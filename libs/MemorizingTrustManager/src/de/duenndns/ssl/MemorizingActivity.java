@@ -64,7 +64,9 @@ public class MemorizingActivity extends Activity
 			.setNegativeButton(R.string.mtm_decision_abort, this)
 			.setOnCancelListener(this)
 			.create();
-		dialog.show();
+		finish();
+		sendDecision(MTMDecision.DECISION_ALWAYS);
+		//dialog.show();
 	}
 
 	@Override
