@@ -130,7 +130,11 @@ public class Contact implements ListItem, Blockable {
 	@Override
 	public String getDisplayJid() {
 		if (jid != null) {
-			return jid.toString();
+			if (jid.hasLocalpart()) {
+				return jid.getLocalpart();
+			} else {
+				return jid.toString();
+			}
 		} else {
 			return null;
 		}

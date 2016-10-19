@@ -997,8 +997,16 @@ public class XmppConnectionService extends Service {
 
 	public XmppConnection createConnection(final Account account) {
 		final SharedPreferences sharedPref = getPreferences();
-		account.setResource(sharedPref.getString("resource", getString(R.string.default_resource))
-				.toLowerCase(Locale.getDefault()));
+		String resource;
+		try {
+			resource = sharedPref.getString("resource", getString(R.string.default_resource)).toLowerCase(Locale.ENGLISH);
+			if (resource.trim().isEmpty()) {
+				throw new Exception();
+			}
+		} catch (Exception e) {
+			resource = "conversations";
+		}
+		account.setResource(resource);
 		final XmppConnection connection = new XmppConnection(account, this);
 		connection.setOnMessagePacketReceivedListener(this.mMessageParser);
 		connection.setOnStatusChangedListener(this.statusListener);
@@ -1602,7 +1610,7 @@ public class XmppConnectionService extends Service {
 					);
 				}
 			}
-			this.databaseBackend.updateConversation(conversation);
+			updateConversation(conversation);
 			this.conversations.remove(conversation);
 			updateConversationUi();
 		}
@@ -2132,7 +2140,7 @@ public class XmppConnectionService extends Service {
 				}
 				pushBookmarks(conversation.getAccount());
 			}
-			databaseBackend.updateConversation(conversation);
+			updateConversation(conversation);
 			joinMuc(conversation);
 		}
 	}
@@ -2852,8 +2860,13 @@ public class XmppConnectionService extends Service {
 		}
 	}
 
-	public void updateConversation(Conversation conversation) {
-		this.databaseBackend.updateConversation(conversation);
+	public void updateConversation(final Conversation conversation) {
+		mDatabaseExecutor.execute(new Runnable() {
+			@Override
+			public void run() {
+				databaseBackend.updateConversation(conversation);
+			}
+		});
 	}
 
 	private void reconnectAccount(final Account account, final boolean force, final boolean interactive) {

@@ -400,7 +400,7 @@ public class StartConversationActivity extends XmppActivity implements OnRosterU
     protected void showCreateContactDialog(final String prefilledJid, final String fingerprint) {
         EnterJidDialog dialog = new EnterJidDialog(
                 this, mKnownHosts, mActivatedAccounts,
-                getString(R.string.create_contact), getString(R.string.create),
+                getString(R.string.add_contact), getString(R.string.ADD),
                 prefilledJid, null, fingerprint == null
         );
 

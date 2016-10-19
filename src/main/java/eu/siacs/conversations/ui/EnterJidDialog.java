@@ -51,7 +51,7 @@ public class EnterJidDialog {
 		jabberIdDesc.setText(R.string.account_settings_jabber_id);
 		final Spinner spinner = (Spinner) dialogView.findViewById(R.id.account);
 		final AutoCompleteTextView jid = (AutoCompleteTextView) dialogView.findViewById(R.id.jid);
-		jid.setAdapter(new KnownHostsAdapter(context, R.layout.simple_list_item, knownHosts));
+		//jid.setAdapter(new KnownHostsAdapter(context, R.layout.simple_list_item, knownHosts));
 		if (prefilledJid != null) {
 			jid.append(prefilledJid);
 			if (!allowEditJid) {

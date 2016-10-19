@@ -54,6 +54,7 @@ import eu.siacs.conversations.entities.Transferable;
 import eu.siacs.conversations.persistance.FileBackend;
 import eu.siacs.conversations.ui.ConversationActivity;
 import eu.siacs.conversations.ui.widget.ClickableMovementMethod;
+import eu.siacs.conversations.ui.widget.ListSelectionManager;
 import eu.siacs.conversations.utils.CryptoHelper;
 import eu.siacs.conversations.utils.GeoHelper;
 import eu.siacs.conversations.utils.UIHelper;
@@ -76,16 +77,10 @@ public class MessageAdapter extends ArrayAdapter<Message> {
 	private OnContactPictureClicked mOnContactPictureClickedListener;
 	private OnContactPictureLongClicked mOnContactPictureLongClickedListener;
 
-	private OnLongClickListener openContextMenu = new OnLongClickListener() {
-
-		@Override
-		public boolean onLongClick(View v) {
-			v.showContextMenu();
-			return true;
-		}
-	};
 	private boolean mIndicateReceived = false;
 	private boolean mUseGreenBackground = false;
+
+	private final ListSelectionManager listSelectionManager = new ListSelectionManager();
 
 	public MessageAdapter(ConversationActivity activity, List<Message> messages) {
 		super(activity, 0, messages);
@@ -362,6 +357,7 @@ public class MessageAdapter extends ArrayAdapter<Message> {
 			viewHolder.messageBody.setText(formattedBody);
 			viewHolder.messageBody.setTextIsSelectable(true);
 			viewHolder.messageBody.setMovementMethod(ClickableMovementMethod.getInstance());
+			listSelectionManager.onUpdate(viewHolder.messageBody, message);
 		} else {
 			viewHolder.messageBody.setText("");
 			viewHolder.messageBody.setTextIsSelectable(false);
@@ -370,7 +366,6 @@ public class MessageAdapter extends ArrayAdapter<Message> {
 		viewHolder.messageBody.setLinkTextColor(this.getMessageTextColor(darkBackground, true));
 		viewHolder.messageBody.setHighlightColor(activity.getResources().getColor(darkBackground ? (type == SENT || !mUseGreenBackground ? R.color.black26 : R.color.grey800) : R.color.grey500));
 		viewHolder.messageBody.setTypeface(null, Typeface.NORMAL);
-		viewHolder.messageBody.setOnLongClickListener(openContextMenu);
 	}
 
 	private void displayDownloadableMessage(ViewHolder viewHolder,
@@ -386,7 +381,6 @@ public class MessageAdapter extends ArrayAdapter<Message> {
 				activity.startDownloadable(message);
 			}
 		});
-		viewHolder.download_button.setOnLongClickListener(openContextMenu);
 	}
 
 	private void displayOpenableMessage(ViewHolder viewHolder,final Message message) {
@@ -401,7 +395,6 @@ public class MessageAdapter extends ArrayAdapter<Message> {
 				openDownloadable(message);
 			}
 		});
-		viewHolder.download_button.setOnLongClickListener(openContextMenu);
 	}
 
 	private void displayLocationMessage(ViewHolder viewHolder, final Message message) {
@@ -416,7 +409,6 @@ public class MessageAdapter extends ArrayAdapter<Message> {
 				showLocation(message);
 			}
 		});
-		viewHolder.download_button.setOnLongClickListener(openContextMenu);
 	}
 
 	private void displayImageMessage(ViewHolder viewHolder,
@@ -454,12 +446,11 @@ public class MessageAdapter extends ArrayAdapter<Message> {
 				openDownloadable(message);
 			}
 		});
-		viewHolder.image.setOnLongClickListener(openContextMenu);
 	}
 
 	private void loadMoreMessages(Conversation conversation) {
 		conversation.setLastClearHistory(0);
-		activity.xmppConnectionService.databaseBackend.updateConversation(conversation);
+		activity.xmppConnectionService.updateConversation(conversation);
 		conversation.setHasMessagesLeftOnServer(true);
 		conversation.setFirstMamReference(null);
 		long timestamp = conversation.getLastMessageTransmitted();
@@ -535,6 +526,7 @@ public class MessageAdapter extends ArrayAdapter<Message> {
 					viewHolder = null;
 					break;
 			}
+			if (viewHolder.messageBody != null) listSelectionManager.onCreate(viewHolder.messageBody);
 			view.setTag(viewHolder);
 		} else {
 			viewHolder = (ViewHolder) view.getTag();
@@ -685,6 +677,13 @@ public class MessageAdapter extends ArrayAdapter<Message> {
 		return view;
 	}
 
+	@Override
+	public void notifyDataSetChanged() {
+		listSelectionManager.onBeforeNotifyDataSetChanged();
+		super.notifyDataSetChanged();
+		listSelectionManager.onAfterNotifyDataSetChanged();
+	}
+
 	public void openDownloadable(Message message) {
 		DownloadableFile file = activity.xmppConnectionService.getFileBackend().getFile(message);
 		if (!file.exists()) {
@@ -735,6 +734,15 @@ public class MessageAdapter extends ArrayAdapter<Message> {
 	public void updatePreferences() {
 		this.mIndicateReceived = activity.indicateReceived();
 		this.mUseGreenBackground = activity.useGreenBackground();
+	}
+
+	public TextView getMessageBody(View view) {
+		final Object tag = view.getTag();
+		if (tag instanceof ViewHolder) {
+			final ViewHolder viewHolder = (ViewHolder) tag;
+			return viewHolder.messageBody;
+		}
+		return null;
 	}
 
 	public interface OnContactPictureClicked {
