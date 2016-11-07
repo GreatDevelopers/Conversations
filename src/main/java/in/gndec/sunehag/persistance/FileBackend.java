@@ -59,7 +59,7 @@ import in.gndec.sunehag.xmpp.pep.Avatar;
 public class FileBackend {
 	private static final SimpleDateFormat IMAGE_DATE_FORMAT = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US);
 
-	public static final String CONVERSATIONS_FILE_PROVIDER = "eu.siacs.conversations.files";
+	public static final String CONVERSATIONS_FILE_PROVIDER = "in.gndec.sunehag.files";
 
 	private XmppConnectionService mXmppConnectionService;
 

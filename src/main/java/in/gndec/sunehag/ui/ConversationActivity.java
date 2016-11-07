@@ -64,15 +64,17 @@ import in.gndec.sunehag.services.XmppConnectionService.OnRosterUpdate;
 import in.gndec.sunehag.ui.adapter.ConversationAdapter;
 import in.gndec.sunehag.utils.ExceptionHelper;
 import in.gndec.sunehag.xmpp.OnUpdateBlocklist;
+import in.gndec.sunehag.xmpp.XmppConnection;
 import in.gndec.sunehag.xmpp.jid.InvalidJidException;
 import in.gndec.sunehag.xmpp.jid.Jid;
+
 
 public class ConversationActivity extends XmppActivity
 	implements OnAccountUpdate, OnConversationUpdate, OnRosterUpdate, OnUpdateBlocklist, XmppConnectionService.OnShowErrorToast {
 
-	public static final String ACTION_VIEW_CONVERSATION = "eu.siacs.conversations.action.VIEW";
+	public static final String ACTION_VIEW_CONVERSATION = "in.gndec.sunehag.action.VIEW";
 	public static final String CONVERSATION = "conversationUuid";
-	public static final String EXTRA_DOWNLOAD_UUID = "eu.siacs.conversations.download_uuid";
+	public static final String EXTRA_DOWNLOAD_UUID = "in.gndec.sunehag.download_uuid";
 	public static final String TEXT = "text";
 	public static final String NICK = "nick";
 	public static final String PRIVATE_MESSAGE = "pm";
@@ -507,11 +509,11 @@ public class ConversationActivity extends XmppActivity
 						break;
 					case ATTACHMENT_CHOICE_RECORD_VOICE:
 						intent.setAction(MediaStore.Audio.Media.RECORD_SOUND_ACTION);
-						fallbackPackageId = "eu.siacs.conversations.voicerecorder";
+						fallbackPackageId = "in.gndec.sunehag.voicerecorder";
 						break;
 					case ATTACHMENT_CHOICE_LOCATION:
-						intent.setAction("eu.siacs.conversations.location.request");
-						fallbackPackageId = "eu.siacs.conversations.sharelocation";
+						intent.setAction("in.gndec.sunehag.location.request");
+						fallbackPackageId = "in.gndec.sunehag.sharelocation";
 						break;
 				}
 				if (intent.resolveActivity(getPackageManager()) != null) {
@@ -777,7 +779,7 @@ public class ConversationActivity extends XmppActivity
 		if (new Intent(MediaStore.Audio.Media.RECORD_SOUND_ACTION).resolveActivity(getPackageManager()) == null) {
 			attachFilePopup.getMenu().findItem(R.id.attach_record_voice).setVisible(false);
 		}
-		if (new Intent("eu.siacs.conversations.location.request").resolveActivity(getPackageManager()) == null) {
+		if (new Intent("in.gndec.sunehag.location.request").resolveActivity(getPackageManager()) == null) {
 			attachFilePopup.getMenu().findItem(R.id.attach_location).setVisible(false);
 		}
 		attachFilePopup.setOnMenuItemClickListener(new OnMenuItemClickListener() {
@@ -1446,7 +1448,8 @@ public class ConversationActivity extends XmppActivity
 	}
 
 	private long getMaxHttpUploadSize(Conversation conversation) {
-		return conversation.getAccount().getXmppConnection().getFeatures().getMaxHttpUploadSize();
+		final XmppConnection connection = conversation.getAccount().getXmppConnection();
+		return connection == null ? -1 : connection.getFeatures().getMaxHttpUploadSize();
 	}
 
 	private void setNeverAskForBatteryOptimizationsAgain() {

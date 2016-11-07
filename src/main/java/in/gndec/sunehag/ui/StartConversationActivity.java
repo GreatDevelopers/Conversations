@@ -358,7 +358,7 @@ public class StartConversationActivity extends XmppActivity implements OnRosterU
         builder.setNegativeButton(R.string.cancel, null);
         builder.setTitle(R.string.action_delete_contact);
         builder.setMessage(getString(R.string.remove_contact_text,
-                contact.getJid()));
+                contact.getDisplayJid()));
         builder.setPositiveButton(R.string.delete, new OnClickListener() {
 
             @Override
@@ -378,7 +378,7 @@ public class StartConversationActivity extends XmppActivity implements OnRosterU
         builder.setNegativeButton(R.string.cancel, null);
         builder.setTitle(R.string.delete_bookmark);
         builder.setMessage(getString(R.string.remove_bookmark_text,
-                bookmark.getJid()));
+                bookmark.getDisplayJid()));
         builder.setPositiveButton(R.string.delete, new OnClickListener() {
 
             @Override

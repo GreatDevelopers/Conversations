@@ -187,6 +187,11 @@ public class EditAccountActivity extends XmppActivity implements OnAccountUpdate
 				mAccountJid.requestFocus();
 				return;
 			}
+			if (password.isEmpty()) {
+				mPassword.setError(getString(R.string.empty_password_error_message));
+				mPassword.requestFocus();
+				return;
+			}
 			if (registerNewAccount) {
 				if (!password.equals(passwordConfirm)) {
 					mPasswordConfirm.setError(getString(R.string.passwords_do_not_match));

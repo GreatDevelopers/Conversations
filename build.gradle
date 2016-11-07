@@ -55,8 +55,8 @@ android {
     defaultConfig {
         minSdkVersion 14
         targetSdkVersion 24
-        versionCode 1
-        versionName "0.5"
+        versionCode 2
+        versionName "0.5.1"
         archivesBaseName += "-$versionName"
         applicationId "in.gndec.sunehag"
     }

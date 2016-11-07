@@ -34,19 +34,19 @@ public final class Config {
 		return (ENCRYPTION_MASK & (ENCRYPTION_MASK - 1)) != 0;
 	}
 
-	public static final String LOGTAG = "SunehaG";
+	public static final String LOGTAG = "sunehaG";
 	
 	//FIXME: Change "YOURHOSTNAME" to the domain name at which you want to run this app
 	public static final String BUG_REPORTS = "sunehag@YOURHOSTNAME";
 
 	//FIXME: Change "YOUR DOMAIN" to the domain name at which you want to run this app
-	public static final String DOMAIN_LOCK = "YOUR DOMAIN"; //only allow account creation for this domain
+	public static final String DOMAIN_LOCK = "YOUR DOMAIN"; //only allow account connection for this domain
 
 	//FIXME: Change "YOUR PASSWORD RECOVERY PAGE" to the domain name at which you want to run this app
 	public static final String FORGOT_PASSWORD_URL = "http://YOUR PASSWORD RECOVERY PAGE"; //URL to password recovery page (web page)
 
 	//FIXME: Change "YOUR CHANGE PASSWORD PAGE" to the domain name at which you want to run this app
-	public static final String CHANGE_PASSWORD_URL = "http://YOUR CHANGE PASSWORD PAGE";
+	public static final String CHANGE_PASSWORD_URL = "http://YOUR CHANGE PASSWORD PAGE"; // URL to change password page (web page)
 	public static final String MAGIC_CREATE_DOMAIN = null;
 	public static final boolean DISALLOW_REGISTRATION_IN_UI = true; //hide the register checkbox
 
@@ -61,16 +61,12 @@ public final class Config {
 	public static final int PING_MAX_INTERVAL = 300;
 	public static final int IDLE_PING_INTERVAL = 600; //540 is minimum according to docs;
 	public static final int PING_MIN_INTERVAL = 30;
+	public static final int LOW_PING_TIMEOUT = 1; // used after push received
 	public static final int PING_TIMEOUT = 15;
 	public static final int SOCKET_TIMEOUT = 15;
 	public static final int CONNECT_TIMEOUT = 90;
 	public static final int CONNECT_DISCO_TIMEOUT = 20;
 	public static final int MINI_GRACE_PERIOD = 750;
-
-	public static final boolean PUSH_MODE = false; 	//closes the tcp connection when going to background
-													//and after PING_MIN_INTERVAL of inactivity
-													//very experimental. only enable this if you want
-													//to around with GCM push
 
 	public static final int AVATAR_SIZE = 192;
 	public static final Bitmap.CompressFormat AVATAR_FORMAT = Bitmap.CompressFormat.WEBP;

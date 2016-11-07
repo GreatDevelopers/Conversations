@@ -15,7 +15,6 @@ import in.gndec.sunehag.R;
 
 public class SettingsFragment extends PreferenceFragment {
 
-	//http://stackoverflow.com/questions/16374820/action-bar-home-button-not-functional-with-nested-preferencescreen/16800527#16800527
 	private void initializeActionBar(PreferenceScreen preferenceScreen) {
 		final Dialog dialog = preferenceScreen.getDialog();
 
