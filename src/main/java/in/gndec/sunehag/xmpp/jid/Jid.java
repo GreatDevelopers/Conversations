@@ -24,6 +24,10 @@ public final class Jid {
 
     public void setUserName(String username){ this.username=username; return ;}
     public String getUserName(){ return username;}
+	// It's much more efficient to store the ful JID as well as the parts instead of figuring them
+	// all out every time (since some characters are displayed but aren't used for comparisons).
+	private final String displayjid;
+
 	public String getLocalpart() {
 		return localpart;
 	}
@@ -77,6 +81,7 @@ public final class Jid {
 
 		Jid fromCache = Jid.cache.get(jid);
 		if (fromCache != null) {
+			displayjid = fromCache.displayjid;
 			localpart = fromCache.localpart;
 			domainpart = fromCache.domainpart;
 			resourcepart = fromCache.resourcepart;
@@ -97,6 +102,8 @@ public final class Jid {
 			throw new InvalidJidException(InvalidJidException.INVALID_CHARACTER);
 		}
 
+		String finaljid;
+
 		final int domainpartStart;
 		final int atLoc = jid.indexOf("@");
 		final int slashLoc = jid.indexOf("/");
@@ -104,6 +111,7 @@ public final class Jid {
 		// or there are one or more "@" signs but they're all in the resourcepart (eg. "example.net/@/rp@"):
 		if (atCount == 0 || (atCount > 0 && slashLoc != -1 && atLoc > slashLoc)) {
 			localpart = "";
+			finaljid = "";
 			domainpartStart = 0;
 		} else {
 			final String lp = jid.substring(0, atLoc);
@@ -116,6 +124,7 @@ public final class Jid {
 				throw new InvalidJidException(InvalidJidException.INVALID_PART_LENGTH);
 			}
 			domainpartStart = atLoc + 1;
+			finaljid = lp + "@";
 		}
 
 		final String dp;
@@ -134,6 +143,7 @@ public final class Jid {
 			} catch (final StringprepException e) {
 				throw new InvalidJidException(InvalidJidException.STRINGPREP_FAIL, e);
 			}
+			finaljid = finaljid + dp + "/" + rp;
 		} else {
 			resourcepart = "";
 			try{
@@ -141,6 +151,7 @@ public final class Jid {
 			} catch (final StringprepException e) {
 				throw new InvalidJidException(InvalidJidException.STRINGPREP_FAIL, e);
 			}
+			finaljid = finaljid + dp;
 		}
 
 		// Remove trailing "." before storing the domain part.
@@ -164,6 +175,8 @@ public final class Jid {
 		}
 
 		Jid.cache.put(jid, this);
+
+		this.displayjid = finaljid;
 	}
 
 	public Jid toBareJid() {
@@ -186,6 +199,10 @@ public final class Jid {
 
 	@Override
 	public String toString() {
+		return displayjid;
+	}
+
+	public String toPreppedString() {
 		String out;
 		if (hasLocalpart()) {
 			out = localpart + '@' + domainpart;

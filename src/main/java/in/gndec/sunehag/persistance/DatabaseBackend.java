@@ -53,7 +53,7 @@ public class DatabaseBackend extends SQLiteOpenHelper {
 	private static DatabaseBackend instance = null;
 
 	private static final String DATABASE_NAME = "history";
-	private static final int DATABASE_VERSION = 28;
+	private static final int DATABASE_VERSION = 29;
 
 	private static String CREATE_CONTATCS_STATEMENT = "create table "
 			+ Contact.TABLENAME + "(" + Contact.ACCOUNT + " TEXT, "
@@ -180,6 +180,7 @@ public class DatabaseBackend extends SQLiteOpenHelper {
 				+ Message.EDITED + " TEXT, "
 				+ Message.READ + " NUMBER DEFAULT 1, "
 				+ Message.OOB + " INTEGER, "
+				+ Message.ERROR_MESSAGE + " TEXT,"
 				+ Message.REMOTE_MSG_ID + " TEXT, FOREIGN KEY("
 				+ Message.CONVERSATION + ") REFERENCES "
 				+ Conversation.TABLENAME + "(" + Conversation.UUID
@@ -286,7 +287,7 @@ public class DatabaseBackend extends SQLiteOpenHelper {
 					continue;
 				}
 				int ownDeviceId = Integer.valueOf(ownDeviceIdString);
-				AxolotlAddress ownAddress = new AxolotlAddress(account.getJid().toBareJid().toString(), ownDeviceId);
+				AxolotlAddress ownAddress = new AxolotlAddress(account.getJid().toBareJid().toPreppedString(), ownDeviceId);
 				deleteSession(db, account, ownAddress);
 				IdentityKeyPair identityKeyPair = loadOwnIdentityKeyPair(db, account);
 				if (identityKeyPair != null) {
@@ -332,6 +333,10 @@ public class DatabaseBackend extends SQLiteOpenHelper {
 		if (oldVersion < 28 && newVersion >= 28) {
 			canonicalizeJids(db);
 		}
+
+		if (oldVersion < 29 && newVersion >= 29) {
+			db.execSQL("ALTER TABLE " + Message.TABLENAME + " ADD COLUMN " + Message.ERROR_MESSAGE + " TEXT");
+		}
 	}
 
 	private void canonicalizeJids(SQLiteDatabase db) {
@@ -344,7 +349,7 @@ public class DatabaseBackend extends SQLiteOpenHelper {
 			try {
 				newJid = Jid.fromString(
 						cursor.getString(cursor.getColumnIndex(Conversation.CONTACTJID))
-				).toString();
+				).toPreppedString();
 			} catch (InvalidJidException ignored) {
 				Log.e(Config.LOGTAG, "Failed to migrate Conversation CONTACTJID "
 						+ cursor.getString(cursor.getColumnIndex(Conversation.CONTACTJID))
@@ -369,7 +374,7 @@ public class DatabaseBackend extends SQLiteOpenHelper {
 			try {
 				newJid = Jid.fromString(
 						cursor.getString(cursor.getColumnIndex(Contact.JID))
-				).toString();
+				).toPreppedString();
 			} catch (InvalidJidException ignored) {
 				Log.e(Config.LOGTAG, "Failed to migrate Contact JID "
 						+ cursor.getString(cursor.getColumnIndex(Contact.JID))
@@ -577,8 +582,8 @@ public class DatabaseBackend extends SQLiteOpenHelper {
 	public Conversation findConversation(final Account account, final Jid contactJid) {
 		SQLiteDatabase db = this.getReadableDatabase();
 		String[] selectionArgs = {account.getUuid(),
-				contactJid.toBareJid().toString() + "/%",
-				contactJid.toBareJid().toString()
+				contactJid.toBareJid().toPreppedString() + "/%",
+				contactJid.toBareJid().toPreppedString()
 		};
 		Cursor cursor = db.query(Conversation.TABLENAME, null,
 				Conversation.ACCOUNT + "=? AND (" + Conversation.CONTACTJID
@@ -690,7 +695,7 @@ public class DatabaseBackend extends SQLiteOpenHelper {
 				db.insert(Contact.TABLENAME, null, contact.getContentValues());
 			} else {
 				String where = Contact.ACCOUNT + "=? AND " + Contact.JID + "=?";
-				String[] whereArgs = {account.getUuid(), contact.getJid().toString()};
+				String[] whereArgs = {account.getUuid(), contact.getJid().toPreppedString()};
 				db.delete(Contact.TABLENAME, where, whereArgs);
 			}
 		}
@@ -1024,7 +1029,7 @@ public class DatabaseBackend extends SQLiteOpenHelper {
 	}
 
 	private IdentityKeyPair loadOwnIdentityKeyPair(SQLiteDatabase db, Account account) {
-		String name = account.getJid().toBareJid().toString();
+		String name = account.getJid().toBareJid().toPreppedString();
 		IdentityKeyPair identityKeyPair = null;
 		Cursor cursor = getIdentityKeyCursor(db, account, name, true);
 		if (cursor.getCount() != 0) {
@@ -1180,7 +1185,7 @@ public class DatabaseBackend extends SQLiteOpenHelper {
 	}
 
 	public void storeOwnIdentityKeyPair(Account account, IdentityKeyPair identityKeyPair) {
-		storeIdentityKey(account, account.getJid().toBareJid().toString(), true, identityKeyPair.getPublicKey().getFingerprint().replaceAll("\\s", ""), Base64.encodeToString(identityKeyPair.serialize(), Base64.DEFAULT), XmppAxolotlSession.Trust.TRUSTED);
+		storeIdentityKey(account, account.getJid().toBareJid().toPreppedString(), true, identityKeyPair.getPublicKey().getFingerprint().replaceAll("\\s", ""), Base64.encodeToString(identityKeyPair.serialize(), Base64.DEFAULT), XmppAxolotlSession.Trust.TRUSTED);
 	}
 
 

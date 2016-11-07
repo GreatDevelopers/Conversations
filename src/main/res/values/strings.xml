@@ -699,4 +699,6 @@
 	<string name="account_forget_password">Forgot password</string>
 	<string name="forget_password">Forgot Password?</string>
 	<string name="empty_password_error_message">Please enter password!</string>
+	<string name="show_error_message">Show error message</string>
+	<string name="error_message">Error Message</string>
 </resources>

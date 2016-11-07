@@ -61,16 +61,12 @@ public final class Config {
 	public static final int PING_MAX_INTERVAL = 300;
 	public static final int IDLE_PING_INTERVAL = 600; //540 is minimum according to docs;
 	public static final int PING_MIN_INTERVAL = 30;
+	public static final int LOW_PING_TIMEOUT = 1; // used after push received
 	public static final int PING_TIMEOUT = 15;
 	public static final int SOCKET_TIMEOUT = 15;
 	public static final int CONNECT_TIMEOUT = 90;
 	public static final int CONNECT_DISCO_TIMEOUT = 20;
 	public static final int MINI_GRACE_PERIOD = 750;
-
-	public static final boolean PUSH_MODE = false; 	//closes the tcp connection when going to background
-													//and after PING_MIN_INTERVAL of inactivity
-													//very experimental. only enable this if you want
-													//to around with GCM push
 
 	public static final int AVATAR_SIZE = 192;
 	public static final Bitmap.CompressFormat AVATAR_FORMAT = Bitmap.CompressFormat.WEBP;
