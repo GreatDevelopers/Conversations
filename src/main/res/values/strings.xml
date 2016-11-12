@@ -250,7 +250,7 @@
 	<string name="contact_already_exists">The contact already exists</string>
 	<string name="join">Join</string>
 	<string name="conference_address">Group address</string>
-	<string name="conference_address_example">Room Id</string>
+	<string name="conference_address_example">Group Id</string>
 	<string name="save_as_bookmark">Save as bookmark</string>
 	<string name="delete_bookmark">Delete bookmark</string>
 	<string name="bookmark_already_exists">This bookmark already exists</string>
@@ -348,7 +348,7 @@
 	<string name="pref_use_send_button_to_indicate_status_summary">Colorize send button to indicate contact status</string>
 	<string name="pref_expert_options_other">Other</string>
 	<string name="pref_conference_name">Group name</string>
-	<string name="pref_conference_name_summary">Use room’s subject instead of JID to identify groups</string>
+	<string name="pref_conference_name_summary">Use Group’s subject instead of JID to identify groups</string>
 	<string name="pref_autojoin">Automatically join groups</string>
 	<string name="pref_autojoin_summary">Respect the autojoin flag in group bookmarks</string>
 	<string name="toast_message_otr_fingerprint">OTR fingerprint copied to clipboard!</string>
@@ -701,4 +701,6 @@
 	<string name="empty_password_error_message">Please enter password!</string>
 	<string name="show_error_message">Show error message</string>
 	<string name="error_message">Error Message</string>
+	<string name="muc_share_via_qr_code">Share via QR Code</string>
+	<string name="contact_details_share_via_qr_code">Share via QR Code</string>
 </resources>

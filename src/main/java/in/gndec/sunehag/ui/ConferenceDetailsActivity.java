@@ -293,6 +293,9 @@ public class ConferenceDetailsActivity extends XmppActivity implements OnConvers
 			case R.id.action_share:
 				shareUri();
 				break;
+			case R.id.muc_share_via_qr_code:
+				showQrCode();
+				break;
 			case R.id.action_save_as_bookmark:
 				saveAsBookmark();
 				break;
@@ -314,7 +317,7 @@ public class ConferenceDetailsActivity extends XmppActivity implements OnConvers
 	@Override
 	protected String getShareableUri() {
 		if (mConversation != null) {
-			return "xmpp:" + mConversation.getJid().toBareJid().toString() + "?join";
+			return "xmpp:" + mConversation.getJid().toBareJid().getLocalpart() + "?join";
 		} else {
 			return "";
 		}
@@ -529,7 +532,7 @@ public class ConferenceDetailsActivity extends XmppActivity implements OnConvers
 		mAccountJid.setText(getString(R.string.using_account, account));
 		mYourPhoto.setImageBitmap(avatarService().get(mConversation.getAccount(), getPixel(48)));
 		setTitle(mConversation.getName());
-		mFullJid.setText(mConversation.getJid().getLocalpart().toString());
+		mFullJid.setText(mConversation.getJid().getLocalpart());
 		mYourNick.setText(mucOptions.getActualNick());
 		mRoleAffiliaton = (TextView) findViewById(R.id.muc_role);
 		if (mucOptions.online()) {

@@ -179,7 +179,7 @@ public class ContactDetailsActivity extends XmppActivity implements OnAccountUpd
 	@Override
 	protected String getShareableUri() {
 		if (contact != null) {
-			return "xmpp:"+contact.getJid().toBareJid().toString();
+			return "xmpp:" + contact.getJid().toBareJid().getLocalpart();
 		} else {
 			return "";
 		}
@@ -246,6 +246,9 @@ public class ContactDetailsActivity extends XmppActivity implements OnAccountUpd
 				break;
 			case R.id.action_share:
 				shareUri();
+				break;
+			case R.id.contact_share_via_qr_code:
+				showQrCode();
 				break;
 			case R.id.action_delete_contact:
 				builder.setTitle(getString(R.string.action_delete_contact))

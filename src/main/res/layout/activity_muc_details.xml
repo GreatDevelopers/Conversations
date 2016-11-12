@@ -27,7 +27,7 @@
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_marginBottom="16dp"
-				android:text="Room ID : "
+				android:text="Group ID : "
 				android:textColor="?attr/color_text_primary"
 				android:textSize="?attr/TextSizeHeadline"
 				android:textStyle="bold"/>

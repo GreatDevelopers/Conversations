@@ -623,9 +623,9 @@ public class StartConversationActivity extends XmppActivity implements OnRosterU
             case R.id.action_create_conference:
                 showCreateConferenceDialog();
                 return true;
-            //case R.id.action_scan_qr_code:
-                //new IntentIntegrator(this).initiateScan();
-                //return true;
+            case R.id.action_scan_qr_code:
+                new IntentIntegrator(this).initiateScan();
+                return true;
             case R.id.action_hide_offline:
                 mHideOfflineContacts = !item.isChecked();
                 getPreferences().edit().putBoolean("hide_offline", mHideOfflineContacts).commit();

@@ -1209,6 +1209,7 @@ public abstract class XmppActivity extends Activity {
 
 	protected void showQrCode() {
 		String uri = getShareableUri();
+		Log.d(Config.LOGTAG,"Uri in QR Code : "+uri);
 		if (uri!=null) {
 			Point size = new Point();
 			getWindowManager().getDefaultDisplay().getSize(size);

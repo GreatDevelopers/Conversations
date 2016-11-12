@@ -601,9 +601,9 @@ public class Account extends AbstractEntity {
 	public String getShareableUri() {
 		final String fingerprint = this.getOtrFingerprint();
 		if (fingerprint != null) {
-			return "xmpp:" + this.getJid().toBareJid().toString() + "?otr-fingerprint="+fingerprint;
+			return "xmpp:" + this.getJid().toBareJid().getLocalpart() + "?otr-fingerprint="+fingerprint;
 		} else {
-			return "xmpp:" + this.getJid().toBareJid().toString();
+			return "xmpp:" + this.getJid().toBareJid().getLocalpart();
 		}
 	}
 
