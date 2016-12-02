@@ -34,11 +34,12 @@ import in.gndec.sunehag.xmpp.jid.Jid;
 
 public class BarcodeProvider extends ContentProvider implements ServiceConnection {
 
-    private static final String AUTHORITY = "in.gndec.sunehag.barcodes";
+    private static final String AUTHORITY = ".barcodes";
 
     private final Object lock = new Object();
 
     private XmppConnectionService mXmppConnectionService;
+    private boolean mBindingInProcess = false;
 
     @Override
     public boolean onCreate() {
@@ -123,14 +124,19 @@ public class BarcodeProvider extends ContentProvider implements ServiceConnectio
 
     private boolean connectAndWait() {
         Intent intent = new Intent(getContext(), XmppConnectionService.class);
-        intent.setAction("contact_chooser");
+        intent.setAction(this.getClass().getSimpleName());
         Context context = getContext();
         if (context != null) {
-            context.startService(intent);
-            context.bindService(intent, this, Context.BIND_AUTO_CREATE);
+            synchronized (this) {
+                if (mXmppConnectionService == null && !mBindingInProcess) {
+                    Log.d(Config.LOGTAG,"calling to bind service");
+                    context.startService(intent);
+                    context.bindService(intent, this, Context.BIND_AUTO_CREATE);
+                    this.mBindingInProcess = true;
+                }
+            }
             try {
                 waitForService();
-                Log.d(Config.LOGTAG, "service initialized");
                 return true;
             } catch (InterruptedException e) {
                 return false;
@@ -143,16 +149,21 @@ public class BarcodeProvider extends ContentProvider implements ServiceConnectio
 
     @Override
     public void onServiceConnected(ComponentName name, IBinder service) {
-        XmppConnectionService.XmppConnectionBinder binder = (XmppConnectionService.XmppConnectionBinder) service;
-        mXmppConnectionService = binder.getService();
-        synchronized (this.lock) {
-            lock.notifyAll();
+        synchronized (this) {
+            XmppConnectionService.XmppConnectionBinder binder = (XmppConnectionService.XmppConnectionBinder) service;
+            mXmppConnectionService = binder.getService();
+            mBindingInProcess = false;
+            synchronized (this.lock) {
+                lock.notifyAll();
+            }
         }
     }
 
     @Override
     public void onServiceDisconnected(ComponentName name) {
-        mXmppConnectionService = null;
+        synchronized (this) {
+            mXmppConnectionService = null;
+        }
     }
 
     private void waitForService() throws InterruptedException {
@@ -160,11 +171,14 @@ public class BarcodeProvider extends ContentProvider implements ServiceConnectio
             synchronized (this.lock) {
                 lock.wait();
             }
+        } else {
+            Log.d(Config.LOGTAG,"not waiting for service because already initialized");
         }
     }
 
-    public static Uri getUriForAccount(Account account) {
-        return Uri.parse("content://" + AUTHORITY + "/" + account.getJid().toBareJid() + ".png");
+    public static Uri getUriForAccount(Context context, Account account) {
+        final String packageId = context.getPackageName();
+        return Uri.parse("content://" + packageId + AUTHORITY + "/" + account.getJid().toBareJid() + ".png");
     }
 
     public static Bitmap createAztecBitmap(String input, int size) {

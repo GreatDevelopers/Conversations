@@ -46,6 +46,7 @@ import in.gndec.sunehag.R;
 import in.gndec.sunehag.crypto.axolotl.AxolotlService;
 import in.gndec.sunehag.crypto.axolotl.XmppAxolotlSession;
 import in.gndec.sunehag.entities.Account;
+import in.gndec.sunehag.services.BarcodeProvider;
 import in.gndec.sunehag.services.XmppConnectionService;
 import in.gndec.sunehag.services.XmppConnectionService.OnAccountUpdate;
 import in.gndec.sunehag.services.XmppConnectionService.OnCaptchaRequested;
@@ -581,8 +582,10 @@ public class EditAccountActivity extends OmemoActivity implements OnAccountUpdat
 		final MenuItem renewCertificate = menu.findItem(R.id.action_renew_certificate);
 		final MenuItem mamPrefs = menu.findItem(R.id.action_mam_prefs);
 		final MenuItem changePresence = menu.findItem(R.id.action_change_presence);
-
+		final MenuItem share = menu.findItem(R.id.action_share);
 		renewCertificate.setVisible(mAccount != null && mAccount.getPrivateKeyAlias() != null);
+
+		share.setVisible(mAccount != null && !mInitMode);
 
 		if (mAccount != null && mAccount.isOnlineAndConnected()) {
 			if (!mAccount.getXmppConnection().getFeatures().blocking()) {
@@ -770,6 +773,14 @@ public class EditAccountActivity extends OmemoActivity implements OnAccountUpdat
 			text = mAccount.getShareableUri();
 		}
 		intent.putExtra(Intent.EXTRA_TEXT,text);
+		startActivity(Intent.createChooser(intent, getText(R.string.share_with)));
+	}
+
+	private void shareBarcode() {
+		Intent intent = new Intent(Intent.ACTION_SEND);
+		intent.putExtra(Intent.EXTRA_STREAM, BarcodeProvider.getUriForAccount(this,mAccount));
+		intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+		intent.setType("image/png");
 		startActivity(Intent.createChooser(intent, getText(R.string.share_with)));
 	}
 

@@ -766,4 +766,8 @@
 	<string name="invalid_barcode">Invalid barcode</string>
 	<string name="IDoNotAgreeMessage">You must Accept the Terms and Conditions in order to you the application\n\nClick \"Back\" to read and Accept \nor\nClick \"Exit\" to exit the Application</string>
 	<string name="IAgreeMessage">I have read and agree to the Terms and Conditions</string>
+	<string name="pref_clean_cache_summary">Clean cache folder (used by Camera Application)</string>
+	<string name="pref_clean_cache">Clean cache</string>
+	<string name="pref_clean_private_storage">Clean private storage</string>
+	<string name="pref_clean_private_storage_summary">Clean private storage where files are kept (They can be re-downloaded from the server)</string>
 </resources>
