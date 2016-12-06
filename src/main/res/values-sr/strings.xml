@@ -666,7 +666,4 @@
   <string name="this_device_has_been_verified">Овај уређај је оверен.</string>
   <string name="copy_fingerprint">Копирај отисак</string>
   <string name="all_omemo_keys_have_been_verified">Сви ОМЕМО кључеви су оверени</string>
-  <string name="share_as_barcode">Подели као бар-кôд</string>
-  <string name="share_as_uri">Подели као ИксМПП УРИ</string>
-  <string name="share_as_http">Подели као ХТТП везу</string>
 </resources>

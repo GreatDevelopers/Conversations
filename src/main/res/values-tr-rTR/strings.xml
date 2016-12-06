@@ -671,9 +671,6 @@
   <string name="verified_fingerprints">Doğrulanmış parmak izleri</string>
   <string name="use_camera_icon_to_scan_barcode">Bir kişinin barkodunu taramak için kamerayı kullan</string>
   <string name="please_wait_for_keys_to_be_fetched">Anahtarların alınması için lütfen bekle</string>
-  <string name="share_as_barcode">Barkod olarak paylaş</string>
-  <string name="share_as_uri">XMPP URI\'si olarak paylaş</string>
-  <string name="share_as_http">HTTP bağlantısı olarak paylaş</string>
   <string name="pref_blind_trust_before_verification">Doğrulamadan Önce Kör Güven</string>
   <string name="pref_blind_trust_before_verification_summary">Kişilerin daha önce doğrulanmamış tüm yeni aygıtlarına kendiliğinden güven ve doğrulanmış kişi her yeni aygıt eklediğinde elle doğrulama iste.</string>
   <string name="blindly_trusted_omemo_keys">Körü körüne güvenilen OMEMO anahtarları</string>

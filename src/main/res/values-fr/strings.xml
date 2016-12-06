@@ -674,9 +674,6 @@
   <string name="verified_fingerprints">Empreintes vérifiées</string>
   <string name="use_camera_icon_to_scan_barcode">Utilisez l\'appareil photo pour scanner le code-barres d\'un contact</string>
   <string name="please_wait_for_keys_to_be_fetched">Veuillez attendre que les clés soient récupérées</string>
-  <string name="share_as_barcode">Partager par Code-barres</string>
-  <string name="share_as_uri">Partager par URI XMPP</string>
-  <string name="share_as_http">Partager par lien HTTP</string>
   <string name="pref_blind_trust_before_verification">Faire Aveuglement Confiance Avant La Vérification</string>
   <string name="pref_blind_trust_before_verification_summary">Faire automatiquement confiance à tous les nouveaux appareils des contacts qui n\'ont pas étés vérifiés avant et demandez une confirmation manuelle à chaque fois qu\'un contact vérifié ajoute un nouveau appareil.</string>
   <string name="blindly_trusted_omemo_keys">Faire aveuglement confiance aux clés OMEMO</string>
