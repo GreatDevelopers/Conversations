@@ -17,6 +17,7 @@ public class XmppUri {
 	protected boolean muc;
 	protected List<Fingerprint> fingerprints = new ArrayList<>();
 	private String body;
+	protected boolean safeSource = true;
 
 	public static final String OMEMO_URI_PARAM = "omemo-sid-";
 	public static final String OTR_URI_PARAM = "otr-fingerprint";
@@ -37,6 +38,15 @@ public class XmppUri {
 		parse(uri);
 	}
 
+	public XmppUri(Uri uri, boolean safeSource) {
+		this.safeSource = safeSource;
+		parse(uri);
+	}
+
+	public boolean isSafeSource() {
+		return safeSource;
+	}
+
 	protected void parse(Uri uri) {
 		String scheme = uri.getScheme();
 		String host = uri.getHost();
@@ -54,6 +64,7 @@ public class XmppUri {
 				jid = segments.get(1) + "@" + segments.get(2);
 			}
 			muc = segments.size() > 1 && "j".equalsIgnoreCase(segments.get(0));
+			fingerprints = parseFingerprints(uri.getQuery(),'&');
 		} else if ("xmpp".equalsIgnoreCase(scheme)) {
 			// sample: xmpp:foo@bar.com
 			muc = isMuc(uri.getQuery());
@@ -81,8 +92,12 @@ public class XmppUri {
 	}
 
 	protected List<Fingerprint> parseFingerprints(String query) {
+		return parseFingerprints(query,';');
+	}
+
+	protected List<Fingerprint> parseFingerprints(String query, char seperator) {
 		List<Fingerprint> fingerprints = new ArrayList<>();
-		String[] pairs = query == null ? new String[0] : query.split(";");
+		String[] pairs = query == null ? new String[0] : query.split(String.valueOf(seperator));
 		for(String pair : pairs) {
 			String[] parts = pair.split("=",2);
 			if (parts.length == 2) {
@@ -150,6 +165,26 @@ public class XmppUri {
 	public enum FingerprintType {
 		OMEMO,
 		OTR
+	}
+
+	public static String getFingerprintUri(String base, List<XmppUri.Fingerprint> fingerprints, char seperator) {
+		StringBuilder builder = new StringBuilder(base);
+		builder.append('?');
+		for(int i = 0; i < fingerprints.size(); ++i) {
+			XmppUri.FingerprintType type = fingerprints.get(i).type;
+			if (type == XmppUri.FingerprintType.OMEMO) {
+				builder.append(XmppUri.OMEMO_URI_PARAM);
+				builder.append(fingerprints.get(i).deviceId);
+			} else if (type == XmppUri.FingerprintType.OTR) {
+				builder.append(XmppUri.OTR_URI_PARAM);
+			}
+			builder.append('=');
+			builder.append(fingerprints.get(i).fingerprint);
+			if (i != fingerprints.size() -1) {
+				builder.append(seperator);
+			}
+		}
+		return builder.toString();
 	}
 
 	public static class Fingerprint {

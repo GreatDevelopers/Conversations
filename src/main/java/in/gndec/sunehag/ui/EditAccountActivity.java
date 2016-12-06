@@ -56,6 +56,7 @@ import in.gndec.sunehag.utils.UIHelper;
 import in.gndec.sunehag.utils.XmppUri;
 import in.gndec.sunehag.xml.Element;
 import in.gndec.sunehag.xmpp.OnKeyStatusUpdated;
+import in.gndec.sunehag.xmpp.OnUpdateBlocklist;
 import in.gndec.sunehag.xmpp.XmppConnection;
 import in.gndec.sunehag.xmpp.XmppConnection.Features;
 import in.gndec.sunehag.xmpp.forms.Data;
@@ -63,7 +64,7 @@ import in.gndec.sunehag.xmpp.jid.InvalidJidException;
 import in.gndec.sunehag.xmpp.jid.Jid;
 import in.gndec.sunehag.xmpp.pep.Avatar;
 
-public class EditAccountActivity extends OmemoActivity implements OnAccountUpdate,
+public class EditAccountActivity extends OmemoActivity implements OnAccountUpdate, OnUpdateBlocklist,
 		OnKeyStatusUpdated, OnCaptchaRequested, KeyChainAliasCallback, XmppConnectionService.OnShowErrorToast, XmppConnectionService.OnMamPreferencesFetched {
 
 	private static final int REQUEST_DATA_SAVER = 0x37af244;
@@ -590,6 +591,8 @@ public class EditAccountActivity extends OmemoActivity implements OnAccountUpdat
 		if (mAccount != null && mAccount.isOnlineAndConnected()) {
 			if (!mAccount.getXmppConnection().getFeatures().blocking()) {
 				showBlocklist.setVisible(false);
+			} else {
+				showBlocklist.setEnabled(mAccount.getBlocklist().size() > 0);
 			}
 			//if (!mAccount.getXmppConnection().getFeatures().register()) {
 			//	changePassword.setVisible(false);
@@ -768,7 +771,7 @@ public class EditAccountActivity extends OmemoActivity implements OnAccountUpdat
 		intent.setType("text/plain");
 		String text;
 		if (http) {
-			text = "https://conversations.im/i/"+mAccount.getJid().toBareJid().toString();
+			text = mAccount.getShareableLink();
 		} else {
 			text = mAccount.getShareableUri();
 		}
@@ -1213,5 +1216,10 @@ public class EditAccountActivity extends OmemoActivity implements OnAccountUpdat
 				Toast.makeText(EditAccountActivity.this,R.string.unable_to_fetch_mam_prefs,Toast.LENGTH_LONG).show();
 			}
 		});
+	}
+
+	@Override
+	public void OnUpdateBlocklist(Status status) {
+		refreshUi();
 	}
 }

@@ -38,4 +38,5 @@
 		<item>@color/dot_dark_intro</item>
 		<item>@color/dot_dark_intro</item>
 	</array>
+	<color name="bubble">#ff4b9b4a</color>
 </resources>

@@ -28,8 +28,10 @@ import android.os.Parcelable;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.text.Editable;
+import android.text.SpannableString;
+import android.text.Spanned;
 import android.text.TextWatcher;
-import android.util.Log;
+import android.text.style.TypefaceSpan;
 import android.util.Pair;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -786,12 +788,15 @@ public class StartConversationActivity extends XmppActivity implements OnRosterU
         if (this.mPendingInvite != null) {
             mPendingInvite.invite();
             this.mPendingInvite = null;
+            filter(null);
         } else if (!handleIntent(getIntent())) {
             if (mSearchEditText != null) {
                 filter(mSearchEditText.getText().toString());
             } else {
                 filter(null);
             }
+        } else {
+            filter(null);
         }
         setIntent(null);
     }
@@ -810,15 +815,13 @@ public class StartConversationActivity extends XmppActivity implements OnRosterU
             case Intent.ACTION_VIEW:
                 Uri uri = intent.getData();
                 if (uri != null) {
-                    Log.d(Config.LOGTAG, "received uri=" + intent.getData());
-                    return new Invite(intent.getData()).invite();
+                    return new Invite(intent.getData(),false).invite();
                 } else {
                     return false;
                 }
             case NfcAdapter.ACTION_NDEF_DISCOVERED:
                 for (Parcelable message : getIntent().getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES)) {
                     if (message instanceof NdefMessage) {
-                        Log.d(Config.LOGTAG, "received message=" + message);
                         for (NdefRecord record : ((NdefMessage) message).getRecords()) {
                             switch (record.getTnf()) {
                                 case NdefRecord.TNF_WELL_KNOWN:
@@ -865,10 +868,14 @@ public class StartConversationActivity extends XmppActivity implements OnRosterU
             return false;
         } else if (contacts.size() == 1) {
             Contact contact = contacts.get(0);
-            if (invite.hasFingerprints()) {
-                xmppConnectionService.verifyFingerprints(contact,invite.getFingerprints());
+            if (!invite.isSafeSource() && invite.hasFingerprints()) {
+                displayVerificationWarningDialog(contact,invite);
+            } else {
+                if (invite.hasFingerprints()) {
+                    xmppConnectionService.verifyFingerprints(contact, invite.getFingerprints());
+                }
+                switchToConversation(contact, invite.getBody());
             }
-            switchToConversation(contact,invite.getBody());
             return true;
         } else {
             if (mMenuSearchView != null) {
@@ -881,6 +888,46 @@ public class StartConversationActivity extends XmppActivity implements OnRosterU
             }
             return true;
         }
+    }
+
+    private void displayVerificationWarningDialog(final Contact contact, final Invite invite) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.verify_omemo_keys);
+        View view = getLayoutInflater().inflate(R.layout.dialog_verify_fingerprints, null);
+        final CheckBox isTrustedSource = (CheckBox) view.findViewById(R.id.trusted_source);
+        TextView warning = (TextView) view.findViewById(R.id.warning);
+        String jid = contact.getJid().toBareJid().toString();
+        SpannableString spannable = new SpannableString(getString(R.string.verifying_omemo_keys_trusted_source,jid,contact.getDisplayName()));
+        int start = spannable.toString().indexOf(jid);
+        if (start >= 0) {
+            spannable.setSpan(new TypefaceSpan("monospace"),start,start + jid.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+        warning.setText(spannable);
+        builder.setView(view);
+        builder.setPositiveButton(R.string.confirm, new OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (isTrustedSource.isChecked() && invite.hasFingerprints()) {
+                    xmppConnectionService.verifyFingerprints(contact, invite.getFingerprints());
+                }
+                switchToConversation(contact, invite.getBody());
+            }
+        });
+        builder.setNegativeButton(R.string.cancel, new OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                StartConversationActivity.this.finish();
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialog) {
+                StartConversationActivity.this.finish();
+            }
+        });
+        dialog.show();
     }
 
     protected void filter(String needle) {
@@ -1107,6 +1154,10 @@ public class StartConversationActivity extends XmppActivity implements OnRosterU
 
         public Invite(final String uri) {
             super(uri);
+        }
+
+        public Invite(Uri uri, boolean safeSource) {
+            super(uri,safeSource);
         }
 
         boolean invite() {
