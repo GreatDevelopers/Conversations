@@ -515,7 +515,7 @@ public class ConversationActivity extends XmppActivity
 						break;
 					case ATTACHMENT_CHOICE_LOCATION:
 						intent.setAction("in.gndec.sunehag.location.request");
-						fallbackPackageId = "in.gndec.sunehag.sharelocation";
+						fallbackPackageId = "in.gndec.sunehag.ui";
 						break;
 				}
 				if (intent.resolveActivity(getPackageManager()) != null) {
