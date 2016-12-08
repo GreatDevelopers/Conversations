@@ -5,8 +5,6 @@ import android.database.Cursor;
 import android.os.SystemClock;
 import android.util.Pair;
 
-import in.gndec.sunehag.crypto.PgpDecryptionService;
-
 import net.java.otr4j.crypto.OtrCryptoEngineImpl;
 import net.java.otr4j.crypto.OtrCryptoException;
 
@@ -15,16 +13,21 @@ import org.json.JSONObject;
 
 import java.security.PublicKey;
 import java.security.interfaces.DSAPublicKey;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import in.gndec.sunehag.R;
 import in.gndec.sunehag.crypto.OtrService;
+import in.gndec.sunehag.crypto.PgpDecryptionService;
 import in.gndec.sunehag.crypto.axolotl.AxolotlService;
+import in.gndec.sunehag.crypto.axolotl.XmppAxolotlSession;
 import in.gndec.sunehag.services.XmppConnectionService;
+import in.gndec.sunehag.utils.XmppUri;
 import in.gndec.sunehag.xmpp.XmppConnection;
 import in.gndec.sunehag.xmpp.jid.InvalidJidException;
 import in.gndec.sunehag.xmpp.jid.Jid;
@@ -337,6 +340,10 @@ public class Account extends AbstractEntity {
 		}
 	}
 
+	public State getTrueStatus() {
+		return this.status;
+	}
+
 	public void setStatus(final State status) {
 		this.status = status;
 	}
@@ -486,7 +493,7 @@ public class Account extends AbstractEntity {
 				if (publicKey == null || !(publicKey instanceof DSAPublicKey)) {
 					return null;
 				}
-				this.otrFingerprint = new OtrCryptoEngineImpl().getFingerprint(publicKey);
+				this.otrFingerprint = new OtrCryptoEngineImpl().getFingerprint(publicKey).toLowerCase(Locale.US);
 				return this.otrFingerprint;
 			} catch (final OtrCryptoException ignored) {
 				return null;
@@ -599,12 +606,44 @@ public class Account extends AbstractEntity {
 	}
 
 	public String getShareableUri() {
-		final String fingerprint = this.getOtrFingerprint();
-		if (fingerprint != null) {
-			return "xmpp:" + this.getJid().toBareJid().toString() + "?otr-fingerprint="+fingerprint;
+		//final String fingerprint = this.getOtrFingerprint();
+		/*if (fingerprint != null) {
+			return "xmpp:" + this.getJid().toBareJid().getLocalpart() + "?otr-fingerprint="+fingerprint;
 		} else {
-			return "xmpp:" + this.getJid().toBareJid().toString();
+			return "xmpp:" + this.getJid().toBareJid().getLocalpart();
+		}*/
+		List<XmppUri.Fingerprint> fingerprints = this.getFingerprints();
+		String uri = "xmpp:"+this.getJid().toBareJid().getLocalpart();
+		if (fingerprints.size() > 0) {
+			return XmppUri.getFingerprintUri(uri,fingerprints,';');
+		} else {
+			return uri;
 		}
+	}
+
+	public String getShareableLink() {
+		List<XmppUri.Fingerprint> fingerprints = this.getFingerprints();
+		String uri = "https://conversations.im/i/"+this.getJid().toBareJid().toString();
+		if (fingerprints.size() > 0) {
+			return XmppUri.getFingerprintUri(uri,fingerprints,'&');
+		} else {
+			return uri;
+		}
+	}
+
+	private List<XmppUri.Fingerprint> getFingerprints() {
+		ArrayList<XmppUri.Fingerprint> fingerprints = new ArrayList<>();
+		final String otr = this.getOtrFingerprint();
+		if (otr != null) {
+			fingerprints.add(new XmppUri.Fingerprint(XmppUri.FingerprintType.OTR,otr));
+		}
+		fingerprints.add(new XmppUri.Fingerprint(XmppUri.FingerprintType.OMEMO,axolotlService.getOwnFingerprint().substring(2),axolotlService.getOwnDeviceId()));
+		for(XmppAxolotlSession session : axolotlService.findOwnSessions()) {
+			if (session.getTrust().isVerified() && session.getTrust().isActive()) {
+				fingerprints.add(new XmppUri.Fingerprint(XmppUri.FingerprintType.OMEMO,session.getFingerprint().substring(2).replaceAll("\\s",""),session.getRemoteAddress().getDeviceId()));
+			}
+		}
+		return fingerprints;
 	}
 
 	public boolean isBlocked(final ListItem contact) {

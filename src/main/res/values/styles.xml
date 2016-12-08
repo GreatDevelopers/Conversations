@@ -22,4 +22,8 @@
         <item name="android:windowBackground">@drawable/background_welcome</item>
     </style>
 
+    <style name="Intro" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowNoTitle">true</item>
+    </style>
+
 </resources>

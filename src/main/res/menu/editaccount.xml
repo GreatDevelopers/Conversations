@@ -1,6 +1,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
+        android:id="@+id/action_share"
+        android:title="@string/share_uri_with"
+        android:icon="?attr/icon_share"
+        android:showAsAction="always" />
+
+    <item
         android:id="@+id/action_change_presence"
         android:showAsAction="always"
         android:title="@string/change_presence"
@@ -45,10 +51,6 @@
         android:visible="true"
         android:title="@string/change_password"/>
 
-    <item
-        android:id="@+id/action_clear_devices"
-        android:showAsAction="never"
-        android:title="@string/clear_other_devices"/>
     <item
         android:id="@+id/action_settings"
         android:orderInCategory="100"

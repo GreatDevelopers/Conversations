@@ -40,6 +40,7 @@
     <attr name="icon_new" format="reference"/>
     <attr name="icon_new_attachment" format="reference"/>
     <attr name="icon_not_secure" format="reference"/>
+    <attr name="icon_quote" format="reference"/>
     <attr name="icon_refresh" format="reference"/>
     <attr name="icon_remove" format="reference"/>
     <attr name="icon_search" format="reference"/>
@@ -47,6 +48,7 @@
     <attr name="icon_settings" format="reference"/>
     <attr name="icon_share" format="reference"/>
     <attr name="icon_import_export" format="reference"/>
+    <attr name="icon_scan_qr_code" format="reference"/>
 
     <attr name="icon_notifications" format="reference"/>
     <attr name="icon_notifications_off" format="reference"/>

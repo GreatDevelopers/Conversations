@@ -100,7 +100,6 @@
   <string name="accept">قبول</string>
   <string name="error">حدث خطأ ما</string>
   <string name="pref_grant_presence_updates">منح تحديثات الظهور</string>
-  <string name="pref_grant_presence_updates_summary">اسأل واقبل السؤال عن تحديثات الظهور</string>
   <string name="your_account">حسابك</string>
   <string name="keys">مفاتيح</string>
   <string name="send_presence_updates">ارسال تحديثات الظهور</string>
@@ -223,7 +222,6 @@
   <string name="no_application_found_to_open_file">لا يوجد تطبيق متاح لعرض الملف</string>
   <string name="could_not_verify_fingerprint">لا يمكن التحقق من البصمة</string>
   <string name="manually_verify">تأكيد يدوي</string>
-  <string name="are_you_sure_verify_fingerprint">هل ترغب في تأكيد بصمات OTR لجهات اتصالك ؟</string>
   <string name="pref_show_dynamic_tags">عرض العلامات التلقائية</string>
   <string name="pref_show_dynamic_tags_summary">عرض العلامات  للقراءة فقط أسفل بيانات جهات الإتصال </string>
   <string name="enable_notifications">تفعيل الإشعارات</string>

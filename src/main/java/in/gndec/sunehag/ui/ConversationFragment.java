@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.IntentSender.SendIntentException;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.Editable;
 import android.text.InputType;
 import android.util.Log;
 import android.util.Pair;
@@ -506,6 +507,34 @@ public class ConversationFragment extends Fragment implements EditMessage.Keyboa
 						}
 					}
 				});
+		messageListAdapter.setOnQuoteListener(new MessageAdapter.OnQuoteListener() {
+
+			@Override
+			public void onQuote(String text) {
+				if (mEditMessage.isEnabled()) {
+					text = text.replaceAll("(\n *){2,}", "\n").replaceAll("(^|\n)", "$1> ").replaceAll("\n$", "");
+					Editable editable = mEditMessage.getEditableText();
+					int position = mEditMessage.getSelectionEnd();
+					if (position == -1) position = editable.length();
+					if (position > 0 && editable.charAt(position - 1) != '\n') {
+						editable.insert(position++, "\n");
+					}
+					editable.insert(position, text);
+					position += text.length();
+					editable.insert(position++, "\n");
+					if (position < editable.length() && editable.charAt(position) != '\n') {
+						editable.insert(position, "\n");
+					}
+					mEditMessage.setSelection(position);
+					mEditMessage.requestFocus();
+					InputMethodManager inputMethodManager = (InputMethodManager) getActivity()
+							.getSystemService(Context.INPUT_METHOD_SERVICE);
+					if (inputMethodManager != null) {
+						inputMethodManager.showSoftInput(mEditMessage, InputMethodManager.SHOW_IMPLICIT);
+					}
+				}
+			}
+		});
 		messagesView.setAdapter(messageListAdapter);
 
 		registerForContextMenu(messagesView);
@@ -546,6 +575,7 @@ public class ConversationFragment extends Fragment implements EditMessage.Keyboa
 			MenuItem downloadFile = menu.findItem(R.id.download_file);
 			MenuItem cancelTransmission = menu.findItem(R.id.cancel_transmission);
 			MenuItem deleteFile = menu.findItem(R.id.delete_file);
+			MenuItem showErrorMessage = menu.findItem(R.id.show_error_message);
 			if (!treatAsFile
 					&& !GeoHelper.isGeoUri(m.getBody())
 					&& m.treatAsDownloadable() != Message.Decision.MUST) {
@@ -556,7 +586,8 @@ public class ConversationFragment extends Fragment implements EditMessage.Keyboa
 				retryDecryption.setVisible(true);
 			}
 			if (relevantForCorrection.getType() == Message.TYPE_TEXT
-					&& relevantForCorrection.isLastCorrectableMessage()) {
+					&& relevantForCorrection.isLastCorrectableMessage()
+					&& (m.getConversation().getMucOptions().nonanonymous() || m.getConversation().getMode() == Conversation.MODE_SINGLE)) {
 				correctMessage.setVisible(true);
 			}
 			if (treatAsFile || (GeoHelper.isGeoUri(m.getBody()))) {
@@ -588,6 +619,9 @@ public class ConversationFragment extends Fragment implements EditMessage.Keyboa
 					deleteFile.setVisible(true);
 					deleteFile.setTitle(activity.getString(R.string.delete_x_file, UIHelper.getFileDescriptionString(activity, m)));
 				}
+			}
+			if (m.getStatus() == Message.STATUS_SEND_FAILED && m.getErrorMessage() != null) {
+				showErrorMessage.setVisible(true);
 			}
 		}
 	}
@@ -625,9 +659,20 @@ public class ConversationFragment extends Fragment implements EditMessage.Keyboa
 			case R.id.delete_file:
 				deleteFile(selectedMessage);
 				return true;
+			case R.id.show_error_message:
+				showErrorMessage(selectedMessage);
+				return true;
 			default:
 				return super.onContextItemSelected(item);
 		}
+	}
+
+	private void showErrorMessage(final Message message) {
+		AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+		builder.setTitle(R.string.error_message);
+		builder.setMessage(message.getErrorMessage());
+		builder.setPositiveButton(R.string.confirm,null);
+		builder.create().show();
 	}
 
 	private void shareWith(Message message) {
@@ -638,8 +683,7 @@ public class ConversationFragment extends Fragment implements EditMessage.Keyboa
 			shareIntent.setType("text/plain");
 		} else {
 			shareIntent.putExtra(Intent.EXTRA_STREAM,
-					activity.xmppConnectionService.getFileBackend()
-							.getJingleFileUri(message));
+					activity.xmppConnectionService.getFileBackend().getJingleFileUri(message));
 			shareIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 			String mime = message.getMimeType();
 			if (mime == null) {
@@ -656,7 +700,7 @@ public class ConversationFragment extends Fragment implements EditMessage.Keyboa
 	}
 
 	private void copyText(Message message) {
-		if (activity.copyTextToClipboard(message.getMergedBody(),
+		if (activity.copyTextToClipboard(message.getMergedBody().toString(),
 				R.string.message_text)) {
 			Toast.makeText(activity, R.string.message_copied_to_clipboard,
 					Toast.LENGTH_SHORT).show();
@@ -901,15 +945,15 @@ public class ConversationFragment extends Fragment implements EditMessage.Keyboa
 
 	private void updateSnackBar(final Conversation conversation) {
 		final Account account = conversation.getAccount();
-		final Contact contact = conversation.getContact();
 		final int mode = conversation.getMode();
+		final Contact contact = mode == Conversation.MODE_SINGLE ? conversation.getContact() : null;
 		if (account.getStatus() == Account.State.DISABLED) {
 			showSnackbar(R.string.this_account_is_disabled, R.string.enable, this.mEnableAccountListener);
 		} else if (conversation.isBlocked()) {
 			showSnackbar(R.string.contact_blocked, R.string.unblock, this.mUnblockClickListener);
-		} else if (!contact.showInRoster() && contact.getOption(Contact.Options.PENDING_SUBSCRIPTION_REQUEST)) {
+		} else if (contact != null && !contact.showInRoster() && contact.getOption(Contact.Options.PENDING_SUBSCRIPTION_REQUEST)) {
 			showSnackbar(R.string.contact_added_you, R.string.add_back, this.mAddBackClickListener);
-		} else if (contact.getOption(Contact.Options.PENDING_SUBSCRIPTION_REQUEST)) {
+		} else if (contact != null && contact.getOption(Contact.Options.PENDING_SUBSCRIPTION_REQUEST)) {
 			showSnackbar(R.string.contact_asks_for_presence_subscription, R.string.allow, this.mAllowPresenceSubscription);
 		} else if (mode == Conversation.MODE_MULTI
 				&& !conversation.getMucOptions().online()

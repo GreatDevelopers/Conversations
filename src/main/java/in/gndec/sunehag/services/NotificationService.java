@@ -34,13 +34,14 @@ import in.gndec.sunehag.entities.Conversation;
 import in.gndec.sunehag.entities.Message;
 import in.gndec.sunehag.ui.ConversationActivity;
 import in.gndec.sunehag.ui.ManageAccountActivity;
+import in.gndec.sunehag.ui.SettingsActivity;
 import in.gndec.sunehag.ui.TimePreference;
 import in.gndec.sunehag.utils.GeoHelper;
 import in.gndec.sunehag.utils.UIHelper;
 
 public class NotificationService {
 
-	private static final String CONVERSATIONS_GROUP = "eu.siacs.conversations";
+	private static final String CONVERSATIONS_GROUP = "in.gndec.sunehag";
 	private final XmppConnectionService mXmppConnectionService;
 
 	private final LinkedHashMap<String, ArrayList<Message>> notifications = new LinkedHashMap<>();
@@ -591,7 +592,7 @@ public class NotificationService {
 				errors.add(account);
 			}
 		}
-		if (mXmppConnectionService.getPreferences().getBoolean("keep_foreground_service", false)) {
+		if (mXmppConnectionService.getPreferences().getBoolean(SettingsActivity.KEEP_FOREGROUND_SERVICE, false)) {
 			notificationManager.notify(FOREGROUND_NOTIFICATION_ID, createForegroundNotification());
 		}
 		final NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(mXmppConnectionService);
@@ -600,7 +601,7 @@ public class NotificationService {
 			return;
 		} else if (errors.size() == 1) {
 			mBuilder.setContentTitle(mXmppConnectionService.getString(R.string.problem_connecting_to_account));
-			mBuilder.setContentText(errors.get(0).getJid().toBareJid().toString());
+			mBuilder.setContentText(errors.get(0).getJid().getLocalpart());
 		} else {
 			mBuilder.setContentTitle(mXmppConnectionService.getString(R.string.problem_connecting_to_accounts));
 			mBuilder.setContentText(mXmppConnectionService.getString(R.string.touch_to_fix));

@@ -122,14 +122,14 @@
   <string name="pref_never_send_crash">Skicka aldrig krasch-rapporter</string>
   <string name="pref_never_send_crash_summary">Genom att skicka in stack traces hjälper du utvecklarna av Conversations</string>
   <string name="pref_confirm_messages">Bekräfta meddelanden</string>
-  <string name="pref_confirm_messages_summary">Låter dina kontakter veta när du har tagit emot och läst ett meddelande</string>
+  <string name="pref_confirm_messages_summary">Låt dina kontakter veta när du har mottagit och läst deras meddelanden</string>
   <string name="pref_ui_options">Gränssnitt</string>
   <string name="openpgp_error">OpenKeychain rapporterade ett fel</string>
   <string name="error_decrypting_file">I/O-fel vid avkryptering av fil</string>
   <string name="accept">Acceptera</string>
   <string name="error">Ett fel har inträffat</string>
   <string name="pref_grant_presence_updates">Tillåt tillänglighetsuppdateringar</string>
-  <string name="pref_grant_presence_updates_summary">Tillåt i förväg och be om tillgänglighetsuppdateringar för kontakter du skapat</string>
+  <string name="pref_grant_presence_updates_summary">Tillåt och be om abonnemangsbegäran i förväg för kontakter du har skapat</string>
   <string name="subscriptions">Abonnemang</string>
   <string name="your_account">Ditt konto</string>
   <string name="keys">Nycklar</string>
@@ -331,6 +331,7 @@
   <string name="check_x_filesize_on_host">Kontrollera filstorlek för %1$s på %2$s</string>
   <string name="message_options">Meddelandealternativ</string>
   <string name="copy_text">Kopiera text</string>
+  <string name="select_text">Markera text</string>
   <string name="copy_original_url">Kopiera orginal-URL</string>
   <string name="send_again">Skicka igen</string>
   <string name="file_url">Fil-URL</string>
@@ -338,8 +339,8 @@
   <string name="url_copied_to_clipboard">URL kopierad till urklipp</string>
   <string name="message_copied_to_clipboard">Meddelande kopierat till urklipp</string>
   <string name="image_transmission_failed">Bildöverföring lyckades inte</string>
-  <string name="scan_qr_code">Skanna QR-kod</string>
-  <string name="show_qr_code">Visa QR-kod</string>
+  <string name="scan_qr_code">Scanna 2D-streckkod</string>
+  <string name="show_qr_code">Visa 2D-streckkod</string>
   <string name="show_block_list">Visa blockeringslista</string>
   <string name="account_details">Kontodetaljer</string>
   <string name="verify_otr">Verifiera OTR</string>
@@ -379,7 +380,7 @@
   <string name="no_application_found_to_open_file">Ingen applikation kunde hittas för att öppna filen</string>
   <string name="could_not_verify_fingerprint">Kunde inte verifiera fingeravtryck</string>
   <string name="manually_verify">Verifiera manuellt</string>
-  <string name="are_you_sure_verify_fingerprint">Är du säker på att du vill verifiera din kontakts OTR-fingeravtryck</string>
+  <string name="are_you_sure_verify_fingerprint">Är du säker på att du vill verifiera din kontakts OTR-fingeravtryck?</string>
   <string name="pref_show_dynamic_tags">Visa dynamiska taggar</string>
   <string name="pref_show_dynamic_tags_summary">Visa skrivskyddade taggar under kontakter</string>
   <string name="enable_notifications">Aktivera notifieringar</string>
@@ -472,7 +473,7 @@
   <string name="contact_is_typing">%s skriver...</string>
   <string name="contact_has_stopped_typing">%s har slutat skriva</string>
   <string name="pref_chat_states">Skriv-notifieringar</string>
-  <string name="pref_chat_states_summary">Låter dina kontakter veta när du skriver ett nytt meddelande</string>
+  <string name="pref_chat_states_summary">Låt dina kontakter veta när du skriver meddelande till dem</string>
   <string name="send_location">Skicka position</string>
   <string name="show_location">Visa position</string>
   <string name="no_application_found_to_display_location">Kunde inte hitta applikation för att visa position</string>
@@ -596,6 +597,8 @@
   <string name="security_error_invalid_file_access">Säkerhetsfel: Ogiltig filaccess</string>
   <string name="no_application_to_share_uri">Ingen applikation kunde hittas för att dela URI</string>
   <string name="share_uri_with">Dela URI med...</string>
+  <string name="welcome_text">XMPP är ett leverantörsoberoende protokoll. Du kan använda denna klient med vilken XMPP server du vill.\nFör din bekvämlighet har vi gjort det enkelt att skapa ett konto hos conversations.im¹; en leverantör speciellt anpassad för att användas med Conversations.</string>
+  <string name="magic_create_text">Du kommer nu att få hjälp med att skapa ett konto på conversations.im.¹\nNär conversations.im väljs som leverantör kommer du kunna kommunicera med användare hos andra leverantörer genom att ge dem ditt Jabber ID.</string>
   <string name="your_full_jid_will_be">Ditt jabber ID blir: %s</string>
   <string name="create_account">Skapa konto</string>
   <string name="use_own_provider">Använd min egen leverantör</string>
@@ -658,4 +661,22 @@
   <string name="pref_delete_omemo_identities_summary">Regenerera din OMEMO-nyckel. Alla dina kontakter kommer att behöva verifiera dig igen. Använd detta endast som en sista utväg.</string>
   <string name="delete_selected_keys">Ta bort valda nycklar</string>
   <string name="error_publish_avatar_offline">Du måste vara ansluten för att publicera din avatarbild</string>
+  <string name="show_error_message">Visa felmeddelande</string>
+  <string name="error_message">Felmeddelande</string>
+  <string name="data_saver_enabled">Databesparing</string>
+  <string name="data_saver_enabled_explained">Ditt operativsystem begränsar Internet-access för Conversations i när den är i bakgrunden. För att få notifieringar vid nya meddelanden behöver du ge Conversations obegränsad access när databesparing är påslaget.\nConversations kommer ändå försöka minska dataanvändningen när det är möjligt.</string>
+  <string name="device_does_not_support_data_saver">Din enhet stödjer inte att deaktivera databesparing för Conversations.</string>
+  <string name="error_unable_to_create_temporary_file">Kunde inte skapa tillfällig fil</string>
+  <string name="this_device_has_been_verified">Denna enhet har verifierats</string>
+  <string name="copy_fingerprint">Kopiera fingeravtryck</string>
+  <string name="all_omemo_keys_have_been_verified">Alla OMEMO nycklar har verifierats</string>
+  <string name="barcode_does_not_contain_fingerprints_for_this_conversation">Streckkoden innehåller inte fingeravtryck för den här konversationen.</string>
+  <string name="verified_fingerprints">Verifierade fingeravtryck</string>
+  <string name="use_camera_icon_to_scan_barcode">Använd kameran för att scanna en kontakts streckkod</string>
+  <string name="please_wait_for_keys_to_be_fetched">Vänta medans nycklar hämtas</string>
+  <string name="pref_blind_trust_before_verification">Blint förtroende före verifiering</string>
+  <string name="pref_blind_trust_before_verification_summary">Lita automatiskt på alla nya enheter för kontakter som inte har blivit verifierade tidigare, och be om manuell bekräftelse varje gång en verifierad kontakt lägger till en ny enhet.</string>
+  <string name="blindly_trusted_omemo_keys">Lita blint på OMEMO-nycklar</string>
+  <string name="not_trusted">Ej betrodd</string>
+  <string name="invalid_barcode">Ogiltig 2D-streckkod</string>
 </resources>

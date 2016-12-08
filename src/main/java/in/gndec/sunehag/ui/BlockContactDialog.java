@@ -35,12 +35,11 @@ public final class BlockContactDialog {
 		SpannableString spannable;
 		if (blockable.getJid().isDomainJid() || blockable.getAccount().isBlocked(blockable.getJid().toDomainJid())) {
 			builder.setTitle(isBlocked ? R.string.action_unblock_domain : R.string.action_block_domain);
-			value = blockable.getJid().toDomainJid().toString();
+			value = blockable.getJid().toDomainJid().getLocalpart(); // .toString();
 			spannable = new SpannableString(context.getString(isBlocked ? R.string.unblock_domain_text : R.string.block_domain_text, value));
-			message.setText(spannable);
 		} else {
 			builder.setTitle(isBlocked ? R.string.action_unblock_contact : R.string.action_block_contact);
-			value = blockable.getJid().toBareJid().toString();
+			value = blockable.getJid().toBareJid().getLocalpart(); //.toString();
 			spannable = new SpannableString(context.getString(isBlocked ? R.string.unblock_contact_text : R.string.block_contact_text, value));
 		}
 		int start = spannable.toString().indexOf(value);

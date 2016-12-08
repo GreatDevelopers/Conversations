@@ -31,12 +31,16 @@ import in.gndec.sunehag.http.HttpConnectionManager;
 import in.gndec.sunehag.services.MessageArchiveService;
 import in.gndec.sunehag.services.XmppConnectionService;
 import in.gndec.sunehag.utils.CryptoHelper;
+import in.gndec.sunehag.utils.Xmlns;
 import in.gndec.sunehag.xml.Element;
 import in.gndec.sunehag.xmpp.OnMessagePacketReceived;
 import in.gndec.sunehag.xmpp.chatstate.ChatState;
 import in.gndec.sunehag.xmpp.jid.Jid;
 import in.gndec.sunehag.xmpp.pep.Avatar;
 import in.gndec.sunehag.xmpp.stanzas.MessagePacket;
+
+
+
 
 public class MessageParser extends AbstractParser implements OnMessagePacketReceived {
 
@@ -208,7 +212,7 @@ public class MessageParser extends AbstractParser implements OnMessagePacketRece
 	private static String extractStanzaId(Element packet, Jid by) {
 		for(Element child : packet.getChildren()) {
 			if (child.getName().equals("stanza-id")
-					&& "urn:xmpp:sid:0".equals(child.getNamespace())
+					&& Xmlns.STANZA_IDS.equals(child.getNamespace())
 					&& by.equals(child.getAttributeAsJid("by"))) {
 				return child.getAttribute("id");
 			}
@@ -266,19 +270,15 @@ public class MessageParser extends AbstractParser implements OnMessagePacketRece
 		if (packet.getType() == MessagePacket.TYPE_ERROR) {
 			Jid from = packet.getFrom();
 			if (from != null) {
-				Element error = packet.findChild("error");
-				String text = error == null ? null : error.findChildContent("text");
-				if (text != null) {
-					Log.d(Config.LOGTAG, account.getJid().toBareJid() + ": sending message to "+ from+ " failed - " + text);
-				} else if (error != null) {
-					Log.d(Config.LOGTAG, account.getJid().toBareJid() + ": sending message to "+ from+ " failed - " + error);
-				}
 				Message message = mXmppConnectionService.markMessage(account,
 						from.toBareJid(),
 						packet.getId(),
-						Message.STATUS_SEND_FAILED);
-				if (message != null && message.getEncryption() == Message.ENCRYPTION_OTR) {
-					message.getConversation().endOtrIfNeeded();
+						Message.STATUS_SEND_FAILED,
+						extractErrorMessage(packet));
+				if (message != null) {
+					if (message.getEncryption() == Message.ENCRYPTION_OTR) {
+						message.getConversation().endOtrIfNeeded();
+					}
 				}
 			}
 			return true;
@@ -434,7 +434,18 @@ public class MessageParser extends AbstractParser implements OnMessagePacketRece
 			}
 
 			if (serverMsgId == null) {
-				serverMsgId = extractStanzaId(packet, isTypeGroupChat ? conversation.getJid().toBareJid() : account.getServer());
+				final Jid by;
+				final boolean safeToExtract;
+				if (isTypeGroupChat) {
+					by = conversation.getJid().toBareJid();
+					safeToExtract = true; //conversation.getMucOptions().hasFeature(Xmlns.STANZA_IDS);
+				} else {
+					by = account.getJid().toBareJid();
+					safeToExtract = true; //account.getXmppConnection().getFeatures().stanzaIds();
+				}
+				if (safeToExtract) {
+					serverMsgId = extractStanzaId(packet, by);
+				}
 			}
 
 			message.setCounterpart(counterpart);
@@ -604,7 +615,7 @@ public class MessageParser extends AbstractParser implements OnMessagePacketRece
 								+user.getRealJid()+" to "+user.getAffiliation()+" in "
 								+conversation.getJid().toBareJid());
 						if (!user.realJidMatchesAccount()) {
-							conversation.getMucOptions().addUser(user);
+							conversation.getMucOptions().updateUser(user);
 							mXmppConnectionService.getAvatarService().clear(conversation);
 							mXmppConnectionService.updateMucRosterUi();
 							mXmppConnectionService.updateConversationUi();

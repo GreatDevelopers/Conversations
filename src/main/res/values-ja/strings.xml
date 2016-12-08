@@ -122,7 +122,7 @@
   <string name="pref_never_send_crash">クラッシュレポートを送信しない</string>
   <string name="pref_never_send_crash_summary">スタックトレースを送信することで、あなたは Conversations の継続的な開発を支援しています</string>
   <string name="pref_confirm_messages">メッセージの確認</string>
-  <string name="pref_confirm_messages_summary">あなたがメッセージを受け取って読んだことを、連絡先に知らせます</string>
+  <string name="pref_confirm_messages_summary">あなたがメッセージを受信して読んだときに、連絡先に知らせます</string>
   <string name="pref_ui_options">UI</string>
   <string name="openpgp_error">OpenKeychain がエラーを報告しました</string>
   <string name="error_decrypting_file">ファイルの復号化中に I/O エラー</string>
@@ -331,6 +331,7 @@
   <string name="check_x_filesize_on_host">%2$s で %1$s のサイズを確認</string>
   <string name="message_options">メッセージオプション</string>
   <string name="copy_text">テキストをコピー</string>
+  <string name="select_text">テキストを選択</string>
   <string name="copy_original_url">元の URL をコピー</string>
   <string name="send_again">再送</string>
   <string name="file_url">ファイル URL</string>
@@ -338,8 +339,8 @@
   <string name="url_copied_to_clipboard">URL をクリップボードにコピーしました</string>
   <string name="message_copied_to_clipboard">メッセージをクリップボードにコピーしました</string>
   <string name="image_transmission_failed">画像の転送に失敗しました</string>
-  <string name="scan_qr_code">QR コードをスキャン</string>
-  <string name="show_qr_code">QR コードを表示</string>
+  <string name="scan_qr_code">2D バーコードをスキャン</string>
+  <string name="show_qr_code">2D バーコードを表示</string>
   <string name="show_block_list">ブロックリストを表示</string>
   <string name="account_details">アカウントの詳細</string>
   <string name="verify_otr">OTR を検証</string>
@@ -472,7 +473,7 @@
   <string name="contact_is_typing">%s は入力中…</string>
   <string name="contact_has_stopped_typing">%s は入力を停止しました</string>
   <string name="pref_chat_states">入力中通知</string>
-  <string name="pref_chat_states_summary">あなたが新しいメッセージを書いている時に、連絡先に知らせます</string>
+  <string name="pref_chat_states_summary">あなたがメッセージを書いているときに、連絡先に知らせます</string>
   <string name="send_location">位置を送信</string>
   <string name="show_location">位置を表示</string>
   <string name="no_application_found_to_display_location">位置を表示するアプリケーションが見つかりません</string>
@@ -657,4 +658,22 @@
   <string name="pref_delete_omemo_identities_summary">OMEMO 鍵を再生成します。すべての連絡先を再度確認する必要があります。最後の手段としてのみ使用してください。</string>
   <string name="delete_selected_keys">選択した鍵を削除</string>
   <string name="error_publish_avatar_offline">アバターを公開するには接続する必要があります。</string>
+  <string name="show_error_message">エラーメッセージを表示</string>
+  <string name="error_message">エラーメッセージ</string>
+  <string name="data_saver_enabled">データセーバーを有効にしました</string>
+  <string name="data_saver_enabled_explained">お使いのオペレーティングシステムは、Conversationsがバックグラウンドのときにインターネットにアクセスすることを制限しています。新しいメッセージの通知を受信するには、データセーバーがオンになっているとき、Conversationsに無制限のアクセスを許可する必要があります。\nConversationsは可能なときにデータを保存するための努力をします。</string>
+  <string name="device_does_not_support_data_saver">お使いのデバイスは、Conversationsのデータセーバーを無効にすることはできません。</string>
+  <string name="error_unable_to_create_temporary_file">一時ファイルを作成できません</string>
+  <string name="this_device_has_been_verified">このデバイスは検証済です</string>
+  <string name="copy_fingerprint">フィンガープリントをコピー</string>
+  <string name="all_omemo_keys_have_been_verified">すべての OMEMO 鍵は検証済です</string>
+  <string name="barcode_does_not_contain_fingerprints_for_this_conversation">バーコードに、この会話のフィンガープリントが含まれていません。</string>
+  <string name="verified_fingerprints">フィンガープリントを検証しました</string>
+  <string name="use_camera_icon_to_scan_barcode">カメラを使用して連絡先のバーコードをスキャンします</string>
+  <string name="please_wait_for_keys_to_be_fetched">キーが取得されるのをお待ちください</string>
+  <string name="pref_blind_trust_before_verification">検証前に白紙信託する</string>
+  <string name="pref_blind_trust_before_verification_summary">以前に確認されていない連絡先の新しいデバイスをすべて自動的に信頼し、確認済の連絡先が新しいデバイスを追加するたびに手動で確認するよう促します。</string>
+  <string name="blindly_trusted_omemo_keys">OMEMO 鍵を白紙信託しました</string>
+  <string name="not_trusted">信頼されていない</string>
+  <string name="invalid_barcode">不正な 2D バーコード</string>
 </resources>

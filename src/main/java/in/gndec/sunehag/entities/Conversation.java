@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 
 import in.gndec.sunehag.Config;
 import in.gndec.sunehag.crypto.PgpDecryptionService;
@@ -459,12 +460,13 @@ public class Conversation extends AbstractEntity implements Blockable, Comparabl
 					&& !bookmark.getBookmarkName().trim().isEmpty()) {
 				return bookmark.getBookmarkName().trim();
 			} else {
-				String generatedName = getMucOptions().createNameFromParticipants();
+				/*String generatedName = getMucOptions().createNameFromParticipants();
 				if (generatedName != null) {
 					return generatedName;
-				} else {
-					return getJid().getLocalpart();
-				}
+				} else {*/
+					//return getJid().getLocalpart();
+				return getJid().getUnescapedLocalpart();
+				//}
 			}
 		} else {
 			return this.getContact().getDisplayName();
@@ -506,7 +508,7 @@ public class Conversation extends AbstractEntity implements Blockable, Comparabl
 		values.put(NAME, name);
 		values.put(CONTACT, contactUuid);
 		values.put(ACCOUNT, accountUuid);
-		values.put(CONTACTJID, contactJid.toString());
+		values.put(CONTACTJID, contactJid.toPreppedString());
 		values.put(CREATED, created);
 		values.put(STATUS, status);
 		values.put(MODE, mode);
@@ -627,7 +629,7 @@ public class Conversation extends AbstractEntity implements Blockable, Comparabl
 					return null;
 				}
 				DSAPublicKey remotePubKey = (DSAPublicKey) getOtrSession().getRemotePublicKey();
-				this.otrFingerprint = getAccount().getOtrService().getFingerprint(remotePubKey);
+				this.otrFingerprint = getAccount().getOtrService().getFingerprint(remotePubKey).toLowerCase(Locale.US);
 			} catch (final OtrCryptoException | UnsupportedOperationException ignored) {
 				return null;
 			}
@@ -697,36 +699,7 @@ public class Conversation extends AbstractEntity implements Blockable, Comparabl
 	}
 
 	public int getNextEncryption() {
-		final AxolotlService axolotlService = getAccount().getAxolotlService();
-		int next = this.getIntAttribute(ATTRIBUTE_NEXT_ENCRYPTION, -1);
-		if (next == -1) {
-			if (Config.supportOmemo()
-					&& axolotlService != null
-					&& mode == MODE_SINGLE
-					&& axolotlService.isConversationAxolotlCapable(this)
-					&& getAccount().getSelfContact().getPresences().allOrNonSupport(AxolotlService.PEP_DEVICE_LIST_NOTIFY)
-					&& getContact().getPresences().allOrNonSupport(AxolotlService.PEP_DEVICE_LIST_NOTIFY)) {
-				return Message.ENCRYPTION_AXOLOTL;
-			} else {
-				next = this.getMostRecentlyUsedIncomingEncryption();
-			}
-		}
-
-		if (!Config.supportUnencrypted() && next <= 0) {
-			if (Config.supportOmemo()
-					&& ((axolotlService != null && axolotlService.isConversationAxolotlCapable(this)) || !Config.multipleEncryptionChoices())) {
-				return Message.ENCRYPTION_AXOLOTL;
-			} else if (Config.supportOtr() && mode == MODE_SINGLE) {
-				return Message.ENCRYPTION_OTR;
-			} else if (Config.supportOpenPgp()
-					&& (mode == MODE_SINGLE) || !Config.multipleEncryptionChoices()) {
-				return Message.ENCRYPTION_PGP;
-			}
-		} else if (next == Message.ENCRYPTION_AXOLOTL
-				&& (!Config.supportOmemo() || axolotlService == null || !axolotlService.isConversationAxolotlCapable(this))) {
-			next = Message.ENCRYPTION_NONE;
-		}
-		return next;
+		return Math.max(this.getIntAttribute(ATTRIBUTE_NEXT_ENCRYPTION, Message.ENCRYPTION_NONE), Message.ENCRYPTION_NONE);
 	}
 
 	public void setNextEncryption(int encryption) {

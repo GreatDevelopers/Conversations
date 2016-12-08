@@ -1,5 +1,6 @@
 package in.gndec.sunehag.ui.adapter;
 
+import android.Manifest;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -12,7 +13,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
-import android.support.v4.content.FileProvider;
+import android.support.v4.app.ActivityCompat;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
@@ -23,6 +24,9 @@ import android.text.style.StyleSpan;
 import android.text.util.Linkify;
 import android.util.DisplayMetrics;
 import android.util.Patterns;
+import android.view.ActionMode;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
@@ -42,7 +46,7 @@ import java.util.regex.Pattern;
 
 import in.gndec.sunehag.Config;
 import in.gndec.sunehag.R;
-import in.gndec.sunehag.crypto.axolotl.XmppAxolotlSession;
+import in.gndec.sunehag.crypto.axolotl.FingerprintStatus;
 import in.gndec.sunehag.entities.Account;
 import in.gndec.sunehag.entities.Conversation;
 import in.gndec.sunehag.entities.DownloadableFile;
@@ -51,13 +55,16 @@ import in.gndec.sunehag.entities.Message.FileParams;
 import in.gndec.sunehag.entities.Transferable;
 import in.gndec.sunehag.persistance.FileBackend;
 import in.gndec.sunehag.ui.ConversationActivity;
+import in.gndec.sunehag.ui.text.DividerSpan;
+import in.gndec.sunehag.ui.text.QuoteSpan;
 import in.gndec.sunehag.ui.widget.ClickableMovementMethod;
+import in.gndec.sunehag.ui.widget.CopyTextView;
 import in.gndec.sunehag.ui.widget.ListSelectionManager;
 import in.gndec.sunehag.utils.CryptoHelper;
 import in.gndec.sunehag.utils.GeoHelper;
 import in.gndec.sunehag.utils.UIHelper;
 
-public class MessageAdapter extends ArrayAdapter<Message> {
+public class MessageAdapter extends ArrayAdapter<Message> implements CopyTextView.CopyHandler {
 
 	private static final int SENT = 0;
 	private static final int RECEIVED = 1;
@@ -78,6 +85,8 @@ public class MessageAdapter extends ArrayAdapter<Message> {
 	private boolean mIndicateReceived = false;
 	private boolean mUseGreenBackground = false;
 
+	private OnQuoteListener onQuoteListener;
+
 	private final ListSelectionManager listSelectionManager = new ListSelectionManager();
 
 	public MessageAdapter(ConversationActivity activity, List<Message> messages) {
@@ -95,6 +104,10 @@ public class MessageAdapter extends ArrayAdapter<Message> {
 			OnContactPictureLongClicked listener) {
 		this.mOnContactPictureLongClickedListener = listener;
 			}
+
+	public void setOnQuoteListener(OnQuoteListener listener) {
+		this.onQuoteListener = listener;
+	}
 
 	@Override
 	public int getViewTypeCount() {
@@ -124,7 +137,7 @@ public class MessageAdapter extends ArrayAdapter<Message> {
 		}
 	}
 
-	private void displayStatus(ViewHolder viewHolder, Message message, int type, boolean darkBackground) {
+	private void displayStatus(ViewHolder viewHolder, Message message, int type, boolean darkBackground, boolean inValidSession) {
 		String filesize = null;
 		String info = null;
 		boolean error = false;
@@ -200,12 +213,12 @@ public class MessageAdapter extends ArrayAdapter<Message> {
 			viewHolder.indicator.setImageResource(darkBackground ? R.drawable.ic_lock_white_18dp : R.drawable.ic_lock_black_18dp);
 			viewHolder.indicator.setVisibility(View.VISIBLE);
 			if (message.getEncryption() == Message.ENCRYPTION_AXOLOTL) {
-				XmppAxolotlSession.Trust trust = message.getConversation()
+				FingerprintStatus status = message.getConversation()
 						.getAccount().getAxolotlService().getFingerprintTrust(
 								message.getFingerprint());
 
-				if(trust == null || (!trust.trusted() && !trust.trustedInactive())) {
-					viewHolder.indicator.setColorFilter(activity.getWarningTextColor());
+				if(status == null || (type == SENT ? !status.isTrusted() : (!status.isVerified() && inValidSession))) {
+					viewHolder.indicator.setColorFilter(0xffc64545);
 					viewHolder.indicator.setAlpha(1.0f);
 				} else {
 					viewHolder.indicator.clearColorFilter();
@@ -288,8 +301,76 @@ public class MessageAdapter extends ArrayAdapter<Message> {
 		viewHolder.messageBody.setIncludeFontPadding(false);
 		Spannable span = new SpannableString(body);
 		span.setSpan(new RelativeSizeSpan(4.0f), 0, body.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-		span.setSpan(new ForegroundColorSpan(activity.getWarningTextColor()), 0, body.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+		span.setSpan(new ForegroundColorSpan(activity.getWarningTextColor()), 0, body.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 		viewHolder.messageBody.setText(span);
+	}
+
+	private int applyQuoteSpan(SpannableStringBuilder body, int start, int end, boolean darkBackground) {
+		if (start > 1 && !"\n\n".equals(body.subSequence(start - 2, start).toString())) {
+			body.insert(start++, "\n");
+			body.setSpan(new DividerSpan(false), start - 2, start, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+			end++;
+		}
+		if (end < body.length() - 1 && !"\n\n".equals(body.subSequence(end, end + 2).toString())) {
+			body.insert(end, "\n");
+			body.setSpan(new DividerSpan(false), end, end + 2, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+		}
+		int color = darkBackground ? this.getMessageTextColor(darkBackground, false)
+				: getContext().getResources().getColor(R.color.bubble);
+		DisplayMetrics metrics = getContext().getResources().getDisplayMetrics();
+		body.setSpan(new QuoteSpan(color, metrics), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+		return 0;
+	}
+
+	/**
+	 * Applies QuoteSpan to group of lines which starts with > or » characters.
+	 * Appends likebreaks and applies DividerSpan to them to show a padding between quote and text.
+	 */
+	private boolean handleTextQuotes(SpannableStringBuilder body, boolean darkBackground) {
+		boolean startsWithQuote = false;
+		char previous = '\n';
+		int lineStart = -1;
+		int lineTextStart = -1;
+		int quoteStart = -1;
+		for (int i = 0; i <= body.length(); i++) {
+			char current = body.length() > i ? body.charAt(i) : '\n';
+			if (lineStart == -1) {
+				if (previous == '\n') {
+					if (current == '>' || current == '\u00bb') {
+						// Line start with quote
+						lineStart = i;
+						if (quoteStart == -1) quoteStart = i;
+						if (i == 0) startsWithQuote = true;
+					} else if (quoteStart >= 0) {
+						// Line start without quote, apply spans there
+						applyQuoteSpan(body, quoteStart, i - 1, darkBackground);
+						quoteStart = -1;
+					}
+				}
+			} else {
+				// Remove extra spaces between > and first character in the line
+				// > character will be removed too
+				if (current != ' ' && lineTextStart == -1) {
+					lineTextStart = i;
+				}
+				if (current == '\n') {
+					body.delete(lineStart, lineTextStart);
+					i -= lineTextStart - lineStart;
+					if (i == lineStart) {
+						// Avoid empty lines because span over empty line can be hidden
+						body.insert(i++, " ");
+					}
+					lineStart = -1;
+					lineTextStart = -1;
+				}
+			}
+			previous = current;
+		}
+		if (quoteStart >= 0) {
+			// Apply spans to finishing open quote
+			applyQuoteSpan(body, quoteStart, body.length(), darkBackground);
+		}
+		return startsWithQuote;
 	}
 
 	private void displayTextMessage(final ViewHolder viewHolder, final Message message, boolean darkBackground, int type) {
@@ -301,32 +382,31 @@ public class MessageAdapter extends ArrayAdapter<Message> {
 		viewHolder.messageBody.setIncludeFontPadding(true);
 		if (message.getBody() != null) {
 			final String nick = UIHelper.getMessageDisplayName(message);
-			String body;
-			try {
-				body = message.getMergedBody().replaceAll("^" + Message.ME_COMMAND, nick + " ");
-			} catch (ArrayIndexOutOfBoundsException e) {
-				body = message.getMergedBody();
+			SpannableStringBuilder body = message.getMergedBody();
+			boolean hasMeCommand = message.hasMeCommand();
+			if (hasMeCommand) {
+				body = body.replace(0, Message.ME_COMMAND.length(), nick + " ");
 			}
 			if (body.length() > Config.MAX_DISPLAY_MESSAGE_CHARS) {
-				body = body.substring(0, Config.MAX_DISPLAY_MESSAGE_CHARS)+"\u2026";
+				body = new SpannableStringBuilder(body, 0, Config.MAX_DISPLAY_MESSAGE_CHARS);
+				body.append("\u2026");
 			}
-			Spannable formattedBody = new SpannableString(body);
-			int i = body.indexOf(Message.MERGE_SEPARATOR);
-			while(i >= 0) {
-				final int end = i + Message.MERGE_SEPARATOR.length();
-				formattedBody.setSpan(new RelativeSizeSpan(0.3f),i,end,Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-				i = body.indexOf(Message.MERGE_SEPARATOR,end);
+			Message.MergeSeparator[] mergeSeparators = body.getSpans(0, body.length(), Message.MergeSeparator.class);
+			for (Message.MergeSeparator mergeSeparator : mergeSeparators) {
+				int start = body.getSpanStart(mergeSeparator);
+				int end = body.getSpanEnd(mergeSeparator);
+				body.setSpan(new DividerSpan(true), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 			}
+			boolean startsWithQuote = handleTextQuotes(body, darkBackground);
 			if (message.getType() != Message.TYPE_PRIVATE) {
-				if (message.hasMeCommand()) {
-					formattedBody.setSpan(new StyleSpan(Typeface.BOLD_ITALIC), 0, nick.length(),
+				if (hasMeCommand) {
+					body.setSpan(new StyleSpan(Typeface.BOLD_ITALIC), 0, nick.length(),
 							Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 				}
 			} else {
 				String privateMarker;
 				if (message.getStatus() <= Message.STATUS_RECEIVED) {
-					privateMarker = activity
-						.getString(R.string.private_message);
+					privateMarker = activity.getString(R.string.private_message);
 				} else {
 					final String to;
 					if (message.getCounterpart() != null) {
@@ -336,23 +416,29 @@ public class MessageAdapter extends ArrayAdapter<Message> {
 					}
 					privateMarker = activity.getString(R.string.private_message_to, to);
 				}
-				formattedBody = new SpannableStringBuilder().append(privateMarker).append(' ').append(formattedBody);
-				formattedBody.setSpan(new ForegroundColorSpan(getMessageTextColor(darkBackground,false)), 0, privateMarker
-						.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-				formattedBody.setSpan(new StyleSpan(Typeface.BOLD), 0,
-						privateMarker.length(),
-						Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-				if (message.hasMeCommand()) {
-					formattedBody.setSpan(new StyleSpan(Typeface.BOLD_ITALIC), privateMarker.length() + 1,
-							privateMarker.length() + 1 + nick.length(),
+				body.insert(0, privateMarker);
+				int privateMarkerIndex = privateMarker.length();
+				if (startsWithQuote) {
+					body.insert(privateMarkerIndex, "\n\n");
+					body.setSpan(new DividerSpan(false), privateMarkerIndex, privateMarkerIndex + 2,
 							Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+				} else {
+					body.insert(privateMarkerIndex, " ");
+				}
+				body.setSpan(new ForegroundColorSpan(getMessageTextColor(darkBackground, false)),
+						0, privateMarkerIndex, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+				body.setSpan(new StyleSpan(Typeface.BOLD),
+						0, privateMarkerIndex, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+				if (hasMeCommand) {
+					body.setSpan(new StyleSpan(Typeface.BOLD_ITALIC), privateMarkerIndex + 1,
+							privateMarkerIndex + 1 + nick.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 				}
 			}
-			Linkify.addLinks(formattedBody, Linkify.WEB_URLS);
-			Linkify.addLinks(formattedBody, XMPP_PATTERN, "xmpp");
-			Linkify.addLinks(formattedBody, GeoHelper.GEO_URI, "geo");
+			Linkify.addLinks(body, Linkify.WEB_URLS);
+			Linkify.addLinks(body, XMPP_PATTERN, "xmpp");
+			Linkify.addLinks(body, GeoHelper.GEO_URI, "geo");
 			viewHolder.messageBody.setAutoLinkMask(0);
-			viewHolder.messageBody.setText(formattedBody);
+			viewHolder.messageBody.setText(body);
 			viewHolder.messageBody.setTextIsSelectable(true);
 			viewHolder.messageBody.setMovementMethod(ClickableMovementMethod.getInstance());
 			listSelectionManager.onUpdate(viewHolder.messageBody, message);
@@ -362,7 +448,8 @@ public class MessageAdapter extends ArrayAdapter<Message> {
 		}
 		viewHolder.messageBody.setTextColor(this.getMessageTextColor(darkBackground, true));
 		viewHolder.messageBody.setLinkTextColor(this.getMessageTextColor(darkBackground, true));
-		viewHolder.messageBody.setHighlightColor(activity.getResources().getColor(darkBackground ? (type == SENT || !mUseGreenBackground ? R.color.black26 : R.color.grey800) : R.color.grey500));
+		viewHolder.messageBody.setHighlightColor(activity.getResources().getColor(darkBackground
+				? (type == SENT || !mUseGreenBackground ? R.color.black26 : R.color.grey800) : R.color.grey500));
 		viewHolder.messageBody.setTypeface(null, Typeface.NORMAL);
 	}
 
@@ -463,7 +550,8 @@ public class MessageAdapter extends ArrayAdapter<Message> {
 	@Override
 	public View getView(int position, View view, ViewGroup parent) {
 		final Message message = getItem(position);
-		final boolean isInValidSession = message.isValidInSession();
+		final boolean omemoEncryption = message.getEncryption() == Message.ENCRYPTION_AXOLOTL;
+		final boolean isInValidSession = message.isValidInSession() && (!omemoEncryption || message.isTrusted());
 		final Conversation conversation = message.getConversation();
 		final Account account = conversation.getAccount();
 		final int type = getItemViewType(position);
@@ -485,7 +573,7 @@ public class MessageAdapter extends ArrayAdapter<Message> {
 					viewHolder.edit_indicator = (ImageView) view.findViewById(R.id.edit_indicator);
 					viewHolder.image = (ImageView) view
 						.findViewById(R.id.message_image);
-					viewHolder.messageBody = (TextView) view
+					viewHolder.messageBody = (CopyTextView) view
 						.findViewById(R.id.message_body);
 					viewHolder.time = (TextView) view
 						.findViewById(R.id.message_time);
@@ -506,7 +594,7 @@ public class MessageAdapter extends ArrayAdapter<Message> {
 					viewHolder.edit_indicator = (ImageView) view.findViewById(R.id.edit_indicator);
 					viewHolder.image = (ImageView) view
 						.findViewById(R.id.message_image);
-					viewHolder.messageBody = (TextView) view
+					viewHolder.messageBody = (CopyTextView) view
 						.findViewById(R.id.message_body);
 					viewHolder.time = (TextView) view
 						.findViewById(R.id.message_time);
@@ -524,7 +612,11 @@ public class MessageAdapter extends ArrayAdapter<Message> {
 					viewHolder = null;
 					break;
 			}
-			if (viewHolder.messageBody != null) listSelectionManager.onCreate(viewHolder.messageBody);
+			if (viewHolder.messageBody != null) {
+				listSelectionManager.onCreate(viewHolder.messageBody,
+						new MessageBodyActionModeCallback(viewHolder.messageBody));
+				viewHolder.messageBody.setCopyHandler(this);
+			}
 			view.setTag(viewHolder);
 		} else {
 			viewHolder = (ViewHolder) view.getTag();
@@ -666,11 +758,15 @@ public class MessageAdapter extends ArrayAdapter<Message> {
 			} else {
 				viewHolder.message_box.setBackgroundResource(R.drawable.message_bubble_received_warning);
 				viewHolder.encryption.setVisibility(View.VISIBLE);
-				viewHolder.encryption.setText(CryptoHelper.encryptionTypeToText(message.getEncryption()));
+				if (omemoEncryption && !message.isTrusted()) {
+					viewHolder.encryption.setText(R.string.not_trusted);
+				} else {
+					viewHolder.encryption.setText(CryptoHelper.encryptionTypeToText(message.getEncryption()));
+				}
 			}
 		}
 
-		displayStatus(viewHolder, message, type, darkBackground);
+		displayStatus(viewHolder, message, type, darkBackground, isInValidSession);
 
 		return view;
 	}
@@ -680,6 +776,86 @@ public class MessageAdapter extends ArrayAdapter<Message> {
 		listSelectionManager.onBeforeNotifyDataSetChanged();
 		super.notifyDataSetChanged();
 		listSelectionManager.onAfterNotifyDataSetChanged();
+	}
+
+	private String transformText(CharSequence text, int start, int end, boolean forCopy) {
+		SpannableStringBuilder builder = new SpannableStringBuilder(text);
+		Object copySpan = new Object();
+		builder.setSpan(copySpan, start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+		DividerSpan[] dividerSpans = builder.getSpans(0, builder.length(), DividerSpan.class);
+		for (DividerSpan dividerSpan : dividerSpans) {
+			builder.replace(builder.getSpanStart(dividerSpan), builder.getSpanEnd(dividerSpan),
+					dividerSpan.isLarge() ? "\n\n" : "\n");
+		}
+		start = builder.getSpanStart(copySpan);
+		end = builder.getSpanEnd(copySpan);
+		if (start == -1 || end == -1) return "";
+		builder = new SpannableStringBuilder(builder, start, end);
+		if (forCopy) {
+			QuoteSpan[] quoteSpans = builder.getSpans(0, builder.length(), QuoteSpan.class);
+			for (QuoteSpan quoteSpan : quoteSpans) {
+				builder.insert(builder.getSpanStart(quoteSpan), "> ");
+			}
+		}
+		return builder.toString();
+	}
+
+	@Override
+	public String transformTextForCopy(CharSequence text, int start, int end) {
+		if (text instanceof Spanned) {
+			return transformText(text, start, end, true);
+		} else {
+			return text.toString().substring(start, end);
+		}
+	}
+
+	public interface OnQuoteListener {
+		public void onQuote(String text);
+	}
+
+	private class MessageBodyActionModeCallback implements ActionMode.Callback {
+
+		private final TextView textView;
+
+		public MessageBodyActionModeCallback(TextView textView) {
+			this.textView = textView;
+		}
+
+		@Override
+		public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+			if (onQuoteListener != null) {
+				int quoteResId = activity.getThemeResource(R.attr.icon_quote, R.drawable.ic_action_reply);
+				// 3rd item is placed after "copy" item
+				menu.add(0, android.R.id.button1, 3, R.string.quote).setIcon(quoteResId)
+						.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+			}
+			return false;
+		}
+
+		@Override
+		public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+			return false;
+		}
+
+		@Override
+		public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+			if (item.getItemId() == android.R.id.button1) {
+				int start = textView.getSelectionStart();
+				int end = textView.getSelectionEnd();
+				if (end > start) {
+					String text = transformText(textView.getText(), start, end, false);
+					if (onQuoteListener != null) {
+						onQuoteListener.onQuote(text);
+					}
+					mode.finish();
+				}
+				return true;
+			}
+			return false;
+		}
+
+		@Override
+		public void onDestroyActionMode(ActionMode mode) {}
 	}
 
 	public void openDownloadable(Message message) {
@@ -694,12 +870,16 @@ public class MessageAdapter extends ArrayAdapter<Message> {
 			mime = "*/*";
 		}
 		Uri uri;
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N || Config.ONLY_INTERNAL_STORAGE) {
 			try {
-				uri = FileProvider.getUriForFile(activity, FileBackend.CONVERSATIONS_FILE_PROVIDER, file);
+				uri = FileBackend.getUriForFile(activity, file);
 			} catch (IllegalArgumentException e) {
-				Toast.makeText(activity,activity.getString(R.string.no_permission_to_access_x,file.getAbsolutePath()), Toast.LENGTH_SHORT).show();
-				return;
+				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+					Toast.makeText(activity, activity.getString(R.string.no_permission_to_access_x, file.getAbsolutePath()), Toast.LENGTH_SHORT).show();
+					return;
+				} else {
+					uri = Uri.fromFile(file);
+				}
 			}
 			openIntent.setDataAndType(uri, mime);
 			openIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
@@ -720,6 +900,14 @@ public class MessageAdapter extends ArrayAdapter<Message> {
 	}
 
 	public void showLocation(Message message) {
+		if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+			if (ActivityCompat.shouldShowRequestPermissionRationale(activity,Manifest.permission_group.LOCATION)) {
+				Toast.makeText(getContext(),"Please grant Location permission in order to use this feature",Toast.LENGTH_LONG).show();
+			}
+			ActivityCompat.requestPermissions(activity,new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
+					Manifest.permission.ACCESS_COARSE_LOCATION},ConversationActivity.REQUEST_LOCATION );
+			return;
+		}
 		for(Intent intent : GeoHelper.createGeoIntentsFromMessage(message)) {
 			if (intent.resolveActivity(getContext().getPackageManager()) != null) {
 				getContext().startActivity(intent);
@@ -759,7 +947,7 @@ public class MessageAdapter extends ArrayAdapter<Message> {
 		protected ImageView indicator;
 		protected ImageView indicatorReceived;
 		protected TextView time;
-		protected TextView messageBody;
+		protected CopyTextView messageBody;
 		protected ImageView contact_picture;
 		protected TextView status_message;
 		protected TextView encryption;

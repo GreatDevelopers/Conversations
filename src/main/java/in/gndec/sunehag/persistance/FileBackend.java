@@ -54,12 +54,13 @@ import in.gndec.sunehag.services.XmppConnectionService;
 import in.gndec.sunehag.utils.CryptoHelper;
 import in.gndec.sunehag.utils.ExifHelper;
 import in.gndec.sunehag.utils.FileUtils;
+import in.gndec.sunehag.utils.FileWriterException;
 import in.gndec.sunehag.xmpp.pep.Avatar;
 
 public class FileBackend {
 	private static final SimpleDateFormat IMAGE_DATE_FORMAT = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US);
 
-	public static final String CONVERSATIONS_FILE_PROVIDER = "eu.siacs.conversations.files";
+	private static final String FILE_PROVIDER = ".files";
 
 	private XmppConnectionService mXmppConnectionService;
 
@@ -151,14 +152,27 @@ public class FileBackend {
 		return true;
 	}
 
-	public static String getConversationsFileDirectory() {
-		return  Environment.getExternalStorageDirectory().getAbsolutePath()+"/Conversations/";
+	public String getConversationsFileDirectory() {
+		if (Config.ONLY_INTERNAL_STORAGE) {
+			return mXmppConnectionService.getFilesDir().getAbsolutePath() + "/Files/";
+		} else {
+			return Environment.getExternalStorageDirectory().getAbsolutePath() + "/sunehaG/";
+		}
 	}
 
-	public static String getConversationsImageDirectory() {
-		return Environment.getExternalStoragePublicDirectory(
-				Environment.DIRECTORY_PICTURES).getAbsolutePath()
-			+ "/Conversations/";
+
+	public String getConversationsImageDirectory() {
+		if (Config.ONLY_INTERNAL_STORAGE) {
+			return mXmppConnectionService.getFilesDir().getAbsolutePath()+"/Pictures/";
+		} else {
+			return Environment.getExternalStoragePublicDirectory(
+					Environment.DIRECTORY_PICTURES).getAbsolutePath()
+					+ "/sunehaG/";
+		}
+	}
+
+	public static String getConversationsLogsDirectory() {
+		return  Environment.getExternalStorageDirectory().getAbsolutePath()+"/sunehaG/";
 	}
 
 	public Bitmap resize(Bitmap originalBitmap, int size) {
@@ -238,11 +252,21 @@ public class FileBackend {
 			byte[] buffer = new byte[1024];
 			int length;
 			while ((length = is.read(buffer)) > 0) {
-				os.write(buffer, 0, length);
+				try {
+					os.write(buffer, 0, length);
+				} catch (IOException e) {
+					throw new FileWriterException();
+				}
 			}
-			os.flush();
+			try {
+				os.flush();
+			} catch (IOException e) {
+				throw new FileWriterException();
+			}
 		} catch(FileNotFoundException e) {
 			throw new FileCopyException(R.string.error_file_not_found);
+		} catch(FileWriterException e) {
+			throw new FileCopyException(R.string.error_unable_to_create_temporary_file);
 		} catch (IOException e) {
 			e.printStackTrace();
 			throw new FileCopyException(R.string.error_io_exception);
@@ -287,8 +311,13 @@ public class FileBackend {
 		InputStream is = null;
 		OutputStream os = null;
 		try {
-			file.createNewFile();
+			if (!file.exists() && !file.createNewFile()) {
+				throw new FileCopyException(R.string.error_unable_to_create_temporary_file);
+			}
 			is = mXmppConnectionService.getContentResolver().openInputStream(image);
+			if (is == null) {
+				throw new FileCopyException(R.string.error_not_an_image_file);
+			}
 			Bitmap originalBitmap;
 			BitmapFactory.Options options = new BitmapFactory.Options();
 			int inSampleSize = (int) Math.pow(2, sampleSize);
@@ -315,7 +344,6 @@ public class FileBackend {
 				quality -= 5;
 			}
 			scaledBitmap.recycle();
-			return;
 		} catch (FileNotFoundException e) {
 			throw new FileCopyException(R.string.error_file_not_found);
 		} catch (IOException e) {
@@ -330,8 +358,6 @@ public class FileBackend {
 			} else {
 				throw new FileCopyException(R.string.error_out_of_memory);
 			}
-		} catch (NullPointerException e) {
-			throw new FileCopyException(R.string.error_io_exception);
 		} finally {
 			close(os);
 			close(is);
@@ -438,17 +464,27 @@ public class FileBackend {
 	}
 
 	public Uri getTakePhotoUri() {
-		File file = new File(getTakePhotoPath()+"IMG_" + this.IMAGE_DATE_FORMAT.format(new Date()) + ".jpg");
+		File file;
+		if (Config.ONLY_INTERNAL_STORAGE) {
+			file = new File(mXmppConnectionService.getCacheDir().getAbsolutePath(), "Camera/IMG_" + this.IMAGE_DATE_FORMAT.format(new Date()) + ".jpg");
+		} else {
+			file = new File(getTakePhotoPath() + "IMG_" + this.IMAGE_DATE_FORMAT.format(new Date()) + ".jpg");
+		}
 		file.getParentFile().mkdirs();
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-			return FileProvider.getUriForFile(mXmppConnectionService, CONVERSATIONS_FILE_PROVIDER, file);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N || Config.ONLY_INTERNAL_STORAGE) {
+			return getUriForFile(mXmppConnectionService,file);
 		} else {
 			return Uri.fromFile(file);
 		}
 	}
 
+	public static Uri getUriForFile(Context context, File file) {
+		String packageId = context.getPackageName();
+		return FileProvider.getUriForFile(context, packageId + FILE_PROVIDER, file);
+	}
+
 	public static Uri getIndexableTakePhotoUri(Uri original) {
-		if ("file".equals(original.getScheme())) {
+		if (Config.ONLY_INTERNAL_STORAGE || "file".equals(original.getScheme())) {
 			return original;
 		} else {
 			List<String> segments = original.getPathSegments();
@@ -694,8 +730,7 @@ public class FileBackend {
 	}
 
 	public Uri getJingleFileUri(Message message) {
-		File file = getFile(message);
-		return Uri.parse("file://" + file.getAbsolutePath());
+		return getUriForFile(mXmppConnectionService,getFile(message));
 	}
 
 	public void updateFileParams(Message message) {

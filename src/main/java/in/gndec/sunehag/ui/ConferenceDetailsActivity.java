@@ -204,7 +204,9 @@ public class ConferenceDetailsActivity extends XmppActivity implements OnConvers
 
 		@Override
 		public void onValueEdited(String value) {
-			xmppConnectionService.pushSubjectToConference(mConversation,value);
+			if(!value.isEmpty()) {
+				xmppConnectionService.pushSubjectToConference(mConversation, value);
+			}
 		}
 	};
 
@@ -293,6 +295,9 @@ public class ConferenceDetailsActivity extends XmppActivity implements OnConvers
 			case R.id.action_share:
 				shareUri();
 				break;
+			case R.id.muc_share_via_qr_code:
+				showQrCode();
+				break;
 			case R.id.action_save_as_bookmark:
 				saveAsBookmark();
 				break;
@@ -314,7 +319,7 @@ public class ConferenceDetailsActivity extends XmppActivity implements OnConvers
 	@Override
 	protected String getShareableUri() {
 		if (mConversation != null) {
-			return "xmpp:" + mConversation.getJid().toBareJid().toString() + "?join";
+			return "xmpp:" + mConversation.getJid().toBareJid().getLocalpart() + "?join";
 		} else {
 			return "";
 		}
@@ -378,7 +383,7 @@ public class ConferenceDetailsActivity extends XmppActivity implements OnConvers
 				MenuItem invite = menu.findItem(R.id.invite);
 				startConversation.setVisible(true);
 				if (contact != null) {
-					showContactDetails.setVisible(true);
+					showContactDetails.setVisible(!contact.isSelf());
 				}
 				if (user.getRole() == MucOptions.Role.NONE) {
 					invite.setVisible(true);
@@ -509,8 +514,7 @@ public class ConferenceDetailsActivity extends XmppActivity implements OnConvers
 			this.uuid = getIntent().getExtras().getString("uuid");
 		}
 		if (uuid != null) {
-			this.mConversation = xmppConnectionService
-				.findConversationByUuid(uuid);
+			this.mConversation = xmppConnectionService.findConversationByUuid(uuid);
 			if (this.mConversation != null) {
 				updateView();
 			}
@@ -518,6 +522,7 @@ public class ConferenceDetailsActivity extends XmppActivity implements OnConvers
 	}
 
 	private void updateView() {
+		invalidateOptionsMenu();
 		final MucOptions mucOptions = mConversation.getMucOptions();
 		final User self = mucOptions.getSelf();
 		String account;
@@ -529,7 +534,7 @@ public class ConferenceDetailsActivity extends XmppActivity implements OnConvers
 		mAccountJid.setText(getString(R.string.using_account, account));
 		mYourPhoto.setImageBitmap(avatarService().get(mConversation.getAccount(), getPixel(48)));
 		setTitle(mConversation.getName());
-		mFullJid.setText(mConversation.getJid().getLocalpart().toString());
+		mFullJid.setText(mConversation.getJid().getLocalpart());
 		mYourNick.setText(mucOptions.getActualNick());
 		mRoleAffiliaton = (TextView) findViewById(R.id.muc_role);
 		if (mucOptions.online()) {

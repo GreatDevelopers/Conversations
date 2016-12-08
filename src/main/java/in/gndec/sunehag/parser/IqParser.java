@@ -26,6 +26,7 @@ import in.gndec.sunehag.Config;
 import in.gndec.sunehag.crypto.axolotl.AxolotlService;
 import in.gndec.sunehag.entities.Account;
 import in.gndec.sunehag.entities.Contact;
+import in.gndec.sunehag.entities.Conversation;
 import in.gndec.sunehag.services.XmppConnectionService;
 import in.gndec.sunehag.utils.Xmlns;
 import in.gndec.sunehag.xml.Element;
@@ -319,6 +320,14 @@ public class IqParser extends AbstractParser implements OnIqPacketReceived {
 					}
 				}
 				account.getBlocklist().addAll(jids);
+				if (packet.getType() == IqPacket.TYPE.SET) {
+					for(Jid jid : jids) {
+						Conversation conversation = mXmppConnectionService.find(account,jid);
+						if (conversation != null) {
+							mXmppConnectionService.markRead(conversation);
+						}
+					}
+				}
 			}
 			// Update the UI
 			mXmppConnectionService.updateBlocklistUi(OnUpdateBlocklist.Status.BLOCKED);

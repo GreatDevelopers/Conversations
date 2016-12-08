@@ -122,14 +122,12 @@
   <string name="pref_never_send_crash">总不发送崩溃报告</string>
   <string name="pref_never_send_crash_summary">发送堆栈跟踪帮助 Conversations 开发人员</string>
   <string name="pref_confirm_messages">确认消息</string>
-  <string name="pref_confirm_messages_summary">当你已收到消息并且已阅时通知好友</string>
   <string name="pref_ui_options">UI</string>
   <string name="openpgp_error">OpenKeychain 报告了一个错误</string>
   <string name="error_decrypting_file">解密文件时出现 I/O 错误</string>
   <string name="accept">接受</string>
   <string name="error">产生了一个错误</string>
   <string name="pref_grant_presence_updates">同意更新在线联系人</string>
-  <string name="pref_grant_presence_updates_summary">预先同意并请求更新您的联系人</string>
   <string name="subscriptions">关注</string>
   <string name="your_account">你的账号</string>
   <string name="keys">密钥</string>
@@ -157,7 +155,9 @@
   <string name="account_status_regis_success">注册完成</string>
   <string name="account_status_regis_not_sup">服务器不支持注册</string>
   <string name="account_status_security_error">安全错误</string>
+  <string name="account_status_policy_violation">违反政策</string>
   <string name="account_status_incompatible_server">服务器不兼容</string>
+  <string name="account_status_stream_error">流错误</string>
   <string name="encryption_choice_unencrypted">未加密</string>
   <string name="encryption_choice_otr">OTR</string>
   <string name="encryption_choice_pgp">OpenPGP</string>
@@ -281,6 +281,7 @@
   <string name="conference_requires_password">讨论组设有密码</string>
   <string name="enter_password">输入密码</string>
   <string name="missing_presence_updates">缺少在线联系人更新</string>
+  <string name="missing_presence_subscription">缺少在线订阅</string>
   <string name="request_presence_updates">请先发送更新在线联系人的请求。\n\n<small>以判断您的联系人所用的客户端类型。</small></string>
   <string name="request_now">现在发送请求</string>
   <string name="delete_fingerprint">删除指纹</string>
@@ -328,6 +329,7 @@
   <string name="check_x_filesize_on_host">在 %2$s 上检查 %1$s 的大小</string>
   <string name="message_options">消息选项</string>
   <string name="copy_text">拷贝文本</string>
+  <string name="select_text">选择文本</string>
   <string name="copy_original_url">拷贝原始URL</string>
   <string name="send_again">再次发送</string>
   <string name="file_url">文件  </string>
@@ -335,8 +337,6 @@
   <string name="url_copied_to_clipboard">已经拷贝 URL 到剪贴板</string>
   <string name="message_copied_to_clipboard">消息已经拷贝到剪贴板</string>
   <string name="image_transmission_failed">图片传送失败</string>
-  <string name="scan_qr_code">扫描二维码</string>
-  <string name="show_qr_code">显示二维码</string>
   <string name="show_block_list">显示屏蔽列表</string>
   <string name="account_details">账户详情</string>
   <string name="verify_otr">验证 OTR</string>
@@ -376,7 +376,6 @@
   <string name="no_application_found_to_open_file">没有可以打开此文件的应用</string>
   <string name="could_not_verify_fingerprint">不能验证指纹</string>
   <string name="manually_verify">手工验证</string>
-  <string name="are_you_sure_verify_fingerprint">你确认验证你的联系人的 OTR 指纹？</string>
   <string name="pref_show_dynamic_tags">显示动态标签</string>
   <string name="pref_show_dynamic_tags_summary">在联系人下方显示只读标签</string>
   <string name="enable_notifications">启用通知</string>
@@ -469,7 +468,6 @@
   <string name="contact_is_typing">%s 正在输入</string>
   <string name="contact_has_stopped_typing">%s 已停止输入</string>
   <string name="pref_chat_states">键盘输入通知</string>
-  <string name="pref_chat_states_summary">让对方知道你正在输入新消息</string>
   <string name="send_location">发送位置</string>
   <string name="show_location">显示位置</string>
   <string name="no_application_found_to_display_location">无法找到显示位置的应用</string>
@@ -512,6 +510,7 @@
   <string name="pref_use_white_background_summary">收到的消息将显示为白底黑字</string>
   <string name="account_status_tor_unavailable">Tor network 不可用</string>
   <string name="account_status_bind_failure">绑定失败</string>
+  <string name="account_status_host_unknown">服务器不能为域名做出响应</string>
   <string name="server_info_broken">损坏</string>
   <string name="pref_presence_settings">存在</string>
   <string name="pref_away_when_screen_off">关闭屏幕时离开</string>
@@ -591,6 +590,8 @@
   <string name="security_error_invalid_file_access">安全错误：文件访问权限无效</string>
   <string name="no_application_to_share_uri">没有可以分享此链接的应用</string>
   <string name="share_uri_with">分享链接...</string>
+  <string name="welcome_text">XMPP 是一个独立协议的提供者。你可以用这个客户端连接任何你选择的 XMPP 服务器。\n为了让你更便捷，我们让你可以在 conversations.im¹ 上方便的注册账号；特意为使用 Conversations 的人准备。</string>
+  <string name="magic_create_text">我们将会引导你完成在 conversations.im¹ 上注册账号的过程。\n当获得了 conversations.im 提供的账号以后，你可以通过添加使用其他提供商的好友的完整 Jabber ID 来与他们联络。</string>
   <string name="your_full_jid_will_be">您完整的 Jabble ID 是：%s </string>
   <string name="create_account">创建账户</string>
   <string name="use_own_provider">使用我自己的服务端</string>
@@ -636,15 +637,26 @@
   <string name="type_web">浏览器</string>
   <string name="type_console">控制台</string>
   <string name="payment_required">需要付款</string>
+  <string name="missing_internet_permission">缺少互联网权限</string>
+  <string name="me">我</string>
+  <string name="contact_asks_for_presence_subscription">联系人请求在线订阅</string>
   <string name="allow">允许</string>
   <string name="no_permission_to_access_x">没有访问 %s 的许可</string>
   <string name="remote_server_not_found">找不到远程服务器</string>
   <string name="unable_to_update_account">无法更新账户</string>
+  <string name="missing_presence_subscription_with_x">缺少与 %s 的在线订阅。</string>
   <string name="missing_keys_from_x">缺少来自 %s 的 OMEMO 密钥。</string>
+  <string name="missing_omemo_keys">缺少 OMEMO 密钥</string>
   <string name="wrong_conference_configuration">这不是一个私密，非匿名的会议室。</string>
   <string name="this_conference_has_no_members">这个会议室中没有成员。</string>
   <string name="report_jid_as_spammer">报告这个 JID 发送不想要的消息。</string>
   <string name="pref_delete_omemo_identities">删除 OMEMO 身份</string>
   <string name="pref_delete_omemo_identities_summary">重新生成你的 OMEMO 密钥。你的所有联系人不得不对你进行再认证。请将此作为最后的办法。</string>
   <string name="delete_selected_keys">删除选择的密钥</string>
+  <string name="error_publish_avatar_offline">你需要连接才能发布头像</string>
+  <string name="show_error_message">显示出错消息</string>
+  <string name="error_message">出错消息</string>
+  <string name="data_saver_enabled">省流量模式已激活</string>
+  <string name="data_saver_enabled_explained">您的操作系统禁止本程序在后台运行时访问互联网。为了收到新消息提示，您需要在省流量模式下允许本程序不受限制地访问互联网。\n本程序仍会尽可能节省流量。</string>
+  <string name="device_does_not_support_data_saver">该设备不支持禁用省流量模式</string>
 </resources>
