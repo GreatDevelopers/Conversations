@@ -1,5 +1,6 @@
 package in.gndec.sunehag.ui;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.AlertDialog;
@@ -18,6 +19,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.provider.Settings;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.widget.SlidingPaneLayout;
 import android.support.v4.widget.SlidingPaneLayout.PanelSlideListener;
 import android.util.Log;
@@ -79,6 +81,7 @@ public class ConversationActivity extends XmppActivity
 	public static final String NICK = "nick";
 	public static final String PRIVATE_MESSAGE = "pm";
 
+	public static final int REQUEST_LOCATION = 12012;
 	public static final int REQUEST_SEND_MESSAGE = 0x0201;
 	public static final int REQUEST_DECRYPT_PGP = 0x0202;
 	public static final int REQUEST_ENCRYPT_MESSAGE = 0x0207;
@@ -514,6 +517,14 @@ public class ConversationActivity extends XmppActivity
 						fallbackPackageId = "in.gndec.sunehag.voicerecorder";
 						break;
 					case ATTACHMENT_CHOICE_LOCATION:
+						if (ActivityCompat.checkSelfPermission(ConversationActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(ConversationActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+							if (ActivityCompat.shouldShowRequestPermissionRationale(ConversationActivity.this,Manifest.permission_group.LOCATION)) {
+								Toast.makeText(ConversationActivity.this,"Please grant Location permission in order to use this feature",Toast.LENGTH_LONG).show();
+							}
+							ActivityCompat.requestPermissions(ConversationActivity.this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
+									Manifest.permission.ACCESS_COARSE_LOCATION},REQUEST_LOCATION );
+							return;
+						}
 						intent = new Intent(ConversationActivity.this,ShareLocationActivity.class);
 						//intent.setAction("in.gndec.sunehag.location.request");
 						//fallbackPackageId = "in.gndec.sunehag.ui";
@@ -636,17 +647,27 @@ public class ConversationActivity extends XmppActivity
 	@Override
 	public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
 		if (grantResults.length > 0)
-			if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-				if (requestCode == REQUEST_START_DOWNLOAD) {
-					if (this.mPendingDownloadableMessage != null) {
-						startDownloadable(this.mPendingDownloadableMessage);
+		switch (requestCode) {
+			case REQUEST_LOCATION: {
+				if (grantResults[0] == PackageManager.PERMISSION_GRANTED)
+					Toast.makeText(ConversationActivity.this,"Granted Location permission\nNow you can use the feature",Toast.LENGTH_LONG).show();
+				break;
+			}
+			default: {
+				if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+					if (requestCode == REQUEST_START_DOWNLOAD) {
+						if (this.mPendingDownloadableMessage != null) {
+							startDownloadable(this.mPendingDownloadableMessage);
+						}
+					} else {
+						attachFile(requestCode);
 					}
 				} else {
-					attachFile(requestCode);
+					Toast.makeText(this, R.string.no_storage_permission, Toast.LENGTH_SHORT).show();
 				}
-			} else {
-				Toast.makeText(this, R.string.no_storage_permission, Toast.LENGTH_SHORT).show();
+				break;
 			}
+		}
 	}
 
 	public void startDownloadable(Message message) {
