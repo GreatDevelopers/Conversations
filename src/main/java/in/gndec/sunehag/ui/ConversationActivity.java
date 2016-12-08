@@ -514,8 +514,9 @@ public class ConversationActivity extends XmppActivity
 						fallbackPackageId = "in.gndec.sunehag.voicerecorder";
 						break;
 					case ATTACHMENT_CHOICE_LOCATION:
-						intent.setAction("in.gndec.sunehag.location.request");
-						fallbackPackageId = "in.gndec.sunehag.ui";
+						intent = new Intent(ConversationActivity.this,ShareLocationActivity.class);
+						//intent.setAction("in.gndec.sunehag.location.request");
+						//fallbackPackageId = "in.gndec.sunehag.ui";
 						break;
 				}
 				if (intent.resolveActivity(getPackageManager()) != null) {
@@ -781,7 +782,7 @@ public class ConversationActivity extends XmppActivity
 		if (new Intent(MediaStore.Audio.Media.RECORD_SOUND_ACTION).resolveActivity(getPackageManager()) == null) {
 			attachFilePopup.getMenu().findItem(R.id.attach_record_voice).setVisible(false);
 		}
-		if (new Intent("in.gndec.sunehag.location.request").resolveActivity(getPackageManager()) == null) {
+		if (new Intent(ConversationActivity.this,ShareLocationActivity.class).resolveActivity(getPackageManager()) == null) {
 			attachFilePopup.getMenu().findItem(R.id.attach_location).setVisible(false);
 		}
 		attachFilePopup.setOnMenuItemClickListener(new OnMenuItemClickListener() {

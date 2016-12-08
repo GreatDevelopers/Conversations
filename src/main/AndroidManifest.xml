@@ -231,10 +231,6 @@
         <activity
             android:name=".ui.ShareLocationActivity"
             android:label="@string/share_location">
-            <intent-filter>
-                <action android:name="in.gndec.sunehag.location.request" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
         </activity>
 
         <activity
