@@ -93,7 +93,7 @@ public class SettingsActivity extends XmppActivity implements
 			}
 		}
 
-		boolean removeLocation = new Intent("in.gndec.sunehag.location.request").resolveActivity(getPackageManager()) == null;
+		boolean removeLocation = new Intent(SettingsActivity.this,ShareLocationActivity.class).resolveActivity(getPackageManager()) == null;
 		boolean removeVoice = new Intent(MediaStore.Audio.Media.RECORD_SOUND_ACTION).resolveActivity(getPackageManager()) == null;
 
 		ListPreference quickAction = (ListPreference) mSettingsFragment.findPreference("quick_action");
