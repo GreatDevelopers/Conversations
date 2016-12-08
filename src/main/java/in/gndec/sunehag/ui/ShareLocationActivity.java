@@ -65,10 +65,10 @@ public class ShareLocationActivity extends Activity implements OnMapReadyCallbac
             public void onClick(View view) {
                 if (mLastLocation != null) {
                     Intent result = new Intent();
-                    result.putExtra("latitude",mLastLocation.getLatitude());
-                    result.putExtra("longitude",mLastLocation.getLongitude());
-                    result.putExtra("altitude",mLastLocation.getAltitude());
-                    result.putExtra("accuracy",(int) mLastLocation.getAccuracy());
+                    result.putExtra("latitude", mLastLocation.getLatitude());
+                    result.putExtra("longitude", mLastLocation.getLongitude());
+                    result.putExtra("altitude", mLastLocation.getAltitude());
+                    result.putExtra("accuracy", (int) mLastLocation.getAccuracy());
                     setResult(RESULT_OK, result);
                     finish();
                 }
