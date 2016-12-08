@@ -777,6 +777,6 @@
     <string name="share">Share</string>
     <string name="location_sharing_disabled">Location sharing is disabled in settings</string>
     <string name="locating">Locating&#8230;</string>
-    <string name="google_maps_api_key">AIzaSyArqyUNwYcKIAFxSUnDEIjHiudExNOoYAE</string>
+    <string name="google_maps_api_key">GoogleMapApiKey</string>
     <string name="share_location">Share Location</string>
 </resources>
