@@ -901,7 +901,8 @@ public class MessageAdapter extends ArrayAdapter<Message> implements CopyTextVie
 
 	public void showLocation(Message message) {
 		if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-			if (ActivityCompat.shouldShowRequestPermissionRationale(activity,Manifest.permission_group.LOCATION)) {
+			if (ActivityCompat.shouldShowRequestPermissionRationale(activity,Manifest.permission.ACCESS_FINE_LOCATION)||
+					ActivityCompat.shouldShowRequestPermissionRationale(activity,Manifest.permission.ACCESS_COARSE_LOCATION)) {
 				Toast.makeText(getContext(),"Please grant Location permission in order to use this feature",Toast.LENGTH_LONG).show();
 			}
 			ActivityCompat.requestPermissions(activity,new String[]{Manifest.permission.ACCESS_FINE_LOCATION,

@@ -518,7 +518,8 @@ public class ConversationActivity extends XmppActivity
 						break;
 					case ATTACHMENT_CHOICE_LOCATION:
 						if (ActivityCompat.checkSelfPermission(ConversationActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(ConversationActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-							if (ActivityCompat.shouldShowRequestPermissionRationale(ConversationActivity.this,Manifest.permission_group.LOCATION)) {
+							if (ActivityCompat.shouldShowRequestPermissionRationale(ConversationActivity.this,Manifest.permission.ACCESS_FINE_LOCATION)||
+									ActivityCompat.shouldShowRequestPermissionRationale(ConversationActivity.this,Manifest.permission.ACCESS_COARSE_LOCATION)) {
 								Toast.makeText(ConversationActivity.this,"Please grant Location permission in order to use this feature",Toast.LENGTH_LONG).show();
 							}
 							ActivityCompat.requestPermissions(ConversationActivity.this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
