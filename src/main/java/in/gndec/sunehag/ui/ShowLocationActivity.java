@@ -6,21 +6,21 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
+import org.osmdroid.api.IMapController;
+import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
+import org.osmdroid.util.GeoPoint;
+import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.ItemizedIconOverlay;
+import org.osmdroid.views.overlay.OverlayItem;
 
-import in.gndec.sunehag.Config;
+import java.util.ArrayList;
+
 import in.gndec.sunehag.R;
 
-public class ShowLocationActivity extends Activity implements OnMapReadyCallback {
+public class ShowLocationActivity extends Activity {
 
-    private GoogleMap mGoogleMap;
-    private LatLng mLocation;
-    private String mLocationName;
+    private MapView map;
+    private IMapController mapController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,8 +31,12 @@ public class ShowLocationActivity extends Activity implements OnMapReadyCallback
         }
 
         setContentView(R.layout.activity_show_location);
-        MapFragment fragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map_fragment);
-        fragment.getMapAsync(this);
+        map = (MapView) findViewById(R.id.mapview);
+        map.setTileSource(TileSourceFactory.MAPNIK);
+        map.setBuiltInZoomControls(true);
+        map.setMultiTouchControls(true);
+        mapController = map.getController();
+        mapController.setZoom(20);
     }
 
     @Override
@@ -50,40 +54,24 @@ public class ShowLocationActivity extends Activity implements OnMapReadyCallback
         super.onResume();
         Intent intent = getIntent();
 
-        this.mLocationName = intent != null ? intent.getStringExtra("name") : null;
+        String mLocationName = intent != null ? intent.getStringExtra("name") : null;
 
         if (intent != null && intent.hasExtra("longitude") && intent.hasExtra("latitude")) {
             double longitude = intent.getDoubleExtra("longitude",0);
             double latitude = intent.getDoubleExtra("latitude",0);
-            this.mLocation = new LatLng(latitude,longitude);
-            if (this.mGoogleMap != null) {
-                markAndCenterOnLocation(this.mLocation, this.mLocationName);
-            }
+            GeoPoint geoPoint = new GeoPoint(latitude, longitude);
+            mapController.setCenter(geoPoint);
+            ArrayList<OverlayItem> overlayItemArrayList = new ArrayList<>();
+            OverlayItem item = new OverlayItem(mLocationName,"",geoPoint);
+            overlayItemArrayList.add(item);
+            ItemizedIconOverlay<OverlayItem> overlayItemItemizedIconOverlay =
+                    new ItemizedIconOverlay<>(this, overlayItemArrayList, null);
+            map.getOverlays().add(overlayItemItemizedIconOverlay);
         }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-    }
-
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        this.mGoogleMap = googleMap;
-        this.mGoogleMap.setMyLocationEnabled(true);
-        if (this.mLocation != null) {
-            this.markAndCenterOnLocation(this.mLocation,this.mLocationName);
-        }
-    }
-
-    private void markAndCenterOnLocation(LatLng location, String name) {
-        this.mGoogleMap.clear();
-        MarkerOptions options = new MarkerOptions();
-        options.position(location);
-        if (name != null) {
-            options.title(name);
-        }
-        this.mGoogleMap.addMarker(options);
-        this.mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(location, Config.DEFAULT_MAP_LOCATION_ZOOM));
     }
 }

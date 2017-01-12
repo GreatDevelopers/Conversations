@@ -18,21 +18,24 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.LatLng;
 
-import in.gndec.sunehag.Config;
+import org.osmdroid.api.IMapController;
+import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
+import org.osmdroid.util.GeoPoint;
+import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.ItemizedIconOverlay;
+import org.osmdroid.views.overlay.OverlayItem;
+
+import java.util.ArrayList;
+
 import in.gndec.sunehag.R;
 
-public class ShareLocationActivity extends Activity implements OnMapReadyCallback,
-        GoogleApiClient.ConnectionCallbacks,
+public class ShareLocationActivity extends Activity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener {
 
-    private GoogleMap mGoogleMap;
+    private MapView map;
+    private IMapController mapController;
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
     private Location mLastLocation;
@@ -44,13 +47,19 @@ public class ShareLocationActivity extends Activity implements OnMapReadyCallbac
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_share_location);
-        MapFragment fragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map_fragment);
-        fragment.getMapAsync(this);
+        map = (MapView) findViewById(R.id.mapview);
+        map.setTileSource(TileSourceFactory.MAPNIK);
+        map.setBuiltInZoomControls(true);
+        map.setMultiTouchControls(true);
+        mapController = map.getController();
+        mapController.setZoom(20);
+
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addApi(LocationServices.API)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .build();
+
         mCancelButton = (Button) findViewById(R.id.cancel_button);
         mCancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -105,14 +114,15 @@ public class ShareLocationActivity extends Activity implements OnMapReadyCallbac
         super.onPause();
     }
 
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        this.mGoogleMap = googleMap;
-        this.mGoogleMap.setMyLocationEnabled(true);
-    }
-
-    private void centerOnLocation(LatLng location) {
-        this.mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(location, Config.DEFAULT_MAP_LOCATION_ZOOM));
+    private void centerOnLocation(Location location) {
+        GeoPoint geoPoint = new GeoPoint(location.getLatitude(), location.getLongitude());
+        mapController.setCenter(geoPoint);
+        ArrayList<OverlayItem> overlayItemArrayList = new ArrayList<>();
+        OverlayItem item = new OverlayItem("","",geoPoint);
+        overlayItemArrayList.add(item);
+        ItemizedIconOverlay<OverlayItem> overlayItemItemizedIconOverlay =
+                new ItemizedIconOverlay<>(this, overlayItemArrayList, null);
+        map.getOverlays().add(overlayItemItemizedIconOverlay);
     }
 
     @Override
@@ -137,7 +147,7 @@ public class ShareLocationActivity extends Activity implements OnMapReadyCallbac
     @Override
     public void onLocationChanged(Location location) {
         if (this.mLastLocation == null) {
-            centerOnLocation(new LatLng(location.getLatitude(), location.getLongitude()));
+            centerOnLocation(location);
             this.mShareButton.setEnabled(true);
             this.mShareButton.setTextColor(0xde000000);
             this.mShareButton.setText(R.string.share);
