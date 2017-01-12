@@ -30,6 +30,8 @@ import java.util.ArrayList;
 
 import in.gndec.sunehag.R;
 
+import static in.gndec.sunehag.Config.DEFAULT_MAP_LOCATION_ZOOM;
+
 public class ShareLocationActivity extends Activity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener {
@@ -52,7 +54,7 @@ public class ShareLocationActivity extends Activity implements GoogleApiClient.C
         map.setBuiltInZoomControls(true);
         map.setMultiTouchControls(true);
         mapController = map.getController();
-        mapController.setZoom(20);
+        mapController.setZoom(DEFAULT_MAP_LOCATION_ZOOM);
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addApi(LocationServices.API)
