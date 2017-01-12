@@ -170,11 +170,13 @@ public class MessageParser extends AbstractParser implements OnMessagePacketRece
 	}
 
 	private class Invite {
-		Jid jid;
-		String password;
-		Invite(Jid jid, String password) {
+		final Jid jid;
+		final String password;
+		final Contact inviter;
+		Invite(Jid jid, String password, Contact inviter) {
 			this.jid = jid;
 			this.password = password;
+			this.inviter = inviter;
 		}
 
 		public boolean execute(Account account) {
@@ -183,7 +185,7 @@ public class MessageParser extends AbstractParser implements OnMessagePacketRece
 				if (!conversation.getMucOptions().online()) {
 					conversation.getMucOptions().setPassword(password);
 					mXmppConnectionService.databaseBackend.updateConversation(conversation);
-					mXmppConnectionService.joinMuc(conversation);
+					mXmppConnectionService.joinMuc(conversation, inviter != null && inviter.mutualPresenceSubscription());
 					mXmppConnectionService.updateConversationUi();
 				}
 				return true;
@@ -192,18 +194,22 @@ public class MessageParser extends AbstractParser implements OnMessagePacketRece
 		}
 	}
 
-	private Invite extractInvite(Element message) {
+	private Invite extractInvite(Account account, Element message) {
 		Element x = message.findChild("x", "http://jabber.org/protocol/muc#user");
 		if (x != null) {
 			Element invite = x.findChild("invite");
 			if (invite != null) {
 				Element pw = x.findChild("password");
-				return new Invite(message.getAttributeAsJid("from"), pw != null ? pw.getContent(): null);
+				Jid from = invite.getAttributeAsJid("from");
+				Contact contact = from == null ? null : account.getRoster().getContact(from);
+				return new Invite(message.getAttributeAsJid("from"), pw != null ? pw.getContent(): null, contact);
 			}
 		} else {
 			x = message.findChild("x","jabber:x:conference");
 			if (x != null) {
-				return new Invite(x.getAttributeAsJid("jid"),x.getAttribute("password"));
+				Jid from = message.getAttributeAsJid("from");
+				Contact contact = from == null ? null : account.getRoster().getContact(from);
+				return new Invite(x.getAttributeAsJid("jid"),x.getAttribute("password"),contact);
 			}
 		}
 		return null;
@@ -257,9 +263,10 @@ public class MessageParser extends AbstractParser implements OnMessagePacketRece
 				mXmppConnectionService.updateAccountUi();
 			}
 		} else if (AxolotlService.PEP_DEVICE_LIST.equals(node)) {
-			Log.d(Config.LOGTAG, AxolotlService.getLogprefix(account)+"Received PEP device list update from "+ from + ", processing...");
+
 			Element item = items.findChild("item");
 			Set<Integer> deviceIds = mXmppConnectionService.getIqParser().deviceIds(item);
+			Log.d(Config.LOGTAG, AxolotlService.getLogprefix(account)+"Received PEP device list ("+deviceIds+") update from "+ from + ", processing...");
 			AxolotlService axolotlService = account.getAxolotlService();
 			axolotlService.registerDevices(from, deviceIds);
 			mXmppConnectionService.updateAccountUi();
@@ -366,7 +373,7 @@ public class MessageParser extends AbstractParser implements OnMessagePacketRece
 			counterpart = from;
 		}
 
-		Invite invite = extractInvite(packet);
+		Invite invite = extractInvite(account, packet);
 		if (invite != null && invite.execute(account)) {
 			return;
 		}
@@ -487,7 +494,8 @@ public class MessageParser extends AbstractParser implements OnMessagePacketRece
 							|| replacedMessage.getFingerprint().equals(message.getFingerprint());
 					final boolean trueCountersMatch = replacedMessage.getTrueCounterpart() != null
 							&& replacedMessage.getTrueCounterpart().equals(message.getTrueCounterpart());
-					if (fingerprintsMatch && (trueCountersMatch || !conversationMultiMode)) {
+					final boolean duplicate = conversation.hasDuplicateMessage(message);
+					if (fingerprintsMatch && (trueCountersMatch || !conversationMultiMode) && !duplicate) {
 						Log.d(Config.LOGTAG, "replaced message '" + replacedMessage.getBody() + "' with '" + message.getBody() + "'");
 						synchronized (replacedMessage) {
 							final String uuid = replacedMessage.getUuid();
@@ -653,9 +661,9 @@ public class MessageParser extends AbstractParser implements OnMessagePacketRece
 			}
 		}
 
-		Element event = packet.findChild("event", "http://jabber.org/protocol/pubsub#event");
+		Element event = original.findChild("event", "http://jabber.org/protocol/pubsub#event");
 		if (event != null) {
-			parseEvent(event, from, account);
+			parseEvent(event, original.getFrom(), account);
 		}
 
 		String nick = packet.findChildContent("nick", "http://jabber.org/protocol/nick");

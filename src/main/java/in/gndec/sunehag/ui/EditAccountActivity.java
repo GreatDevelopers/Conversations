@@ -41,7 +41,6 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import in.gndec.sunehag.Config;
-import in.gndec.sunehag.OmemoActivity;
 import in.gndec.sunehag.R;
 import in.gndec.sunehag.crypto.axolotl.AxolotlService;
 import in.gndec.sunehag.crypto.axolotl.XmppAxolotlSession;
@@ -101,7 +100,6 @@ public class EditAccountActivity extends OmemoActivity implements OnAccountUpdat
 	private RelativeLayout mAxolotlFingerprintBox;
 	private ImageButton mOtrFingerprintToClipboardButton;
 	private ImageButton mAxolotlFingerprintToClipboardButton;
-	private ImageButton mRegenerateAxolotlKeyButton;
 	private LinearLayout keys;
 	private LinearLayout keysCard;
 	private LinearLayout mNamePort;
@@ -528,7 +526,6 @@ public class EditAccountActivity extends OmemoActivity implements OnAccountUpdat
 		this.mAxolotlFingerprint = (TextView) findViewById(R.id.axolotl_fingerprint);
 		this.mAxolotlFingerprintBox = (RelativeLayout) findViewById(R.id.axolotl_fingerprint_box);
 		this.mAxolotlFingerprintToClipboardButton = (ImageButton) findViewById(R.id.action_copy_axolotl_to_clipboard);
-		this.mRegenerateAxolotlKeyButton = (ImageButton) findViewById(R.id.action_regenerate_axolotl_key);
 		this.mOwnFingerprintDesc = (TextView) findViewById(R.id.own_fingerprint_desc);
 		this.keysCard = (LinearLayout) findViewById(R.id.other_device_keys_card);
 		this.keys = (LinearLayout) findViewById(R.id.other_device_keys);
@@ -925,7 +922,7 @@ public class EditAccountActivity extends OmemoActivity implements OnAccountUpdat
 							@Override
 							public void onClick(final View v) {
 
-								if (copyTextToClipboard(otrFingerprint, R.string.otr_fingerprint)) {
+								if (copyTextToClipboard(CryptoHelper.prettifyFingerprint(otrFingerprint), R.string.otr_fingerprint)) {
 									Toast.makeText(
 											EditAccountActivity.this,
 											R.string.toast_message_otr_fingerprint,
@@ -955,18 +952,6 @@ public class EditAccountActivity extends OmemoActivity implements OnAccountUpdat
 								copyOmemoFingerprint(ownAxolotlFingerprint);
 							}
 						});
-				if (Config.SHOW_REGENERATE_AXOLOTL_KEYS_BUTTON) {
-					this.mRegenerateAxolotlKeyButton
-							.setVisibility(View.VISIBLE);
-					this.mRegenerateAxolotlKeyButton
-							.setOnClickListener(new View.OnClickListener() {
-
-								@Override
-								public void onClick(final View v) {
-									showRegenerateAxolotlKeyDialog();
-								}
-							});
-				}
 			} else {
 				this.mAxolotlFingerprintBox.setVisibility(View.GONE);
 			}
@@ -1052,22 +1037,6 @@ public class EditAccountActivity extends OmemoActivity implements OnAccountUpdat
 				}
 			});
 		}
-	}
-
-	public void showRegenerateAxolotlKeyDialog() {
-		Builder builder = new Builder(this);
-		builder.setTitle("Regenerate Key");
-		builder.setIconAttribute(android.R.attr.alertDialogIcon);
-		builder.setMessage("Are you sure you want to regenerate your Identity Key? (This will also wipe all established sessions and contact Identity Keys)");
-		builder.setNegativeButton(getString(R.string.cancel), null);
-		builder.setPositiveButton("Yes",
-				new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						mAccount.getAxolotlService().regenerateKeys(false);
-					}
-				});
-		builder.create().show();
 	}
 
 	public void showWipePepDialog() {

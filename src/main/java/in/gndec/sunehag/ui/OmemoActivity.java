@@ -1,4 +1,4 @@
-package in.gndec.sunehag;
+package in.gndec.sunehag.ui;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -19,14 +19,15 @@ import com.google.zxing.integration.android.IntentResult;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
 
+import in.gndec.sunehag.Config;
+import in.gndec.sunehag.R;
 import in.gndec.sunehag.crypto.axolotl.FingerprintStatus;
 import in.gndec.sunehag.crypto.axolotl.XmppAxolotlSession;
 import in.gndec.sunehag.entities.Account;
-import in.gndec.sunehag.ui.TrustKeysActivity;
-import in.gndec.sunehag.ui.XmppActivity;
 import in.gndec.sunehag.ui.widget.Switch;
 import in.gndec.sunehag.utils.CryptoHelper;
 import in.gndec.sunehag.utils.XmppUri;
+
 
 public abstract class OmemoActivity extends XmppActivity {
 

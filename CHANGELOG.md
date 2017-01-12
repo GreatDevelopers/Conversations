@@ -3,6 +3,10 @@
 ####Version 0.7
 * Custom DNS Server added
 * Terms and Conditions Added
+* show offline contacts in MUC as grayed-out
+* support for POSH (RFC7711)
+* support for quoting messages (via select text)
+* verified messages show shield icon. unverified messages show lock
 * Automatically deactivate own devices after 7 day of inactivity
 * Improvements fo doze/push mode
 * Share button added to account details

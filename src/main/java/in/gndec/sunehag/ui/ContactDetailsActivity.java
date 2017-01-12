@@ -35,10 +35,10 @@ import org.openintents.openpgp.util.OpenPgpUtils;
 import java.util.List;
 
 import in.gndec.sunehag.Config;
-import in.gndec.sunehag.OmemoActivity;
 import in.gndec.sunehag.R;
 import in.gndec.sunehag.crypto.PgpEngine;
 import in.gndec.sunehag.crypto.axolotl.AxolotlService;
+import in.gndec.sunehag.crypto.axolotl.FingerprintStatus;
 import in.gndec.sunehag.crypto.axolotl.XmppAxolotlSession;
 import in.gndec.sunehag.entities.Account;
 import in.gndec.sunehag.entities.Contact;
@@ -113,11 +113,13 @@ public class ContactDetailsActivity extends OmemoActivity implements OnAccountUp
 	private CheckBox send;
 	private CheckBox receive;
 	private Button addContactButton;
+	private Button mShowInactiveDevicesButton;
 	private QuickContactBadge badge;
 	private LinearLayout keys;
 	private FlowLayout tags;
 	private boolean showDynamicTags = false;
 	private boolean showLastSeen = false;
+	private boolean showInactiveOmemo = false;
 	private String messageFingerprint;
 
 	private DialogInterface.OnClickListener addToPhonebook = new DialogInterface.OnClickListener() {
@@ -189,6 +191,7 @@ public class ContactDetailsActivity extends OmemoActivity implements OnAccountUp
 	@Override
 	protected void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		showInactiveOmemo = savedInstanceState != null && savedInstanceState.getBoolean("show_inactive_omemo",false);
 		if (getIntent().getAction().equals(ACTION_VIEW_CONTACT)) {
 			try {
 				this.accountJid = Jid.fromString(getIntent().getExtras().getString(EXTRA_ACCOUNT));
@@ -218,10 +221,24 @@ public class ContactDetailsActivity extends OmemoActivity implements OnAccountUp
 		});
 		keys = (LinearLayout) findViewById(R.id.details_contact_keys);
 		tags = (FlowLayout) findViewById(R.id.tags);
+		mShowInactiveDevicesButton = (Button) findViewById(R.id.show_inactive_devices);
 		if (getActionBar() != null) {
 			getActionBar().setHomeButtonEnabled(true);
 			getActionBar().setDisplayHomeAsUpEnabled(true);
 		}
+		mShowInactiveDevicesButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				showInactiveOmemo = !showInactiveOmemo;
+				populateView();
+			}
+		});
+	}
+
+	@Override
+	public void onSaveInstanceState(final Bundle savedInstanceState) {
+		savedInstanceState.putBoolean("show_inactive_omemo",showInactiveOmemo);
+		super.onSaveInstanceState(savedInstanceState);
 	}
 
 	@Override
@@ -448,13 +465,32 @@ public class ContactDetailsActivity extends OmemoActivity implements OnAccountUp
 			}
 		}
 		if (Config.supportOmemo()) {
+			boolean skippedInactive = false;
+			boolean showsInactive = false;
 			for (final XmppAxolotlSession session : contact.getAccount().getAxolotlService().findSessionsForContact(contact)) {
-				if (!session.getTrust().isCompromised()) {
+				final FingerprintStatus trust = session.getTrust();
+				if (!trust.isActive()) {
+					if (showInactiveOmemo) {
+						showsInactive = true;
+					} else {
+						skippedInactive = true;
+						continue;
+					}
+				}
+				if (!trust.isCompromised()) {
 					boolean highlight = session.getFingerprint().equals(messageFingerprint);
 					hasKeys = true;
 					addFingerprintRow(keys, session, highlight);
 				}
 			}
+			if (showsInactive || skippedInactive) {
+				mShowInactiveDevicesButton.setText(showsInactive ? R.string.hide_inactive_devices : R.string.show_inactive_devices);
+				mShowInactiveDevicesButton.setVisibility(View.VISIBLE);
+			} else {
+				mShowInactiveDevicesButton.setVisibility(View.GONE);
+			}
+		} else {
+			mShowInactiveDevicesButton.setVisibility(View.GONE);
 		}
 		if (Config.supportOpenPgp() && contact.getPgpKeyId() != 0) {
 			hasKeys = true;

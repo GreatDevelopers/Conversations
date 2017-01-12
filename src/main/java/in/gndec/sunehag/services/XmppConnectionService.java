@@ -98,6 +98,7 @@ import in.gndec.sunehag.ui.UiCallback;
 import in.gndec.sunehag.utils.ConversationsFileObserver;
 import in.gndec.sunehag.utils.CryptoHelper;
 import in.gndec.sunehag.utils.ExceptionHelper;
+import in.gndec.sunehag.utils.MimeUtils;
 import in.gndec.sunehag.utils.OnPhoneContactsLoadedListener;
 import in.gndec.sunehag.utils.PRNGFixes;
 import in.gndec.sunehag.utils.PhoneHelper;
@@ -493,9 +494,13 @@ public class XmppConnectionService extends Service {
 			callback.error(R.string.security_error_invalid_file_access, null);
 			return;
 		}
+
+		final String mimeType = MimeUtils.guessMimeTypeFromUri(this, uri);
 		final String compressPictures = getCompressPicturesPreference();
+
 		if ("never".equals(compressPictures)
-				|| ("auto".equals(compressPictures) && getFileBackend().useImageAsIs(uri))) {
+				|| ("auto".equals(compressPictures) && getFileBackend().useImageAsIs(uri))
+				|| (mimeType != null && mimeType.endsWith("/gif"))) {
 			Log.d(Config.LOGTAG,conversation.getAccount().getJid().toBareJid()+ ": not compressing picture. sending as file");
 			attachFileToConversation(conversation, uri, callback);
 			return;
@@ -874,7 +879,10 @@ public class XmppConnectionService extends Service {
 		this.databaseBackend = DatabaseBackend.getInstance(getApplicationContext());
 		this.accounts = databaseBackend.getAccounts();
 
-		if (!keepForegroundService() && databaseBackend.startTimeCountExceedsThreshold()) {
+		if (Config.FREQUENT_RESTARTS_THRESHOLD != 0
+				&& Config.FREQUENT_RESTARTS_DETECTION_WINDOW != 0
+				&& !keepForegroundService()
+				&& databaseBackend.startTimeCountExceedsThreshold()) {
 			getPreferences().edit().putBoolean(SettingsActivity.KEEP_FOREGROUND_SERVICE,true).commit();
 			Log.d(Config.LOGTAG,"number of restarts exceeds threshold. enabling foreground service");
 		}
@@ -2039,10 +2047,18 @@ public class XmppConnectionService extends Service {
 	}
 
 	public void joinMuc(Conversation conversation) {
-		joinMuc(conversation, null);
+		joinMuc(conversation,null, false);
+	}
+
+	public void joinMuc(Conversation conversation, boolean followedInvite) {
+		joinMuc(conversation, null, followedInvite);
 	}
 
 	private void joinMuc(Conversation conversation, final OnConferenceJoined onConferenceJoined) {
+		joinMuc(conversation,onConferenceJoined,false);
+	}
+
+	private void joinMuc(Conversation conversation, final OnConferenceJoined onConferenceJoined, final boolean followedInvite) {
 		Account account = conversation.getAccount();
 		account.pendingConferenceJoins.remove(conversation);
 		account.pendingConferenceLeaves.remove(conversation);
@@ -2087,6 +2103,9 @@ public class XmppConnectionService extends Service {
 					}
 					if (mucOptions.membersOnly() && mucOptions.nonanonymous()) {
 						fetchConferenceMembers(conversation);
+						if (followedInvite && conversation.getBookmark() == null) {
+							saveConversationAsBookmark(conversation,null);
+						}
 					}
 					sendUnsentMessages(conversation);
 				}
@@ -2898,7 +2917,8 @@ public class XmppConnectionService extends Service {
 				connection = createConnection(account);
 				account.setXmppConnection(connection);
 			}
-			if (!account.isOptionSet(Account.OPTION_DISABLED)) {
+			boolean hasInternet = hasInternetConnection();
+			if (!account.isOptionSet(Account.OPTION_DISABLED) && hasInternet) {
 				if (!force) {
 					disconnect(account, false);
 				}
@@ -2909,10 +2929,13 @@ public class XmppConnectionService extends Service {
 				thread.start();
 				scheduleWakeUpCall(Config.CONNECT_DISCO_TIMEOUT, account.getUuid().hashCode());
 			} else {
-				disconnect(account, force || account.getTrueStatus().isError());
+				disconnect(account, force || account.getTrueStatus().isError() || !hasInternet);
 				account.getRoster().clearPresences();
 				connection.resetEverything();
 				account.getAxolotlService().resetBrokenness();
+				if (!hasInternet) {
+					account.setStatus(Account.State.NO_INTERNET);
+				}
 			}
 		}
 	}

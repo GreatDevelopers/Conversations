@@ -95,6 +95,10 @@ public final class Config {
 	public static final long MILLISECONDS_IN_DAY = 24 * 60 * 60 * 1000;
 
 	public static final long OMEMO_AUTO_EXPIRY = 7 * MILLISECONDS_IN_DAY;
+	public static final boolean REMOVE_BROKEN_DEVICES = false;
+	public static final boolean OMEMO_PADDING = false;
+	public static boolean PUT_AUTH_TAG_INTO_KEY = false;
+
 
 	public static final boolean DISABLE_PROXY_LOOKUP = false; //useful to debug ibb
 	public static final boolean DISABLE_HTTP_UPLOAD = false;
@@ -106,8 +110,6 @@ public final class Config {
 	public static final boolean ENCRYPT_ON_HTTP_UPLOADED = false;
 
 	public static final boolean REPORT_WRONG_FILESIZE_IN_OTR_JINGLE = true;
-
-	public static final boolean SHOW_REGENERATE_AXOLOTL_KEYS_BUTTON = false;
 
 	public static final boolean X509_VERIFICATION = false; //use x509 certificates to verify OMEMO keys
 

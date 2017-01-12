@@ -675,7 +675,7 @@
   <string name="use_camera_icon_to_scan_barcode">Usa la cámara para escanear el código QR del contacto</string>
   <string name="please_wait_for_keys_to_be_fetched">Por favor, espera a que las claves sean recuperadas</string>
   <string name="pref_blind_trust_before_verification">Confianza ciega antes de verificación</string>
-  <string name="pref_blind_trust_before_verification_summary">Automáticamente confiar en los nuevos dispositivos de tus contactos que no han sido verificados antes y solicita confirmación manual cada vez que un contacto verificado añade un dispositivo nuevo.</string>
+  <string name="pref_blind_trust_before_verification_summary">Automáticamente confiar en los nuevos dispositivos de tus contactos que no han sido verificados todavía, y solicitar confirmación manual cada vez que un contacto verificado añade un dispositivo nuevo.</string>
   <string name="blindly_trusted_omemo_keys">Huellas digitales OMEMO de confianza ciega</string>
   <string name="not_trusted">No confiables</string>
   <string name="invalid_barcode">Código QR inválido</string>

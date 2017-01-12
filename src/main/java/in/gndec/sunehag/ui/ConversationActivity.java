@@ -299,9 +299,7 @@ public class ConversationActivity extends XmppActivity
 		}
 		if (mContentView instanceof SlidingPaneLayout) {
 			SlidingPaneLayout mSlidingPaneLayout = (SlidingPaneLayout) mContentView;
-			mSlidingPaneLayout.setParallaxDistance(150);
-			mSlidingPaneLayout
-					.setShadowResource(R.drawable.es_slidingpane_shadow);
+			mSlidingPaneLayout.setShadowResource(R.drawable.es_slidingpane_shadow);
 			mSlidingPaneLayout.setSliderFadeColor(0);
 			mSlidingPaneLayout.setPanelSlideListener(new PanelSlideListener() {
 
@@ -1583,6 +1581,10 @@ public class ConversationActivity extends XmppActivity
 				hidePrepareFileToast(prepareFileToast);
 			}
 		});
+	}
+
+	public void attachImageToConversation(Uri uri) {
+		this.attachImageToConversation(getSelectedConversation(), uri);
 	}
 
 	private void attachImageToConversation(Conversation conversation, Uri uri) {

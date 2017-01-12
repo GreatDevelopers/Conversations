@@ -778,4 +778,6 @@
     <string name="location_sharing_disabled">Location sharing is disabled in settings</string>
     <string name="locating">Locating&#8230;</string>
     <string name="share_location">Share Location</string>
+	<string name="show_inactive_devices">Show inactive devices</string>
+	<string name="hide_inactive_devices">Hide inactive devices</string>
 </resources>

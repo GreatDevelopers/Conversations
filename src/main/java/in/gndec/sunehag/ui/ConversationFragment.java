@@ -11,6 +11,8 @@ import android.content.Intent;
 import android.content.IntentSender.SendIntentException;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v13.view.inputmethod.InputConnectionCompat;
+import android.support.v13.view.inputmethod.InputContentInfoCompat;
 import android.text.Editable;
 import android.text.InputType;
 import android.util.Log;
@@ -56,6 +58,7 @@ import in.gndec.sunehag.entities.Presence;
 import in.gndec.sunehag.entities.Transferable;
 import in.gndec.sunehag.entities.TransferablePlaceholder;
 import in.gndec.sunehag.http.HttpDownloadConnection;
+import in.gndec.sunehag.persistance.FileBackend;
 import in.gndec.sunehag.services.MessageArchiveService;
 import in.gndec.sunehag.services.XmppConnectionService;
 import in.gndec.sunehag.ui.XmppActivity.OnPresenceSelected;
@@ -285,6 +288,37 @@ public class ConversationFragment extends Fragment implements EditMessage.Keyboa
 			}
 		}
 	};
+	private EditMessage.OnCommitContentListener mEditorContentListener = new EditMessage.OnCommitContentListener() {
+		@Override
+		public boolean onCommitContent(InputContentInfoCompat inputContentInfo, int flags, Bundle opts, String[] contentMimeTypes) {
+			// try to get permission to read the image, if applicable
+			if ((flags & InputConnectionCompat.INPUT_CONTENT_GRANT_READ_URI_PERMISSION) != 0) {
+				try {
+					inputContentInfo.requestPermission();
+				} catch (Exception e) {
+					Log.e(Config.LOGTAG, "InputContentInfoCompat#requestPermission() failed.", e);
+					Toast.makeText(
+							activity,
+							activity.getString(R.string.no_permission_to_access_x, inputContentInfo.getDescription()),
+							Toast.LENGTH_LONG
+					).show();
+					return false;
+				}
+			}
+
+			// send the image
+			activity.attachImageToConversation(inputContentInfo.getContentUri());
+
+			// TODO: revoke permissions?
+			// since uploading an image is async its tough to wire a callback to when
+			// the image has finished uploading.
+			// According to the docs: "calling IC#releasePermission() is just to be a
+			// good citizen. Even if we failed to call that method, the system would eventually revoke
+			// the permission sometime after inputContentInfo object gets garbage-collected."
+			// See: https://developer.android.com/samples/CommitContentSampleApp/src/com.example.android.commitcontent.app/MainActivity.html#l164
+			return true;
+		}
+	};
 	private OnClickListener mSendButtonListener = new OnClickListener() {
 
 		@Override
@@ -416,6 +450,8 @@ public class ConversationFragment extends Fragment implements EditMessage.Keyboa
 	public View onCreateView(final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		final View view = inflater.inflate(R.layout.fragment_conversation, container, false);
 		view.setOnClickListener(null);
+
+		String[] allImagesMimeType = {"image/*"};
 		mEditMessage = (EditMessage) view.findViewById(R.id.textinput);
 		mEditMessage.setOnClickListener(new OnClickListener() {
 
@@ -427,6 +463,7 @@ public class ConversationFragment extends Fragment implements EditMessage.Keyboa
 			}
 		});
 		mEditMessage.setOnEditorActionListener(mEditorActionListener);
+		mEditMessage.setRichContentListener(allImagesMimeType, mEditorContentListener);
 
 		mSendButton = (ImageButton) view.findViewById(R.id.textSendButton);
 		mSendButton.setOnClickListener(this.mSendButtonListener);
@@ -682,8 +719,13 @@ public class ConversationFragment extends Fragment implements EditMessage.Keyboa
 			shareIntent.putExtra(Intent.EXTRA_TEXT, message.getBody());
 			shareIntent.setType("text/plain");
 		} else {
-			shareIntent.putExtra(Intent.EXTRA_STREAM,
-					activity.xmppConnectionService.getFileBackend().getJingleFileUri(message));
+			final DownloadableFile file = activity.xmppConnectionService.getFileBackend().getFile(message);
+			try {
+				shareIntent.putExtra(Intent.EXTRA_STREAM, FileBackend.getUriForFile(activity, file));
+			} catch (SecurityException e) {
+				Toast.makeText(activity, activity.getString(R.string.no_permission_to_access_x, file.getAbsolutePath()), Toast.LENGTH_SHORT).show();
+				return;
+			}
 			shareIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 			String mime = message.getMimeType();
 			if (mime == null) {
