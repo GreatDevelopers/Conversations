@@ -11,9 +11,8 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".ui.ShowLocationActivity">
 
-    <fragment
-        android:name="com.google.android.gms.maps.MapFragment"
-        android:id="@+id/map_fragment"
+    <org.osmdroid.views.MapView
+        android:id="@+id/mapview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         map:mapType="normal"
