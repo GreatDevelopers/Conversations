@@ -99,6 +99,7 @@ public class StartConversationActivity extends XmppActivity implements OnRosterU
     private AtomicBoolean mRequestedContactsPermission = new AtomicBoolean(false);
     private final int REQUEST_SYNC_CONTACTS = 0x3b28cf;
     private final int REQUEST_CREATE_CONFERENCE = 0x3b39da;
+    private final int REQUEST_STORAGE = 12022;
     private Dialog mCurrentDialog = null;
 
     private MenuItem.OnActionExpandListener mOnActionExpandListener = new MenuItem.OnActionExpandListener() {
@@ -715,7 +716,7 @@ public class StartConversationActivity extends XmppActivity implements OnRosterU
 
     private void askForContactsPermissions() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (checkSelfPermission(Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+            if (checkSelfPermission(Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                 if (mRequestedContactsPermission.compareAndSet(false, true)) {
                     if (shouldShowRequestPermissionRationale(Manifest.permission.READ_CONTACTS)) {
                         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -741,10 +742,16 @@ public class StartConversationActivity extends XmppActivity implements OnRosterU
                         }
                         builder.create().show();
                     } else {
-                        requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, 0);
+                        requestPermissions(new String[]{Manifest.permission.READ_CONTACTS,Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0);
                     }
                 }
             }
+            /*if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                if (shouldShowRequestPermissionRationale(Manifest.permission.READ_EXTERNAL_STORAGE) || shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                    Toast.makeText(StartConversationActivity.this,"Please grant Storage permission in order to use this feature",Toast.LENGTH_LONG).show();
+                }
+                requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.WRITE_EXTERNAL_STORAGE},REQUEST_STORAGE );
+            }*/
         }
     }
 
