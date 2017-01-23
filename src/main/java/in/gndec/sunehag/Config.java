@@ -49,7 +49,7 @@ public final class Config {
 	public static final String CHANGE_PASSWORD_URL = "http://YOUR CHANGE PASSWORD PAGE"; // URL to change password page (web page)
 
 	//FIXME: Custom DNS for the app
-	public static final boolean ALLOW_CUSTOM_DNS = false;
+	public static final boolean ALLOW_CUSTOM_DNS = true;
 	public static final byte[] ipAddress = new byte[]{8,8,8,8}; //Enter Your custom DNS Server (Default is 8.8.8.8)
 
 	public static final int DEFAULT_MAP_LOCATION_ZOOM = 15;
