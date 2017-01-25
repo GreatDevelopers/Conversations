@@ -22,10 +22,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+
 import in.gndec.sunehag.Config;
 import in.gndec.sunehag.crypto.axolotl.AxolotlService;
 import in.gndec.sunehag.entities.Account;
 import in.gndec.sunehag.entities.Contact;
+import in.gndec.sunehag.entities.Conversation;
 import in.gndec.sunehag.services.XmppConnectionService;
 import in.gndec.sunehag.utils.Xmlns;
 import in.gndec.sunehag.xml.Element;
@@ -33,6 +35,8 @@ import in.gndec.sunehag.xmpp.OnIqPacketReceived;
 import in.gndec.sunehag.xmpp.OnUpdateBlocklist;
 import in.gndec.sunehag.xmpp.jid.Jid;
 import in.gndec.sunehag.xmpp.stanzas.IqPacket;
+
+
 
 public class IqParser extends AbstractParser implements OnIqPacketReceived {
 
@@ -319,6 +323,14 @@ public class IqParser extends AbstractParser implements OnIqPacketReceived {
 					}
 				}
 				account.getBlocklist().addAll(jids);
+				if (packet.getType() == IqPacket.TYPE.SET) {
+					for(Jid jid : jids) {
+						Conversation conversation = mXmppConnectionService.find(account,jid);
+						if (conversation != null) {
+							mXmppConnectionService.markRead(conversation);
+						}
+					}
+				}
 			}
 			// Update the UI
 			mXmppConnectionService.updateBlocklistUi(OnUpdateBlocklist.Status.BLOCKED);
@@ -349,7 +361,8 @@ public class IqParser extends AbstractParser implements OnIqPacketReceived {
 			final IqPacket response = packet.generateResponse(IqPacket.TYPE.RESULT);
 			mXmppConnectionService.sendIqPacket(account, response, null);
 		} else if (packet.hasChild("open", "http://jabber.org/protocol/ibb")
-				|| packet.hasChild("data", "http://jabber.org/protocol/ibb")) {
+				|| packet.hasChild("data", "http://jabber.org/protocol/ibb")
+				|| packet.hasChild("close","http://jabber.org/protocol/ibb")) {
 			mXmppConnectionService.getJingleConnectionManager()
 				.deliverIbbPacket(account, packet);
 		} else if (packet.hasChild("query", "http://jabber.org/protocol/disco#info")) {

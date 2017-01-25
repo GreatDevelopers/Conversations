@@ -19,6 +19,8 @@
         android:name="android.permission.READ_PHONE_STATE"
         tools:node="remove" />
 
+    <uses-sdk tools:overrideLibrary="net.ypresto.androidtranscoder" />
+
     <application
         android:allowBackup="true"
         android:icon="@drawable/gne"
@@ -204,13 +206,18 @@
 
         <provider
             android:name="android.support.v4.content.FileProvider"
-            android:authorities="in.gndec.sunehag.files"
+            android:authorities="${applicationId}.files"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
+        <provider
+            android:authorities="${applicationId}.barcodes"
+            android:name=".services.BarcodeProvider"
+            android:exported="false"
+            android:grantUriPermissions="true"/>
 
 
     </application>

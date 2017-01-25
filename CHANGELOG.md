@@ -1,5 +1,37 @@
 ###Changelog
 
+####Version 1.15.5
+* show nick as bold text when mentioned in conference
+* bug fixes
+
+####Version 1.15.4
+* bug fixes
+
+####Version 1.15.3
+* show offline contacts in MUC as grayed-out
+* don't transcode gifs. add overlay indication to gifs
+* bug fixes
+
+####Version 1.15.2
+* bug fixes
+
+####Version 1.15.1
+* support for POSH (RFC7711)
+* support for quoting messages (via select text)
+* verified messages show shield icon. unverified messages show lock
+
+####Version 1.15.0
+* New [Blind Trust Before Verification](https://gultsch.de/trust.html) mode
+* Easily share Barcode and XMPP uri from Account details
+* Automatically deactivate own devices after 7 day of inactivity
+* Improvements fo doze/push mode
+* bug fixes
+
+####Version 1.14.9
+* warn in account details when data saver is enabled
+* automatically enable foreground service after detecting frequent restarts
+* bug fixes
+
 ####Version 1.14.8
 * bug fixes
 

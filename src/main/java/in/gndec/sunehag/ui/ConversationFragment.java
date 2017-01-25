@@ -9,8 +9,13 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender.SendIntentException;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v13.view.inputmethod.InputConnectionCompat;
+import android.support.v13.view.inputmethod.InputContentInfoCompat;
+import android.text.Editable;
 import android.text.InputType;
 import android.util.Log;
 import android.util.Pair;
@@ -29,6 +34,7 @@ import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -68,6 +74,9 @@ import in.gndec.sunehag.utils.UIHelper;
 import in.gndec.sunehag.xmpp.XmppConnection;
 import in.gndec.sunehag.xmpp.chatstate.ChatState;
 import in.gndec.sunehag.xmpp.jid.Jid;
+
+
+import in.gndec.sunehag.persistance.FileBackend;
 
 public class ConversationFragment extends Fragment implements EditMessage.KeyboardListener {
 
@@ -113,7 +122,6 @@ public class ConversationFragment extends Fragment implements EditMessage.Keyboa
 	private RelativeLayout snackbar;
 	private TextView snackbarMessage;
 	private TextView snackbarAction;
-	private boolean messagesLoaded = true;
 	private Toast messageLoaderToast;
 
 	private OnScrollListener mOnScrollListener = new OnScrollListener() {
@@ -128,14 +136,13 @@ public class ConversationFragment extends Fragment implements EditMessage.Keyboa
 		public void onScroll(AbsListView view, int firstVisibleItem,
 							 int visibleItemCount, int totalItemCount) {
 			synchronized (ConversationFragment.this.messageList) {
-				if (firstVisibleItem < 5 && messagesLoaded && messageList.size() > 0) {
+				if (firstVisibleItem < 5 && conversation != null && conversation.messagesLoaded.compareAndSet(true,false) && messageList.size() > 0) {
 					long timestamp;
 					if (messageList.get(0).getType() == Message.TYPE_STATUS && messageList.size() >= 2) {
 						timestamp = messageList.get(1).getTimeSent();
 					} else {
 						timestamp = messageList.get(0).getTimeSent();
 					}
-					messagesLoaded = false;
 					activity.xmppConnectionService.loadMoreMessages(conversation, timestamp, new XmppConnectionService.OnMoreMessagesLoaded() {
 						@Override
 						public void onMoreMessagesLoaded(final int c, Conversation conversation) {
@@ -164,7 +171,6 @@ public class ConversationFragment extends Fragment implements EditMessage.Keyboa
 									messageListAdapter.notifyDataSetChanged();
 									int pos = Math.max(getIndexOf(uuid,messageList),0);
 									messagesView.setSelectionFromTop(pos, pxOffset);
-									messagesLoaded = true;
 									if (messageLoaderToast != null) {
 										messageLoaderToast.cancel();
 									}
@@ -284,6 +290,37 @@ public class ConversationFragment extends Fragment implements EditMessage.Keyboa
 			}
 		}
 	};
+	private EditMessage.OnCommitContentListener mEditorContentListener = new EditMessage.OnCommitContentListener() {
+		@Override
+		public boolean onCommitContent(InputContentInfoCompat inputContentInfo, int flags, Bundle opts, String[] contentMimeTypes) {
+			// try to get permission to read the image, if applicable
+			if ((flags & InputConnectionCompat.INPUT_CONTENT_GRANT_READ_URI_PERMISSION) != 0) {
+				try {
+					inputContentInfo.requestPermission();
+				} catch (Exception e) {
+					Log.e(Config.LOGTAG, "InputContentInfoCompat#requestPermission() failed.", e);
+					Toast.makeText(
+							activity,
+							activity.getString(R.string.no_permission_to_access_x, inputContentInfo.getDescription()),
+							Toast.LENGTH_LONG
+					).show();
+					return false;
+				}
+			}
+
+			// send the image
+			activity.attachImageToConversation(inputContentInfo.getContentUri());
+
+			// TODO: revoke permissions?
+			// since uploading an image is async its tough to wire a callback to when
+			// the image has finished uploading.
+			// According to the docs: "calling IC#releasePermission() is just to be a
+			// good citizen. Even if we failed to call that method, the system would eventually revoke
+			// the permission sometime after inputContentInfo object gets garbage-collected."
+			// See: https://developer.android.com/samples/CommitContentSampleApp/src/com.example.android.commitcontent.app/MainActivity.html#l164
+			return true;
+		}
+	};
 	private OnClickListener mSendButtonListener = new OnClickListener() {
 
 		@Override
@@ -337,10 +374,6 @@ public class ConversationFragment extends Fragment implements EditMessage.Keyboa
 	};
 	private ConversationActivity activity;
 	private Message selectedMessage;
-
-	public void setMessagesLoaded() {
-		this.messagesLoaded = true;
-	}
 
 	private void sendMessage() {
 		final String body = mEditMessage.getText().toString();
@@ -415,6 +448,8 @@ public class ConversationFragment extends Fragment implements EditMessage.Keyboa
 	public View onCreateView(final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		final View view = inflater.inflate(R.layout.fragment_conversation, container, false);
 		view.setOnClickListener(null);
+
+		String[] allImagesMimeType = {"image/*"};
 		mEditMessage = (EditMessage) view.findViewById(R.id.textinput);
 		mEditMessage.setOnClickListener(new OnClickListener() {
 
@@ -426,6 +461,7 @@ public class ConversationFragment extends Fragment implements EditMessage.Keyboa
 			}
 		});
 		mEditMessage.setOnEditorActionListener(mEditorActionListener);
+		mEditMessage.setRichContentListener(allImagesMimeType, mEditorContentListener);
 
 		mSendButton = (ImageButton) view.findViewById(R.id.textSendButton);
 		mSendButton.setOnClickListener(this.mSendButtonListener);
@@ -506,6 +542,34 @@ public class ConversationFragment extends Fragment implements EditMessage.Keyboa
 						}
 					}
 				});
+		messageListAdapter.setOnQuoteListener(new MessageAdapter.OnQuoteListener() {
+
+			@Override
+			public void onQuote(String text) {
+				if (mEditMessage.isEnabled()) {
+					text = text.replaceAll("(\n *){2,}", "\n").replaceAll("(^|\n)", "$1> ").replaceAll("\n$", "");
+					Editable editable = mEditMessage.getEditableText();
+					int position = mEditMessage.getSelectionEnd();
+					if (position == -1) position = editable.length();
+					if (position > 0 && editable.charAt(position - 1) != '\n') {
+						editable.insert(position++, "\n");
+					}
+					editable.insert(position, text);
+					position += text.length();
+					editable.insert(position++, "\n");
+					if (position < editable.length() && editable.charAt(position) != '\n') {
+						editable.insert(position, "\n");
+					}
+					mEditMessage.setSelection(position);
+					mEditMessage.requestFocus();
+					InputMethodManager inputMethodManager = (InputMethodManager) getActivity()
+							.getSystemService(Context.INPUT_METHOD_SERVICE);
+					if (inputMethodManager != null) {
+						inputMethodManager.showSoftInput(mEditMessage, InputMethodManager.SHOW_IMPLICIT);
+					}
+				}
+			}
+		});
 		messagesView.setAdapter(messageListAdapter);
 
 		registerForContextMenu(messagesView);
@@ -557,7 +621,8 @@ public class ConversationFragment extends Fragment implements EditMessage.Keyboa
 				retryDecryption.setVisible(true);
 			}
 			if (relevantForCorrection.getType() == Message.TYPE_TEXT
-					&& relevantForCorrection.isLastCorrectableMessage()) {
+					&& relevantForCorrection.isLastCorrectableMessage()
+					&& (m.getConversation().getMucOptions().nonanonymous() || m.getConversation().getMode() == Conversation.MODE_SINGLE)) {
 				correctMessage.setVisible(true);
 			}
 			if (treatAsFile || (GeoHelper.isGeoUri(m.getBody()))) {
@@ -652,9 +717,13 @@ public class ConversationFragment extends Fragment implements EditMessage.Keyboa
 			shareIntent.putExtra(Intent.EXTRA_TEXT, message.getBody());
 			shareIntent.setType("text/plain");
 		} else {
-			shareIntent.putExtra(Intent.EXTRA_STREAM,
-					activity.xmppConnectionService.getFileBackend()
-							.getJingleFileUri(message));
+			final DownloadableFile file = activity.xmppConnectionService.getFileBackend().getFile(message);
+			try {
+				shareIntent.putExtra(Intent.EXTRA_STREAM, FileBackend.getUriForFile(activity, file));
+			} catch (SecurityException e) {
+				Toast.makeText(activity, activity.getString(R.string.no_permission_to_access_x, file.getAbsolutePath()), Toast.LENGTH_SHORT).show();
+				return;
+			}
 			shareIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 			String mime = message.getMimeType();
 			if (mime == null) {
@@ -776,16 +845,22 @@ public class ConversationFragment extends Fragment implements EditMessage.Keyboa
 	}
 
 	protected void highlightInConference(String nick) {
-		String oldString = mEditMessage.getText().toString().trim();
-		if (oldString.isEmpty() || mEditMessage.getSelectionStart() == 0) {
+		final Editable editable = mEditMessage.getText();
+		String oldString = editable.toString().trim();
+		final int pos = mEditMessage.getSelectionStart();
+		if (oldString.isEmpty() || pos == 0) {
 			mEditMessage.getText().insert(0, nick + ": ");
 		} else {
-			if (mEditMessage.getText().charAt(
-					mEditMessage.getSelectionStart() - 1) != ' ') {
-				nick = " " + nick;
+			final char before = editable.charAt(pos - 1);
+			final char after = editable.length() > pos ? editable.charAt(pos) : '\0';
+			if (before == '\n') {
+				editable.insert(pos, nick + ": ");
+			} else {
+				editable.insert(pos,(Character.isWhitespace(before)? "" : " ") + nick + (Character.isWhitespace(after) ? "" : " "));
+				if (Character.isWhitespace(after)) {
+					mEditMessage.setSelection(mEditMessage.getSelectionStart()+1);
+				}
 			}
-			mEditMessage.getText().insert(mEditMessage.getSelectionStart(),
-					nick + " ");
 		}
 	}
 
@@ -833,7 +908,7 @@ public class ConversationFragment extends Fragment implements EditMessage.Keyboa
 		messageListAdapter.updatePreferences();
 		this.messagesView.setAdapter(messageListAdapter);
 		updateMessages();
-		this.messagesLoaded = true;
+		this.conversation.messagesLoaded.set(true);
 		synchronized (this.messageList) {
 			final Message first = conversation.getFirstUnreadMessage();
 			final int bottom = Math.max(0, this.messageList.size() - 1);
@@ -916,15 +991,15 @@ public class ConversationFragment extends Fragment implements EditMessage.Keyboa
 
 	private void updateSnackBar(final Conversation conversation) {
 		final Account account = conversation.getAccount();
-		final Contact contact = conversation.getContact();
 		final int mode = conversation.getMode();
+		final Contact contact = mode == Conversation.MODE_SINGLE ? conversation.getContact() : null;
 		if (account.getStatus() == Account.State.DISABLED) {
 			showSnackbar(R.string.this_account_is_disabled, R.string.enable, this.mEnableAccountListener);
 		} else if (conversation.isBlocked()) {
 			showSnackbar(R.string.contact_blocked, R.string.unblock, this.mUnblockClickListener);
-		} else if (!contact.showInRoster() && contact.getOption(Contact.Options.PENDING_SUBSCRIPTION_REQUEST)) {
+		} else if (contact != null && !contact.showInRoster() && contact.getOption(Contact.Options.PENDING_SUBSCRIPTION_REQUEST)) {
 			showSnackbar(R.string.contact_added_you, R.string.add_back, this.mAddBackClickListener);
-		} else if (contact.getOption(Contact.Options.PENDING_SUBSCRIPTION_REQUEST)) {
+		} else if (contact != null && contact.getOption(Contact.Options.PENDING_SUBSCRIPTION_REQUEST)) {
 			showSnackbar(R.string.contact_asks_for_presence_subscription, R.string.allow, this.mAllowPresenceSubscription);
 		} else if (mode == Conversation.MODE_MULTI
 				&& !conversation.getMucOptions().online()

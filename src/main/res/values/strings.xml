@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<string name="app_name" translatable="false">sunehaG</string>
 	<string name="action_settings">Settings</string>
@@ -123,7 +123,7 @@
 	<string name="pref_never_send_crash">Never send crash reports</string>
 	<string name="pref_never_send_crash_summary">By sending in stack traces you are helping the ongoing development of sunehaG</string>
 	<string name="pref_confirm_messages">Confirm Messages</string>
-	<string name="pref_confirm_messages_summary">Let your contact know when you have received and read a message</string>
+	<string name="pref_confirm_messages_summary">Let your contacts know when you have received and read their messages</string>
 	<string name="pref_ui_options">UI</string>
 	<string name="openpgp_error">OpenKeychain reported an error</string>
 	<string name="error_decrypting_file">I/O Error decrypting file</string>
@@ -366,6 +366,7 @@
 	<string name="message_options">Message options</string>
 	<string name="copy_text">Copy text</string>
 	<string name="select_text">Select text</string>
+	<string name="quote">Quote</string>
 	<string name="copy_original_url">Copy original URL</string>
 	<string name="send_again">Send again</string>
 	<string name="file_url">File URL</string>
@@ -373,8 +374,8 @@
 	<string name="url_copied_to_clipboard">URL copied to clipboard</string>
 	<string name="message_copied_to_clipboard">Message copied to clipboard</string>
 	<string name="image_transmission_failed">Image transmission failed</string>
-	<string name="scan_qr_code">Scan QR code</string>
-	<string name="show_qr_code">Show QR code</string>
+	<string name="scan_qr_code">Scan 2D Barcode</string>
+	<string name="show_qr_code">Show 2D Barcode</string>
 	<string name="show_block_list">Show block list</string>
 	<string name="account_details">Account details</string>
 	<string name="verify_otr">Verify OTR</string>
@@ -414,7 +415,7 @@
 	<string name="no_application_found_to_open_file">No application found to open file</string>
 	<string name="could_not_verify_fingerprint">Could not verify fingerprint</string>
 	<string name="manually_verify">Manually verify</string>
-	<string name="are_you_sure_verify_fingerprint">Are you sure that you want to verify your contacts OTR fingerprint?</string>
+	<string name="are_you_sure_verify_fingerprint">Are you sure that you want to verify your contact’s OTR fingerprint?</string>
 	<string name="pref_show_dynamic_tags">Show dynamic tags</string>
 	<string name="pref_show_dynamic_tags_summary">Display read-only tags underneath contacts</string>
 	<string name="enable_notifications">Enable notifications</string>
@@ -430,9 +431,6 @@
 	<string name="wipe_omemo_pep">Wipe other devices from PEP</string>
 	<string name="clear_other_devices">Clear devices</string>
 	<string name="clear_other_devices_desc">Are you sure you want to clear all other devices from the OMEMO announcement? The next time your devices connect, they will reannounce themselves, but they might not receive messages sent in the meantime.</string>
-	<string name="purge_key">Purge key</string>
-	<string name="purge_key_desc_part1">Are you sure you want to purge this key?</string>
-	<string name="purge_key_desc_part2">It will irreversibly be considered compromised, and you can never build a session with it again.</string>
 	<string name="error_no_keys_to_trust_server_error">There are no usable keys available for this contact.\nFetching new keys from the server has been unsuccessful. Maybe there is something wrong with your contacts server.</string>
 	<string name="error_no_keys_to_trust">There are no usable keys available for this contact. If you have purged any of their keys, they need to generate new ones.</string>
 	<string name="error_trustkeys_title">Error</string>
@@ -507,7 +505,7 @@
 	<string name="contact_is_typing">%s is typing…</string>
 	<string name="contact_has_stopped_typing">%s has stopped typing</string>
 	<string name="pref_chat_states">Typing notifications</string>
-	<string name="pref_chat_states_summary">Let your contact know when you are writing a new message</string>
+	<string name="pref_chat_states_summary">Let your contacts know when you are writing messages to them</string>
 	<string name="send_location">Send location</string>
 	<string name="show_location">Show location</string>
 	<string name="no_application_found_to_display_location">No application found to display location</string>
@@ -701,4 +699,43 @@
 	<string name="empty_password_error_message">Please enter password!</string>
 	<string name="show_error_message">Show error message</string>
 	<string name="error_message">Error Message</string>
+	<string name="data_saver_enabled">Data saver enabled</string>
+	<string name="data_saver_enabled_explained">Your operating system is restricting Conversations from accessing the Internet when in background. To receive notifications of new messages you should allow Conversations unrestricted access when Data saver is on.\nConversations will still make an effort to save data when possible.</string>
+	<string name="device_does_not_support_data_saver">Your device does not support disabling Data saver for Conversations.</string>
+	<string name="error_unable_to_create_temporary_file">Unable to create temporary file</string>
+	<string name="this_device_has_been_verified">This device has been verified</string>
+	<string name="copy_fingerprint">Copy fingerprint</string>
+	<string name="all_omemo_keys_have_been_verified">All OMEMO keys have been verified</string>
+	<string name="barcode_does_not_contain_fingerprints_for_this_conversation">Barcode does not contain fingerprints for this conversation.</string>
+	<string name="verified_fingerprints">Verified fingerprints</string>
+	<string name="use_camera_icon_to_scan_barcode">Use the camera to scan a contact’s barcode</string>
+	<string name="please_wait_for_keys_to_be_fetched">Please wait for keys to be fetched</string>
+	<string name="share_as_barcode">Share as Barcode</string>
+	<string name="share_as_uri">Share as XMPP URI</string>
+	<string name="share_as_http">Share as HTTP link</string>
+	<string name="pref_blind_trust_before_verification">Blind Trust Before Verification</string>
+	<string name="pref_blind_trust_before_verification_summary">Automatically trust all new devices of contacts that haven’t been verified before, and prompt for manual confirmation each time a verified contact adds a new device.</string>
+	<string name="blindly_trusted_omemo_keys">Blindly trusted OMEMO keys</string>
+	<string name="not_trusted">Untrusted</string>
+	<string name="invalid_barcode">Invalid 2D barcode</string>
+	<string name="pref_clean_cache_summary">Clean cache folder (used by Camera Application)</string>
+	<string name="pref_clean_cache">Clean cache</string>
+	<string name="pref_clean_private_storage">Clean private storage</string>
+	<string name="pref_clean_private_storage_summary">Clean private storage where files are kept (They can be re-downloaded from the server)</string>
+	<string name="i_followed_this_link_from_a_trusted_source">I followed this link from a trusted source</string>
+	<string name="verifying_omemo_keys_trusted_source">You are about to verify the OMEMO keys of %1$s after clicking a link. This is only secure if you followed this link from a trusted source where only %2$s could have published this link.</string>
+	<string name="verify_omemo_keys">Verify OMEMO keys</string>
+	<string name="show_inactive_devices">Show inactive devices</string>
+	<string name="hide_inactive_devices">Hide inactive devices</string>
+	<string name="distrust_omemo_key">Distrust device</string>
+	<string name="distrust_omemo_key_text">Are you sure you want to remove the verification for this device?\nThis device and messages coming from that device will be marked as untrusted.</string>
+	<string name="timeout_24_hours">24 hours</string>
+	<string name="timeout_7_days">7 days</string>
+	<string name="timeout_30_days">30 days</string>
+	<string name="timeout_6_months">6 months</string>
+	<string name="pref_automatically_delete_messages">Automatic message deletion</string>
+	<string name="pref_automatically_delete_messages_description">Automatically delete messages from this device that are older than the configured time frame.</string>
+	<string name="encrypting_message">Encrypting message</string>
+	<string name="not_fetching_history_retention_period">Overstepping local retention period.</string>
+	<string name="transcoding_video_progress">Compressing video (%s%% completed)</string>
 </resources>

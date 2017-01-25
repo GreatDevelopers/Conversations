@@ -62,8 +62,8 @@
   <string name="crash_report_message">Слањем контратрага помажете текући развој Конверзације\n<b>Упозорење:</b> Ово ће да искористи ваш ИксМПП налог за слање контратрага програмеру.</string>
   <string name="send_now">Пошаљи одмах</string>
   <string name="send_never">Не питај више</string>
-  <string name="problem_connecting_to_account">Не могох да се повежем са налогом</string>
-  <string name="problem_connecting_to_accounts">Не могох да се повежем са више налога</string>
+  <string name="problem_connecting_to_account">Не могу да се повежем са налогом</string>
+  <string name="problem_connecting_to_accounts">Не могу да се повежем са више налога</string>
   <string name="touch_to_fix">Тапните овде да бисте управљали вашим налозима</string>
   <string name="attach_file">Приложи фајл</string>
   <string name="not_in_roster">Контакт није на вашем списку контаката. Желите ли да га додате?</string>
@@ -122,7 +122,7 @@
   <string name="pref_never_send_crash">Никад не шаљи извештаје о паду</string>
   <string name="pref_never_send_crash_summary">Слањем контратрага помажете текући развој Конверзације</string>
   <string name="pref_confirm_messages">Потврди поруке</string>
-  <string name="pref_confirm_messages_summary">Обзнаните контакту кад примите и прочитате поруку</string>
+  <string name="pref_confirm_messages_summary">Обзнаните контактима када примите и прочитате њихове поруке</string>
   <string name="pref_ui_options">Сучеље</string>
   <string name="openpgp_error">Отворени кључарник је пријавио грешку</string>
   <string name="error_decrypting_file">У/И грешка дешифровања фајла</string>
@@ -331,6 +331,7 @@
   <string name="check_x_filesize_on_host">Провери величину %1$s na %2$s</string>
   <string name="message_options">Опције поруке</string>
   <string name="copy_text">Копирај текст</string>
+  <string name="select_text">Изабери текст</string>
   <string name="copy_original_url">Копирај изворни УРЛ</string>
   <string name="send_again">Пошаљи поново</string>
   <string name="file_url">УРЛ фајла</string>
@@ -338,8 +339,8 @@
   <string name="url_copied_to_clipboard">УРЛ је копиран на клипборд</string>
   <string name="message_copied_to_clipboard">Порука је копирана на клипборд</string>
   <string name="image_transmission_failed">Пренос слике није успео</string>
-  <string name="scan_qr_code">Очитај бар-кôд</string>
-  <string name="show_qr_code">Прикажи бар-кôд</string>
+  <string name="scan_qr_code">Очитај 2Д бар-кôд</string>
+  <string name="show_qr_code">Прикажи 2Д бар-кôд</string>
   <string name="show_block_list">Прикажи списак блокираних</string>
   <string name="account_details">Детаљи налога</string>
   <string name="verify_otr">Овери ОТР</string>
@@ -395,9 +396,6 @@
   <string name="wipe_omemo_pep">Уклони остале уређаје са ПЕП-а</string>
   <string name="clear_other_devices">Очисти уређаје</string>
   <string name="clear_other_devices_desc">Желите ли заиста да уклоните све остале уређаје са ОМЕМО објаве? Када се ваши уређаји следећи пут повежу, објавиће се сами, али у међувремену можда неће примати поруке.</string>
-  <string name="purge_key">Очисти кључ</string>
-  <string name="purge_key_desc_part1">Желите ли заиста да очистите овај кључ?</string>
-  <string name="purge_key_desc_part2">Неповратно ће бити сматран компровитованим, и њиме више никад нећете моћи да успоставите сесију.</string>
   <string name="error_no_keys_to_trust_server_error">Нема употребљивих кључева за овај контакт.\nДобављање нових кључева са сервера није било успешно. Можда нешто није у реду са сервером ваших контаката.</string>
   <string name="error_no_keys_to_trust">Нема употребљивих кључева за овај контакт. Ако сте очистили било који од тих кључева, контакт мора да генерише нови.</string>
   <string name="error_trustkeys_title">Грешка</string>
@@ -472,7 +470,7 @@
   <string name="contact_is_typing">%s куца…</string>
   <string name="contact_has_stopped_typing">%s престаде да куца</string>
   <string name="pref_chat_states">Обавештења о куцању</string>
-  <string name="pref_chat_states_summary">Обзнаните контакту кад куцате нову поруку</string>
+  <string name="pref_chat_states_summary">Обзнаните контактима када им куцате поруке</string>
   <string name="send_location">Пошаљи локацију</string>
   <string name="show_location">Прикажи локацију</string>
   <string name="no_application_found_to_display_location">Нема апликације за приказ локације</string>
@@ -532,12 +530,12 @@
   <string name="pref_show_connection_options_summary">Приказ домаћина и порта у поставкама налога</string>
   <string name="hostname_example">xmpp.primer.com</string>
   <string name="action_add_account_with_certificate">Додај налог сертификатом</string>
-  <string name="unable_to_parse_certificate">Не могох да рашчланим сертификат</string>
+  <string name="unable_to_parse_certificate">Не могу да рашчланим сертификат</string>
   <string name="authenticate_with_certificate">Оставите празно за аутентификацију сертификатом</string>
   <string name="mam_prefs">Поставке архивисања</string>
   <string name="server_side_mam_prefs">Серверске поставке архивисања</string>
   <string name="fetching_mam_prefs">Добављам поставке архивисања, сачекајте…</string>
-  <string name="unable_to_fetch_mam_prefs">Не могох да добавим поставке архивисања</string>
+  <string name="unable_to_fetch_mam_prefs">Не могу да добавим поставке архивисања</string>
   <string name="captcha_required">Потребна стопка</string>
   <string name="captcha_hint">Унесите текст са слике изнад</string>
   <string name="certificate_chain_is_not_trusted">Ланац сертификата није поуздан</string>
@@ -599,6 +597,8 @@
   <string name="security_error_invalid_file_access">Безбедносна грешка: неисправан приступ фајлу</string>
   <string name="no_application_to_share_uri">Нема апликације за дељење веза</string>
   <string name="share_uri_with">Подели везу помоћу…</string>
+  <string name="welcome_text">ИксМПП је протокол независан од провајдера. Можете да користите овог клијента са било којим ИксМПП сервером.\nИпак, због погодности омогућили смо једноставно прављење налога на conversations.im¹, сервер посебно прилагођен за коришћење са Конверзацијом.</string>
+  <string name="magic_create_text">Водићемо вас кроз процес прављења налога на conversations.im.¹\nАко изаберете conversations.im за даваоца услуге моћи ћете да комуницирате са корисницима других сервера ако им дате ваш Џабер ИД.</string>
   <string name="your_full_jid_will_be">Ваш пуни Џабер ИД ће бити: %s</string>
   <string name="create_account">Направи налог</string>
   <string name="use_own_provider">Користићу сопствени провајдер</string>
@@ -636,7 +636,7 @@
   <string name="pref_theme_dark">Тамна тема</string>
   <string name="pref_use_green_background">Зелена позадина</string>
   <string name="pref_use_green_background_summary">Зелена позадина за примљене поруке</string>
-  <string name="unable_to_connect_to_keychain">Не могох да се повежем са Отвореним кључарником</string>
+  <string name="unable_to_connect_to_keychain">Не могу да се повежем са Отвореним кључарником</string>
   <string name="this_device_is_no_longer_in_use">Овај уређај више није у употреби</string>
   <string name="type_pc">Рачунар</string>
   <string name="type_phone">Мобилни телефон</string>
@@ -650,7 +650,7 @@
   <string name="allow">Дозволи</string>
   <string name="no_permission_to_access_x">Нема дозвола за приступ %s</string>
   <string name="remote_server_not_found">Удаљени сервер није нађен</string>
-  <string name="unable_to_update_account">Не могох да се ажурирам налог</string>
+  <string name="unable_to_update_account">Не могу да ажурирам налог</string>
   <string name="missing_presence_subscription_with_x">Нема претплате на присутност са %s.</string>
   <string name="missing_keys_from_x">Нема ОМЕМО кључева у %s.</string>
   <string name="missing_omemo_keys">Нема ОМЕМО кључева</string>
@@ -661,4 +661,18 @@
   <string name="pref_delete_omemo_identities_summary">Поновно генерисање ОМЕМО кључева. Сви ваши контакти ће морати поново да вас овере. Користите ово само у крајњем случају.</string>
   <string name="delete_selected_keys">Обриши изабране кључеве</string>
   <string name="error_publish_avatar_offline">Морате бити повезани да бисте објавили ваш аватар.</string>
+  <string name="show_error_message">Прикажи поруку грешке</string>
+  <string name="error_message">Порука грешке</string>
+  <string name="error_unable_to_create_temporary_file">Не могу да направим привремени фајл</string>
+  <string name="this_device_has_been_verified">Овај уређај је оверен.</string>
+  <string name="copy_fingerprint">Копирај отисак</string>
+  <string name="all_omemo_keys_have_been_verified">Сви ОМЕМО кључеви су оверени</string>
+  <string name="barcode_does_not_contain_fingerprints_for_this_conversation">Бар-кôд не садржи отиске за ову преписку.</string>
+  <string name="verified_fingerprints">Оверени отисци</string>
+  <string name="use_camera_icon_to_scan_barcode">Користи камеру за очитавање контактова бар-кôда</string>
+  <string name="please_wait_for_keys_to_be_fetched">Сачекајте на добављање кључева</string>
+  <string name="share_as_barcode">Подели као бар-кôд</string>
+  <string name="share_as_uri">Подели као ИксМПП УРИ</string>
+  <string name="share_as_http">Подели као ХТТП везу</string>
+  <string name="invalid_barcode">Неисправан 2Д бар-кôд</string>
 </resources>

@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+
 import in.gndec.sunehag.Config;
 import in.gndec.sunehag.R;
 import in.gndec.sunehag.entities.Account;
@@ -34,9 +35,11 @@ import in.gndec.sunehag.entities.Conversation;
 import in.gndec.sunehag.entities.Message;
 import in.gndec.sunehag.ui.ConversationActivity;
 import in.gndec.sunehag.ui.ManageAccountActivity;
+import in.gndec.sunehag.ui.SettingsActivity;
 import in.gndec.sunehag.ui.TimePreference;
 import in.gndec.sunehag.utils.GeoHelper;
 import in.gndec.sunehag.utils.UIHelper;
+
 
 public class NotificationService {
 
@@ -99,11 +102,26 @@ public class NotificationService {
 		}
 	}
 
-	public void finishBacklog(boolean notify) {
+	public void finishBacklog(boolean notify, Account account) {
 		synchronized (notifications) {
 			mXmppConnectionService.updateUnreadCountBadge();
-			updateNotification(notify);
+			if (account == null || !notify) {
+				updateNotification(notify);
+			} else {
+				boolean hasPendingMessages = false;
+				for(ArrayList<Message> messages : notifications.values()) {
+					if (messages.size() > 0 && messages.get(0).getConversation().getAccount() == account) {
+						hasPendingMessages = true;
+						break;
+					}
+				}
+				updateNotification(hasPendingMessages);
+			}
 		}
+	}
+
+	public void finishBacklog(boolean notify) {
+		finishBacklog(notify,null);
 	}
 
 	private void pushToStack(final Message message) {
@@ -506,7 +524,7 @@ public class NotificationService {
 		return (m.find() || message.getType() == Message.TYPE_PRIVATE);
 	}
 
-	private static Pattern generateNickHighlightPattern(final String nick) {
+	public static Pattern generateNickHighlightPattern(final String nick) {
 		// We expect a word boundary, i.e. space or start of string, followed by
 		// the
 		// nick (matched in case-insensitive manner), followed by optional
@@ -591,7 +609,7 @@ public class NotificationService {
 				errors.add(account);
 			}
 		}
-		if (mXmppConnectionService.getPreferences().getBoolean("keep_foreground_service", false)) {
+		if (mXmppConnectionService.getPreferences().getBoolean(SettingsActivity.KEEP_FOREGROUND_SERVICE, false)) {
 			notificationManager.notify(FOREGROUND_NOTIFICATION_ID, createForegroundNotification());
 		}
 		final NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(mXmppConnectionService);

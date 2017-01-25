@@ -42,6 +42,9 @@ import in.gndec.sunehag.xmpp.jid.Jid;
 
 public class ConferenceDetailsActivity extends XmppActivity implements OnConversationUpdate, OnMucRosterUpdate, XmppConnectionService.OnAffiliationChanged, XmppConnectionService.OnRoleChanged, XmppConnectionService.OnConferenceOptionsPushed {
 	public static final String ACTION_VIEW_MUC = "view_muc";
+
+	private static final float INACTIVE_ALPHA = 0.4684f; //compromise between dark and light theme
+
 	private Conversation mConversation;
 	private OnClickListener inviteListener = new OnClickListener() {
 
@@ -378,7 +381,7 @@ public class ConferenceDetailsActivity extends XmppActivity implements OnConvers
 				MenuItem invite = menu.findItem(R.id.invite);
 				startConversation.setVisible(true);
 				if (contact != null) {
-					showContactDetails.setVisible(true);
+					showContactDetails.setVisible(!contact.isSelf());
 				}
 				if (user.getRole() == MucOptions.Role.NONE) {
 					invite.setVisible(true);
@@ -509,8 +512,7 @@ public class ConferenceDetailsActivity extends XmppActivity implements OnConvers
 			this.uuid = getIntent().getExtras().getString("uuid");
 		}
 		if (uuid != null) {
-			this.mConversation = xmppConnectionService
-				.findConversationByUuid(uuid);
+			this.mConversation = xmppConnectionService.findConversationByUuid(uuid);
 			if (this.mConversation != null) {
 				updateView();
 			}
@@ -518,6 +520,7 @@ public class ConferenceDetailsActivity extends XmppActivity implements OnConvers
 	}
 
 	private void updateView() {
+		invalidateOptionsMenu();
 		final MucOptions mucOptions = mConversation.getMucOptions();
 		final User self = mucOptions.getSelf();
 		String account;
@@ -619,6 +622,12 @@ public class ConferenceDetailsActivity extends XmppActivity implements OnConvers
 			}
 			ImageView iv = (ImageView) view.findViewById(R.id.contact_photo);
 			iv.setImageBitmap(avatarService().get(user, getPixel(48), false));
+			if (user.getRole() == MucOptions.Role.NONE) {
+				tvDisplayName.setAlpha(INACTIVE_ALPHA);
+				tvKey.setAlpha(INACTIVE_ALPHA);
+				tvStatus.setAlpha(INACTIVE_ALPHA);
+				iv.setAlpha(INACTIVE_ALPHA);
+			}
 			membersView.addView(view);
 			if (mConversation.getMucOptions().canInvite()) {
 				mInviteButton.setVisibility(View.VISIBLE);

@@ -23,6 +23,8 @@ import in.gndec.sunehag.services.XmppConnectionService;
 import in.gndec.sunehag.utils.CryptoHelper;
 import in.gndec.sunehag.utils.SSLSocketHelper;
 
+import in.gndec.sunehag.utils.TLSSocketFactory;
+
 public class HttpConnectionManager extends AbstractConnectionManager {
 
 	public HttpConnectionManager(XmppConnectionService service) {
@@ -62,7 +64,7 @@ public class HttpConnectionManager extends AbstractConnectionManager {
 		final X509TrustManager trustManager;
 		final HostnameVerifier hostnameVerifier;
 		if (interactive) {
-			trustManager = mXmppConnectionService.getMemorizingTrustManager();
+			trustManager = mXmppConnectionService.getMemorizingTrustManager().getInteractive();
 			hostnameVerifier = mXmppConnectionService
 					.getMemorizingTrustManager().wrapHostnameVerifier(
 							new StrictHostnameVerifier());
@@ -75,18 +77,7 @@ public class HttpConnectionManager extends AbstractConnectionManager {
 							new StrictHostnameVerifier());
 		}
 		try {
-			final SSLContext sc = SSLSocketHelper.getSSLContext();
-			sc.init(null, new X509TrustManager[]{trustManager},
-					mXmppConnectionService.getRNG());
-
-			final SSLSocketFactory sf = sc.getSocketFactory();
-			final String[] cipherSuites = CryptoHelper.getOrderedCipherSuites(
-					sf.getSupportedCipherSuites());
-			if (cipherSuites.length > 0) {
-				sc.getDefaultSSLParameters().setCipherSuites(cipherSuites);
-
-			}
-
+			final SSLSocketFactory sf = new TLSSocketFactory(new X509TrustManager[]{trustManager}, mXmppConnectionService.getRNG());
 			connection.setSSLSocketFactory(sf);
 			connection.setHostnameVerifier(hostnameVerifier);
 		} catch (final KeyManagementException | NoSuchAlgorithmException ignored) {

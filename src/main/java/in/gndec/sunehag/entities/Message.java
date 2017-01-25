@@ -9,12 +9,14 @@ import java.net.URL;
 
 import in.gndec.sunehag.Config;
 import in.gndec.sunehag.crypto.axolotl.XmppAxolotlSession;
+import in.gndec.sunehag.crypto.axolotl.FingerprintStatus;
 import in.gndec.sunehag.utils.CryptoHelper;
 import in.gndec.sunehag.utils.GeoHelper;
 import in.gndec.sunehag.utils.MimeUtils;
 import in.gndec.sunehag.utils.UIHelper;
 import in.gndec.sunehag.xmpp.jid.InvalidJidException;
 import in.gndec.sunehag.xmpp.jid.Jid;
+
 
 public class Message extends AbstractEntity {
 
@@ -410,15 +412,18 @@ public class Message extends AbstractEntity {
 				body = this.body;
 				otherBody = message.body;
 			}
+			final boolean matchingCounterpart = this.counterpart.equals(message.getCounterpart());
 			if (message.getRemoteMsgId() != null) {
+				final boolean hasUuid = CryptoHelper.UUID_PATTERN.matcher(message.getRemoteMsgId()).matches();
+				if (hasUuid && this.edited != null && matchingCounterpart && this.edited.equals(message.getRemoteMsgId())) {
+					return true;
+				}
 				return (message.getRemoteMsgId().equals(this.remoteMsgId) || message.getRemoteMsgId().equals(this.uuid))
-						&& this.counterpart.equals(message.getCounterpart())
-						&& (body.equals(otherBody)
-						||(message.getEncryption() == Message.ENCRYPTION_PGP
-						&& CryptoHelper.UUID_PATTERN.matcher(message.getRemoteMsgId()).matches()));
+						&& matchingCounterpart
+						&& (body.equals(otherBody) ||(message.getEncryption() == Message.ENCRYPTION_PGP && hasUuid));
 			} else {
 				return this.remoteMsgId == null
-						&& this.counterpart.equals(message.getCounterpart())
+						&& matchingCounterpart
 						&& body.equals(otherBody)
 						&& Math.abs(this.getTimeSent() - message.getTimeSent()) < Config.MESSAGE_MERGE_WINDOW * 1000;
 			}
@@ -492,7 +497,7 @@ public class Message extends AbstractEntity {
 						!this.getBody().startsWith(ME_COMMAND) &&
 						!this.bodyIsHeart() &&
 						!message.bodyIsHeart() &&
-						this.isTrusted() == message.isTrusted()
+						((this.axolotlFingerprint == null && message.axolotlFingerprint == null) || this.axolotlFingerprint.equals(message.getFingerprint()))
 				);
 	}
 
@@ -811,8 +816,8 @@ public class Message extends AbstractEntity {
 	}
 
 	public boolean isTrusted() {
-		XmppAxolotlSession.Trust t = conversation.getAccount().getAxolotlService().getFingerprintTrust(axolotlFingerprint);
-		return t != null && t.trusted();
+		FingerprintStatus s = conversation.getAccount().getAxolotlService().getFingerprintTrust(axolotlFingerprint);
+		return s != null && s.isTrusted();
 	}
 
 	private  int getPreviousEncryption() {

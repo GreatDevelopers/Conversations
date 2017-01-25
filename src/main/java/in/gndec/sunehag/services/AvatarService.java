@@ -44,6 +44,9 @@ public class AvatarService implements OnAdvancedStreamFeaturesLoaded {
 	}
 
 	private Bitmap get(final Contact contact, final int size, boolean cachedOnly) {
+		if (contact.isSelf()) {
+			return get(contact.getAccount(),size,cachedOnly);
+		}
 		final String KEY = key(contact, size);
 		Bitmap avatar = this.mXmppConnectionService.getBitmapCache().get(KEY);
 		if (avatar != null || cachedOnly) {
@@ -169,7 +172,7 @@ public class AvatarService implements OnAdvancedStreamFeaturesLoaded {
 		if (bitmap != null || cachedOnly) {
 			return bitmap;
 		}
-		final List<MucOptions.User> users = mucOptions.getUsers();
+		final List<MucOptions.User> users = mucOptions.getUsers(5);
 		int count = users.size();
 		bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
 		Canvas canvas = new Canvas(bitmap);

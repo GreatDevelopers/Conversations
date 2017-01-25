@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.PowerManager;
+import android.os.SystemClock;
 import android.util.Log;
 import android.util.Pair;
 
@@ -22,6 +23,7 @@ import java.io.OutputStream;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.concurrent.atomic.AtomicLong;
 
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
@@ -35,6 +37,9 @@ import in.gndec.sunehag.entities.DownloadableFile;
 
 public class AbstractConnectionManager {
 	protected XmppConnectionService mXmppConnectionService;
+
+	private static final int UI_REFRESH_THRESHOLD = 250;
+	private static final AtomicLong LAST_UI_UPDATE_CALL = new AtomicLong(0);
 
 	public AbstractConnectionManager(XmppConnectionService service) {
 		this.mXmppConnectionService = service;
@@ -55,7 +60,7 @@ public class AbstractConnectionManager {
 	}
 
 	public boolean hasStoragePermission() {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+		if (!Config.ONLY_INTERNAL_STORAGE && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 			return mXmppConnectionService.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
 		} else {
 			return true;
@@ -133,6 +138,15 @@ public class AbstractConnectionManager {
 			return null;
 		} catch (InvalidAlgorithmParameterException e) {
 			return null;
+		}
+	}
+
+	public void updateConversationUi(boolean force) {
+		synchronized (LAST_UI_UPDATE_CALL) {
+			if (force || SystemClock.elapsedRealtime() - LAST_UI_UPDATE_CALL.get() >= UI_REFRESH_THRESHOLD) {
+				LAST_UI_UPDATE_CALL.set(SystemClock.elapsedRealtime());
+				mXmppConnectionService.updateConversationUi();
+			}
 		}
 	}
 
