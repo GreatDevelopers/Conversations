@@ -16,7 +16,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.zxing.integration.android.IntentIntegrator;
-import com.google.zxing.integration.android.IntentResult;
 
 import org.whispersystems.libaxolotl.IdentityKey;
 
@@ -28,10 +27,11 @@ import java.util.Map;
 import java.util.Set;
 
 import in.gndec.sunehag.Config;
-import in.gndec.sunehag.OmemoActivity;
+import in.gndec.sunehag.ui.OmemoActivity;
 import in.gndec.sunehag.R;
 import in.gndec.sunehag.crypto.axolotl.AxolotlService;
 import in.gndec.sunehag.crypto.axolotl.FingerprintStatus;
+
 import in.gndec.sunehag.entities.Account;
 import in.gndec.sunehag.entities.Conversation;
 import in.gndec.sunehag.utils.XmppUri;
@@ -162,6 +162,7 @@ public class TrustKeysActivity extends OmemoActivity implements OnKeyStatusUpdat
 			}
 		} else {
 			reloadFingerprints();
+
 			Log.d(Config.LOGTAG,"xmpp uri was: "+uri.getJid()+" has Fingerprints: "+Boolean.toString(uri.hasFingerprints()));
 			Toast.makeText(this,R.string.barcode_does_not_contain_fingerprints_for_this_conversation,Toast.LENGTH_SHORT).show();
 		}

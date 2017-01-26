@@ -43,7 +43,8 @@ public class SettingsActivity extends XmppActivity implements
 	public static final String AWAY_WHEN_SCREEN_IS_OFF = "away_when_screen_off";
 	public static final String TREAT_VIBRATE_AS_SILENT = "treat_vibrate_as_silent";
 	public static final String MANUALLY_CHANGE_PRESENCE = "manually_change_presence";
-	public static final String BLIND_TRUST_BEFORE_VERIFICATION = "blind_trust_before_verification";
+	public static final String BLIND_TRUST_BEFORE_VERIFICATION = "btbv";
+	public static final String AUTOMATIC_MESSAGE_DELETION = "automatic_message_deletion";
 
 	public static final int REQUEST_WRITE_LOGS = 0xbf8701;
 	private SettingsFragment mSettingsFragment;
@@ -372,6 +373,9 @@ public class SettingsActivity extends XmppActivity implements
 		} else if (name.equals("use_tor")) {
 			reconnectAccounts();
 		}*/
+		else if (name.equals(AUTOMATIC_MESSAGE_DELETION)) {
+			xmppConnectionService.expireOldMessages(true);
+		}
 
 	}
 

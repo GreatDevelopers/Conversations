@@ -75,7 +75,6 @@
                 android:layout_marginRight="16dp"
                 android:src="@drawable/ic_verified_fingerprint" />
 
-
             <in.gndec.sunehag.ui.widget.Switch
                 android:id="@+id/tgl_trust"
                 style="@style/MD"

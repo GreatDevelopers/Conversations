@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.IntentSender.SendIntentException;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -42,6 +43,9 @@ import in.gndec.sunehag.xmpp.jid.Jid;
 
 public class ConferenceDetailsActivity extends XmppActivity implements OnConversationUpdate, OnMucRosterUpdate, XmppConnectionService.OnAffiliationChanged, XmppConnectionService.OnRoleChanged, XmppConnectionService.OnConferenceOptionsPushed {
 	public static final String ACTION_VIEW_MUC = "view_muc";
+
+	private static final float INACTIVE_ALPHA = 0.4684f; //compromise between dark and light theme
+
 	private Conversation mConversation;
 	private OnClickListener inviteListener = new OnClickListener() {
 
@@ -587,7 +591,12 @@ public class ConferenceDetailsActivity extends XmppActivity implements OnConvers
 		membersView.removeAllViews();
 		final ArrayList<User> users = mucOptions.getUsers();
 		Collections.sort(users);
+		int i=0;
 		for (final User user : users) {
+			if(i>200){
+				break;
+			}
+			i=i+1;
 			View view = inflater.inflate(R.layout.contact, membersView,false);
 			this.setListItemBackgroundOnView(view);
 			view.setOnClickListener(new OnClickListener() {
@@ -624,6 +633,12 @@ public class ConferenceDetailsActivity extends XmppActivity implements OnConvers
 			}
 			ImageView iv = (ImageView) view.findViewById(R.id.contact_photo);
 			iv.setImageBitmap(avatarService().get(user, getPixel(48), false));
+			if (user.getRole() == MucOptions.Role.NONE) {
+				tvDisplayName.setAlpha(INACTIVE_ALPHA);
+				tvKey.setAlpha(INACTIVE_ALPHA);
+				tvStatus.setAlpha(INACTIVE_ALPHA);
+				iv.setAlpha(INACTIVE_ALPHA);
+			}
 			membersView.addView(view);
 			if (mConversation.getMucOptions().canInvite()) {
 				mInviteButton.setVisibility(View.VISIBLE);

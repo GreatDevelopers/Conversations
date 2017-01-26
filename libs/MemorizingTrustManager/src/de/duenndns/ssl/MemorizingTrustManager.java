@@ -34,6 +34,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Handler;
+
+import android.preference.PreferenceManager;
+
 import android.util.Base64;
 import android.util.Log;
 import android.util.SparseArray;
@@ -431,7 +434,8 @@ public class MemorizingTrustManager {
 				else
 					defaultTrustManager.checkClientTrusted(chain, authType);
 			} catch (CertificateException e) {
-				if (domain != null && isServer && !isIp(domain)) {
+				boolean trustSystemCAs = !PreferenceManager.getDefaultSharedPreferences(master).getBoolean("dont_trust_system_cas", false);
+				if (domain != null && isServer && trustSystemCAs && !isIp(domain)) {
 					String hash = getBase64Hash(chain[0],"SHA-256");
 					List<String> fingerprints = getPoshFingerprints(domain);
 					if (hash != null && fingerprints.contains(hash)) {
@@ -459,10 +463,14 @@ public class MemorizingTrustManager {
 	}
 
 	private List<String> getPoshFingerprintsFromServer(String domain) {
+		return getPoshFingerprintsFromServer(domain, "https://"+domain+"/.well-known/posh/xmpp-client.json",-1,true);
+	}
+
+	private List<String> getPoshFingerprintsFromServer(String domain, String url, int maxTtl, boolean followUrl) {
+		Log.d("mtm","downloading json for "+domain+" from "+url);
 		try {
 			List<String> results = new ArrayList<>();
-			URL url = new URL("https://"+domain+"/.well-known/posh/xmpp-client.json");
-			HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
+			HttpsURLConnection connection = (HttpsURLConnection) new URL(url).openConnection();
 			connection.setConnectTimeout(5000);
 			connection.setReadTimeout(5000);
 			BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
@@ -473,6 +481,22 @@ public class MemorizingTrustManager {
 			}
 			JSONObject jsonObject = new JSONObject(builder.toString());
 			in.close();
+			int expires = jsonObject.getInt("expires");
+			if (expires <= 0) {
+				return new ArrayList<>();
+			}
+			if (maxTtl >= 0) {
+				expires = Math.min(maxTtl,expires);
+			}
+			String redirect;
+			try {
+				redirect = jsonObject.getString("url");
+			} catch (JSONException e) {
+				redirect = null;
+			}
+			if (followUrl && redirect != null && redirect.toLowerCase().startsWith("https")) {
+				return getPoshFingerprintsFromServer(domain, redirect, expires, false);
+			}
 			JSONArray fingerprints = jsonObject.getJSONArray("fingerprints");
 			for(int i = 0; i < fingerprints.length(); i++) {
 				JSONObject fingerprint = fingerprints.getJSONObject(i);
@@ -481,11 +505,6 @@ public class MemorizingTrustManager {
 					results.add(sha256);
 				}
 			}
-			int expires = jsonObject.getInt("expires");
-			if (expires <= 0) {
-				return new ArrayList<>();
-			}
-			in.close();
 			writeFingerprintsToCache(domain, results,1000L * expires+System.currentTimeMillis());
 			return results;
 		} catch (Exception e) {

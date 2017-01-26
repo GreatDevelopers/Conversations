@@ -83,6 +83,8 @@ import in.gndec.sunehag.xmpp.OnKeyStatusUpdated;
 import in.gndec.sunehag.xmpp.OnUpdateBlocklist;
 import in.gndec.sunehag.xmpp.jid.InvalidJidException;
 import in.gndec.sunehag.xmpp.jid.Jid;
+import in.gndec.sunehag.services.BarcodeProvider;
+
 
 public abstract class XmppActivity extends Activity {
 

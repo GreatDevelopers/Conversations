@@ -23,6 +23,7 @@ import in.gndec.sunehag.Config;
 import in.gndec.sunehag.entities.Account;
 import in.gndec.sunehag.services.XmppConnectionService;
 
+
 public class SQLiteAxolotlStore implements AxolotlStore {
 
 	public static final String PREKEY_TABLENAME = "prekeys";

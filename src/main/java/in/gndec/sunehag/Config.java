@@ -37,7 +37,7 @@ public final class Config {
 	public static final String LOGTAG = "sunehaG";
 	
 	//FIXME: Change "YOURHOSTNAME" to the domain name at which you want to run this app
-	public static final String BUG_REPORTS = "sunehag@YOURHOSTNAME";
+	public static final String BUG_REPORTS = "sunehag@YOUR DOMAIN";
 
 	//FIXME: Change "YOUR DOMAIN" to the domain name at which you want to run this app
 	public static final String DOMAIN_LOCK = "YOUR DOMAIN"; //only allow account connection for this domain
@@ -93,6 +93,10 @@ public final class Config {
 	public static final long MILLISECONDS_IN_DAY = 24 * 60 * 60 * 1000;
 
 	public static final long OMEMO_AUTO_EXPIRY = 7 * MILLISECONDS_IN_DAY;
+	public static final boolean REMOVE_BROKEN_DEVICES = false;
+	public static final boolean OMEMO_PADDING = false;
+	public static boolean PUT_AUTH_TAG_INTO_KEY = false;
+
 
 	public static final boolean DISABLE_PROXY_LOOKUP = false; //useful to debug ibb
 	public static final boolean DISABLE_HTTP_UPLOAD = false;
@@ -104,8 +108,6 @@ public final class Config {
 	public static final boolean ENCRYPT_ON_HTTP_UPLOADED = false;
 
 	public static final boolean REPORT_WRONG_FILESIZE_IN_OTR_JINGLE = true;
-
-	public static final boolean SHOW_REGENERATE_AXOLOTL_KEYS_BUTTON = false;
 
 	public static final boolean X509_VERIFICATION = false; //use x509 certificates to verify OMEMO keys
 
@@ -119,10 +121,12 @@ public final class Config {
 	public static final int MAM_MAX_MESSAGES = 500;
 
 	public static final long FREQUENT_RESTARTS_DETECTION_WINDOW = 12 * 60 * 60 * 1000; // 10 hours
-	public static final long FREQUENT_RESTARTS_THRESHOLD = 16;
+	public static final long FREQUENT_RESTARTS_THRESHOLD = 0; // previous value was 16;
 
 	public static final ChatState DEFAULT_CHATSTATE = ChatState.ACTIVE;
 	public static final int TYPING_TIMEOUT = 8;
+
+	public static final int EXPIRY_INTERVAL = 30 * 60 * 1000; // 30 minutes
 
 	public static final String ENABLED_CIPHERS[] = {
 		"TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",

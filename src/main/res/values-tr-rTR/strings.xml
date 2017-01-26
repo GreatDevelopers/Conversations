@@ -232,7 +232,7 @@
   <string name="fetching_keys">Anahtarları alıyor…</string>
   <string name="done">Tamam</string>
   <string name="verify">Doğrula</string>
-  <string name="decrypt">Deşifre et</string>
+  <string name="decrypt">Şifreyi çöz</string>
   <string name="conferences">Toplantılar</string>
   <string name="search">Ara</string>
   <string name="create_contact">Kişi Oluştur</string>
@@ -278,7 +278,7 @@
   <string name="additional_information">Ek bilgi</string>
   <string name="skip">Atla</string>
   <string name="disable_notifications">Bildirimleri kapat</string>
-  <string name="disable_notifications_for_this_conversation">Bu sohbet için bildirimleri kapat</string>
+  <string name="disable_notifications_for_this_conversation">Bu konuşma için bildirimleri kapat</string>
   <string name="enable">Etkinleştir</string>
   <string name="conference_requires_password">Toplantı için parola gerekiyor</string>
   <string name="enter_password">Parolayı gir</string>
@@ -332,6 +332,7 @@
   <string name="message_options">İleti seçenekleri</string>
   <string name="copy_text">Metni kopyala</string>
   <string name="select_text">Metni seç</string>
+  <string name="quote">Alıntı</string>
   <string name="copy_original_url">Orijinal URL\'i kopyala</string>
   <string name="send_again">Yeniden gönder</string>
   <string name="file_url">Dosya URL</string>
@@ -396,9 +397,6 @@
   <string name="wipe_omemo_pep">PEP’teki diğer aygıtları sil</string>
   <string name="clear_other_devices">Aygıtları sil</string>
   <string name="clear_other_devices_desc">OMEMO bildirimindeki diğer aygıtların hepsini silmek istediğinizden emin misiniz? Aygıtlarınız yeniden bağlandıklarında kendilerini yeniden bildirecekler ama bu süre zarfındaki iletileri alamayabilirler.</string>
-  <string name="purge_key">Anahtarı sil</string>
-  <string name="purge_key_desc_part1">Bu anahtarı silmek istediğinizden emin misiniz?</string>
-  <string name="purge_key_desc_part2">Anahtar geri dönüşü olmayacak şekilde zedelenmiş kabul edilecek bir daha onunla bir oturum başlatamayacaksınız.</string>
   <string name="error_no_keys_to_trust_server_error">Bu kişi için kullanılabilr anahtar mevcut değil\nSunucudan yeni anahtarlar alınamadı. Sunucunuzla ilgili bir sorun olabilir.</string>
   <string name="error_no_keys_to_trust">Bu kişi için kullanılabilecek bir anahtar bulunmuyor. Eğer anahtarlarını sildiyseniz, yeni anahtar oluşturmaları gerekiyor.</string>
   <string name="error_trustkeys_title">Hata</string>
@@ -479,7 +477,7 @@
   <string name="no_application_found_to_display_location">Yer bildirimi için bir uygulama bulunamadı</string>
   <string name="location">Yer</string>
   <string name="received_location">Bildirilen yer</string>
-  <string name="title_undo_swipe_out_conversation">Sohbet sonlandı</string>
+  <string name="title_undo_swipe_out_conversation">Konuşma sonlandı</string>
   <string name="title_undo_swipe_out_muc">Toplantıdan ayrıldı</string>
   <string name="pref_dont_trust_system_cas_title">Sistem sertifikalarına güvenmeyin</string>
   <string name="pref_dont_trust_system_cas_summary">Tüm sertifikalar bizzat onaylanmalıdır</string>
@@ -562,7 +560,7 @@
   <string name="shared_text_with_x">%s ile paylaşılan metin</string>
   <string name="no_storage_permission">Conversations’ın harici depolama alanına erişmesi gerek </string>
   <string name="sync_with_contacts">Kişilerle senkronize et</string>
-  <string name="sync_with_contacts_long">Conversations XMPP listenizi telefon rehberinizle eşleştirerek kişilerin tam isimlerini ve avatarlarını göstermek istiyor.\n\nConversations telefon rehberinizi yalnızca okuyacak ve onları sunucunuza yüklemeden eşleştirecek.\n\nŞimdi telefon rehberinize erişilmesine izin vermeniz istenecek.</string>
+  <string name="sync_with_contacts_long">Conversations XMPP listenizi telefon rehberinizle eşleştirerek kişilerin tam adlarını ve avatarlarını göstermek istiyor.\n\nConversations telefon rehberinizi yalnızca okuyacak ve onları sunucunuza yüklemeden eşleştirecek.\n\nŞimdi telefon rehberinize erişilmesine izin vermeniz istenecek.</string>
   <string name="certificate_information">Sertifika Bilgisi</string>
   <string name="certificate_subject">Konu</string>
   <string name="certificate_issuer">Veren</string>
@@ -605,7 +603,7 @@
   <string name="change_presence">Durum Değiştir</string>
   <string name="status_message">Durum iletisi</string>
   <string name="all_accounts_on_this_device">Bu aygıttaki tüm hesaplara uygula</string>
-  <string name="presence_chat">Sohbet için uygun</string>
+  <string name="presence_chat">Konuşmak için uygun</string>
   <string name="presence_online">Çevrim içi</string>
   <string name="presence_away">Uzakta</string>
   <string name="presence_xa">Mevcut Değil</string>
@@ -676,4 +674,15 @@
   <string name="blindly_trusted_omemo_keys">Körü körüne güvenilen OMEMO anahtarları</string>
   <string name="not_trusted">Güvenilmeyen</string>
   <string name="invalid_barcode">Geçersiz 2D barkod</string>
+  <string name="pref_clean_cache_summary">Önbellek dizinini temizle (Kamera uygulamasının kullandığı)</string>
+  <string name="pref_clean_cache">Önbelleği temizle</string>
+  <string name="pref_clean_private_storage">Özel depolama alanını temizle</string>
+  <string name="pref_clean_private_storage_summary">Dosyaların tutulduğu özel depolama alanını temizle (Sunucu üzerinden tekrar indirilebilir)</string>
+  <string name="i_followed_this_link_from_a_trusted_source">Bu bağlantıyı güvenilir bir kaynaktan takip ettim</string>
+  <string name="verifying_omemo_keys_trusted_source">Bir bağlantıyı tıkladıktan sonra %1$s in OMEMO anahtarını doğrulamış olacaksınız.  Bu yalnızca  bağlantının %2$s  tarafından yayınladığından eminseniz güvenlidir.</string>
+  <string name="verify_omemo_keys">OMEMO anahtarlarını doğrula</string>
+  <string name="show_inactive_devices">Aktif olmayan cihazları göster</string>
+  <string name="hide_inactive_devices">Aktif olmayan cihazları gizle</string>
+  <string name="distrust_omemo_key">Güvensiz aygıt</string>
+  <string name="distrust_omemo_key_text">Bu cihazın doğrulamasını kaldırmak istediğinizden emin misiniz? \ Bu cihaz ve cihazdan gelen mesajlar güvenilmez olarak işaretlenecektir.</string>
 </resources>

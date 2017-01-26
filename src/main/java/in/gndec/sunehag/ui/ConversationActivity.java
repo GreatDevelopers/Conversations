@@ -99,6 +99,7 @@ public class ConversationActivity extends XmppActivity
 
 	private String mOpenConversation = null;
 	private boolean mPanelOpen = true;
+	private AtomicBoolean mShouldPanelBeOpen = new AtomicBoolean(false);
 	private Pair<Integer,Integer> mScrollPosition = null;
 	final private List<Uri> mPendingImageUris = new ArrayList<>();
 	final private List<Uri> mPendingFileUris = new ArrayList<>();
@@ -134,6 +135,7 @@ public class ConversationActivity extends XmppActivity
 	public void showConversationsOverview() {
 		if (mContentView instanceof SlidingPaneLayout) {
 			SlidingPaneLayout mSlidingPaneLayout = (SlidingPaneLayout) mContentView;
+			mShouldPanelBeOpen.set(true);
 			mSlidingPaneLayout.openPane();
 		}
 	}
@@ -151,6 +153,7 @@ public class ConversationActivity extends XmppActivity
 	public void hideConversationsOverview() {
 		if (mContentView instanceof SlidingPaneLayout) {
 			SlidingPaneLayout mSlidingPaneLayout = (SlidingPaneLayout) mContentView;
+			mShouldPanelBeOpen.set(false);
 			mSlidingPaneLayout.closePane();
 		}
 	}
@@ -161,8 +164,7 @@ public class ConversationActivity extends XmppActivity
 
 	public boolean isConversationsOverviewVisable() {
 		if (mContentView instanceof SlidingPaneLayout) {
-			SlidingPaneLayout mSlidingPaneLayout = (SlidingPaneLayout) mContentView;
-			return mSlidingPaneLayout.isOpen();
+			return mShouldPanelBeOpen.get();
 		} else {
 			return true;
 		}
@@ -296,26 +298,25 @@ public class ConversationActivity extends XmppActivity
 		}
 		if (mContentView instanceof SlidingPaneLayout) {
 			SlidingPaneLayout mSlidingPaneLayout = (SlidingPaneLayout) mContentView;
-			mSlidingPaneLayout.setParallaxDistance(150);
-			mSlidingPaneLayout
-					.setShadowResource(R.drawable.es_slidingpane_shadow);
+			mSlidingPaneLayout.setShadowResource(R.drawable.es_slidingpane_shadow);
 			mSlidingPaneLayout.setSliderFadeColor(0);
 			mSlidingPaneLayout.setPanelSlideListener(new PanelSlideListener() {
 
 				@Override
 				public void onPanelOpened(View arg0) {
+					mShouldPanelBeOpen.set(true);
 					updateActionBarTitle();
 					invalidateOptionsMenu();
 					hideKeyboard();
 					if (xmppConnectionServiceBound) {
-						xmppConnectionService.getNotificationService()
-								.setOpenConversation(null);
+						xmppConnectionService.getNotificationService().setOpenConversation(null);
 					}
 					closeContextMenu();
 				}
 
 				@Override
 				public void onPanelClosed(View arg0) {
+					mShouldPanelBeOpen.set(false);
 					listView.discardUndo();
 					openConversation();
 				}
@@ -971,7 +972,7 @@ public class ConversationActivity extends XmppActivity
 		if (!isConversationsOverviewVisable()) {
 			showConversationsOverview();
 		} else {
-			moveTaskToBack(true);
+			super.onBackPressed();
 		}
 	}
 
@@ -993,6 +994,7 @@ public class ConversationActivity extends XmppActivity
 				upKey = KeyEvent.KEYCODE_DPAD_RIGHT;
 				downKey = KeyEvent.KEYCODE_DPAD_LEFT;
 				break;
+			case Surface.ROTATION_0:
 			default:
 				upKey = KeyEvent.KEYCODE_DPAD_UP;
 				downKey = KeyEvent.KEYCODE_DPAD_DOWN;
@@ -1268,6 +1270,11 @@ public class ConversationActivity extends XmppActivity
 		if (!ExceptionHelper.checkForCrash(this, this.xmppConnectionService)) {
 			openBatteryOptimizationDialogIfNeeded();
 		}
+		if (isConversationsOverviewVisable() && isConversationsOverviewHideable()) {
+			xmppConnectionService.getNotificationService().setOpenConversation(null);
+		} else {
+			xmppConnectionService.getNotificationService().setOpenConversation(getSelectedConversation());
+		}
 	}
 
 	private void handleViewConversationIntent(final Intent intent) {
@@ -1500,7 +1507,7 @@ public class ConversationActivity extends XmppActivity
 	private boolean hasAccountWithoutPush() {
 		for(Account account : xmppConnectionService.getAccounts()) {
 			if (account.getStatus() != Account.State.DISABLED
-					&& !xmppConnectionService.getPushManagementService().available(account)) {
+					&& !xmppConnectionService.getPushManagementService().availableAndUseful(account)) {
 				return true;
 			}
 		}
@@ -1536,9 +1543,26 @@ public class ConversationActivity extends XmppActivity
 		}
 		final Toast prepareFileToast = Toast.makeText(getApplicationContext(),getText(R.string.preparing_file), Toast.LENGTH_LONG);
 		prepareFileToast.show();
-		xmppConnectionService.attachFileToConversation(conversation, uri, new UiCallback<Message>() {
+		xmppConnectionService.attachFileToConversation(conversation, uri, new UiInformableCallback<Message>() {
+			@Override
+			public void inform(final String text) {
+				hidePrepareFileToast(prepareFileToast);
+				runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						replaceToast(text);
+					}
+				});
+			}
+
 			@Override
 			public void success(Message message) {
+				runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						hideToast();
+					}
+				});
 				hidePrepareFileToast(prepareFileToast);
 				xmppConnectionService.sendMessage(message);
 			}
@@ -1560,6 +1584,10 @@ public class ConversationActivity extends XmppActivity
 				hidePrepareFileToast(prepareFileToast);
 			}
 		});
+	}
+
+	public void attachImageToConversation(Uri uri) {
+		this.attachImageToConversation(getSelectedConversation(), uri);
 	}
 
 	private void attachImageToConversation(Conversation conversation, Uri uri) {
@@ -1758,12 +1786,5 @@ public class ConversationActivity extends XmppActivity
 
 	public boolean highlightSelectedConversations() {
 		return !isConversationsOverviewHideable() || this.conversationWasSelectedByKeyboard;
-	}
-
-	public void setMessagesLoaded() {
-		if (mConversationFragment != null) {
-			mConversationFragment.setMessagesLoaded();
-			mConversationFragment.updateMessages();
-		}
 	}
 }

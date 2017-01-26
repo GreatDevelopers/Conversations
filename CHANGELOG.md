@@ -1,5 +1,16 @@
 ###Changelog
 
+####Version 0.8
+* show nick as bold text when mentioned in conference
+* show offline contacts in MUC as grayed-out
+* don't transcode gifs. add overlay indication to gifs
+* bug fixes
+* support for POSH (RFC7711)
+* support for quoting messages (via select text)
+* verified messages show shield icon. unverified messages show lock
+* New [Blind Trust Before Verification](https://gultsch.de/trust.html) mode
+* Easily share Barcode and XMPP uri from Account details
+
 ####Version 0.7
 * Custom DNS Server added
 * Terms and Conditions Added
