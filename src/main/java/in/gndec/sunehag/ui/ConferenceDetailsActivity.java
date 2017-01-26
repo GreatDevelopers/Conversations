@@ -54,6 +54,26 @@ public class ConferenceDetailsActivity extends XmppActivity implements OnConvers
 			inviteToConversation(mConversation);
 		}
 	};
+
+	private OnClickListener nextListener = new OnClickListener() {
+
+		@Override
+		public void onClick(View v) {
+			pageNumber=pageNumber+1;
+			getUsers();
+			UpdatePageNumber();
+		}
+	};
+	private OnClickListener previousListener = new OnClickListener() {
+
+		@Override
+		public void onClick(View v) {
+			pageNumber=pageNumber-1;
+			getUsers();
+			UpdatePageNumber();
+		}
+	};
+
 	private TextView mYourNick;
 	private ImageView mYourPhoto;
 	private ImageButton mEditNickButton;
@@ -69,7 +89,11 @@ public class ConferenceDetailsActivity extends XmppActivity implements OnConvers
 	private ImageButton mChangeConferenceSettingsButton;
 	private ImageButton mNotifyStatusButton;
 	private Button mInviteButton;
+	private Button mPrevious;
+	private Button nextMembers;
 	private String uuid = null;
+	private int pageNumber=0;
+	private int Usersize;
 	private User mSelectedUser = null;
 
 	private boolean mAdvancedMode = false;
@@ -238,6 +262,10 @@ public class ConferenceDetailsActivity extends XmppActivity implements OnConvers
 		mEditNickButton = (ImageButton) findViewById(R.id.edit_nick_button);
 		mFullJid = (TextView) findViewById(R.id.muc_jabberid);
 		membersView = (LinearLayout) findViewById(R.id.muc_members);
+		nextMembers= (Button) findViewById(R.id.next);
+		mPrevious = (Button) findViewById(R.id.previous);
+		nextMembers.setOnClickListener(nextListener);
+		mPrevious.setOnClickListener(previousListener);
 		mAccountJid = (TextView) findViewById(R.id.details_account);
 		mMoreDetails = (LinearLayout) findViewById(R.id.muc_more_details);
 		mMoreDetails.setVisibility(View.GONE);
@@ -459,6 +487,7 @@ public class ConferenceDetailsActivity extends XmppActivity implements OnConvers
 			case R.id.invite:
 				xmppConnectionService.directInvite(mConversation, jid);
 				return true;
+
 			default:
 				return super.onContextItemSelected(item);
 		}
@@ -586,17 +615,36 @@ public class ConferenceDetailsActivity extends XmppActivity implements OnConvers
 			mNotifyStatusButton.setImageResource(ic_notifications_none);
 			mNotifyStatusText.setText(R.string.notify_only_when_highlighted);
 		}
+		getUsers();
+		UpdatePageNumber();
+	}
 
+	private void UpdatePageNumber(){
+
+		if( pageNumber==0 && pageNumber+1*200>Usersize){
+			nextMembers.setVisibility(View.GONE);
+			mPrevious.setVisibility(View.GONE);
+		} else if (pageNumber!=0 && (pageNumber+1)*200<Usersize){
+			nextMembers.setVisibility(View.VISIBLE);
+			mPrevious.setVisibility(View.VISIBLE);
+		} else if (pageNumber ==0 && (pageNumber+1)*200<Usersize){
+			nextMembers.setVisibility(View.VISIBLE);
+			mPrevious.setVisibility(View.GONE);
+		} else if (pageNumber!=0 && (pageNumber+1)*200>Usersize){
+			nextMembers.setVisibility(View.GONE);
+			mPrevious.setVisibility(View.VISIBLE);
+		}
+	}
+
+	private void getUsers(){
+		final MucOptions mucOptions = mConversation.getMucOptions();
 		LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		membersView.removeAllViews();
 		final ArrayList<User> users = mucOptions.getUsers();
 		Collections.sort(users);
-		int i=0;
-		for (final User user : users) {
-			if(i>200){
-				break;
-			}
-			i=i+1;
+		Usersize=users.size();
+		for (int j= pageNumber*200; j<(pageNumber+1)*200 && j<Usersize; j++) {
+			final User user=users.get(j);
 			View view = inflater.inflate(R.layout.contact, membersView,false);
 			this.setListItemBackgroundOnView(view);
 			view.setOnClickListener(new OnClickListener() {
