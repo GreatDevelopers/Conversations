@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import org.bouncycastle.math.ec.PreCompInfo;
 import org.whispersystems.libaxolotl.AxolotlAddress;
 import org.whispersystems.libaxolotl.DuplicateMessageException;
 import org.whispersystems.libaxolotl.IdentityKey;
@@ -18,14 +19,11 @@ import org.whispersystems.libaxolotl.UntrustedIdentityException;
 import org.whispersystems.libaxolotl.protocol.CiphertextMessage;
 import org.whispersystems.libaxolotl.protocol.PreKeyWhisperMessage;
 import org.whispersystems.libaxolotl.protocol.WhisperMessage;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import in.gndec.sunehag.Config;
 import in.gndec.sunehag.entities.Account;
+import org.whispersystems.libaxolotl.util.guava.Optional;
 
-public class XmppAxolotlSession {
+
+public class XmppAxolotlSession implements Comparable<XmppAxolotlSession> {
 	private final SessionCipher cipher;
 	private final SQLiteAxolotlStore sqLiteAxolotlStore;
 	private final AxolotlAddress remoteAddress;
@@ -33,76 +31,6 @@ public class XmppAxolotlSession {
 	private IdentityKey identityKey;
 	private Integer preKeyId = null;
 	private boolean fresh = true;
-
-	public enum Trust {
-		UNDECIDED(0),
-		TRUSTED(1),
-		UNTRUSTED(2),
-		COMPROMISED(3),
-		INACTIVE_TRUSTED(4),
-		INACTIVE_UNDECIDED(5),
-		INACTIVE_UNTRUSTED(6),
-		TRUSTED_X509(7),
-		INACTIVE_TRUSTED_X509(8);
-
-		private static final Map<Integer, Trust> trustsByValue = new HashMap<>();
-
-		static {
-			for (Trust trust : Trust.values()) {
-				trustsByValue.put(trust.getCode(), trust);
-			}
-		}
-
-		private final int code;
-
-		Trust(int code) {
-			this.code = code;
-		}
-
-		public int getCode() {
-			return this.code;
-		}
-
-		public String toString() {
-			switch (this) {
-				case UNDECIDED:
-					return "Trust undecided " + getCode();
-				case TRUSTED:
-					return "Trusted " + getCode();
-				case COMPROMISED:
-					return "Compromised " + getCode();
-				case INACTIVE_TRUSTED:
-					return "Inactive (Trusted)" + getCode();
-				case INACTIVE_UNDECIDED:
-					return "Inactive (Undecided)" + getCode();
-				case INACTIVE_UNTRUSTED:
-					return "Inactive (Untrusted)" + getCode();
-				case TRUSTED_X509:
-					return "Trusted (X509) " + getCode();
-				case INACTIVE_TRUSTED_X509:
-					return "Inactive (Trusted (X509)) " + getCode();
-				case UNTRUSTED:
-				default:
-					return "Untrusted " + getCode();
-			}
-		}
-
-		public static Trust fromBoolean(Boolean trusted) {
-			return trusted ? TRUSTED : UNTRUSTED;
-		}
-
-		public static Trust fromCode(int code) {
-			return trustsByValue.get(code);
-		}
-
-		public boolean trusted() {
-			return this == TRUSTED_X509 || this == TRUSTED;
-		}
-
-		public boolean trustedInactive() {
-			return this == INACTIVE_TRUSTED_X509 || this == INACTIVE_TRUSTED;
-		}
-	}
 
 	public XmppAxolotlSession(Account account, SQLiteAxolotlStore store, AxolotlAddress remoteAddress, IdentityKey identityKey) {
 		this(account, store, remoteAddress);
@@ -145,79 +73,86 @@ public class XmppAxolotlSession {
 		this.fresh = false;
 	}
 
-	protected void setTrust(Trust trust) {
-		sqLiteAxolotlStore.setFingerprintTrust(getFingerprint(), trust);
+	protected void setTrust(FingerprintStatus status) {
+		sqLiteAxolotlStore.setFingerprintStatus(getFingerprint(), status);
 	}
 
-	protected Trust getTrust() {
-		Trust trust = sqLiteAxolotlStore.getFingerprintTrust(getFingerprint());
-		return (trust == null) ? Trust.UNDECIDED : trust;
+	public FingerprintStatus getTrust() {
+		FingerprintStatus status = sqLiteAxolotlStore.getFingerprintStatus(getFingerprint());
+		return (status == null) ? FingerprintStatus.createActiveUndecided() : status;
 	}
 
 	@Nullable
-	public byte[] processReceiving(byte[] encryptedKey) {
-		byte[] plaintext = null;
-		Trust trust = getTrust();
-		switch (trust) {
-			case INACTIVE_TRUSTED:
-			case UNDECIDED:
-			case UNTRUSTED:
-			case TRUSTED:
-			case INACTIVE_TRUSTED_X509:
-			case TRUSTED_X509:
+	public byte[] processReceiving(AxolotlKey encryptedKey) throws CryptoFailedException {
+		byte[] plaintext;
+		FingerprintStatus status = getTrust();
+		if (!status.isCompromised()) {
+			try {
+				CiphertextMessage ciphertextMessage;
 				try {
-					try {
-						PreKeyWhisperMessage message = new PreKeyWhisperMessage(encryptedKey);
-						if (!message.getPreKeyId().isPresent()) {
-							Log.w(Config.LOGTAG, AxolotlService.getLogprefix(account) + "PreKeyWhisperMessage did not contain a PreKeyId");
-							break;
-						}
-						Log.i(Config.LOGTAG, AxolotlService.getLogprefix(account) + "PreKeyWhisperMessage received, new session ID:" + message.getSignedPreKeyId() + "/" + message.getPreKeyId());
-						IdentityKey msgIdentityKey = message.getIdentityKey();
-						if (this.identityKey != null && !this.identityKey.equals(msgIdentityKey)) {
-							Log.e(Config.LOGTAG, AxolotlService.getLogprefix(account) + "Had session with fingerprint " + this.getFingerprint() + ", received message with fingerprint " + msgIdentityKey.getFingerprint());
-						} else {
-							this.identityKey = msgIdentityKey;
-							plaintext = cipher.decrypt(message);
-							preKeyId = message.getPreKeyId().get();
-						}
-					} catch (InvalidMessageException | InvalidVersionException e) {
-						Log.i(Config.LOGTAG, AxolotlService.getLogprefix(account) + "WhisperMessage received");
-						WhisperMessage message = new WhisperMessage(encryptedKey);
-						plaintext = cipher.decrypt(message);
-					} catch (InvalidKeyException | InvalidKeyIdException | UntrustedIdentityException e) {
-						Log.w(Config.LOGTAG, AxolotlService.getLogprefix(account) + "Error decrypting axolotl header, " + e.getClass().getName() + ": " + e.getMessage());
+					ciphertextMessage = new PreKeyWhisperMessage(encryptedKey.key);
+					Optional<Integer> optionalPreKeyId = ((PreKeyWhisperMessage) ciphertextMessage).getPreKeyId();
+					IdentityKey identityKey = ((PreKeyWhisperMessage) ciphertextMessage).getIdentityKey();
+					if (!optionalPreKeyId.isPresent()) {
+						throw new CryptoFailedException("PreKeyWhisperMessage did not contain a PreKeyId");
 					}
-				} catch (LegacyMessageException | InvalidMessageException | DuplicateMessageException | NoSessionException e) {
-					Log.w(Config.LOGTAG, AxolotlService.getLogprefix(account) + "Error decrypting axolotl header, " + e.getClass().getName() + ": " + e.getMessage());
-				}
-
-				if (plaintext != null) {
-					if (trust == Trust.INACTIVE_TRUSTED) {
-						setTrust(Trust.TRUSTED);
-					} else if (trust == Trust.INACTIVE_TRUSTED_X509) {
-						setTrust(Trust.TRUSTED_X509);
+					preKeyId = optionalPreKeyId.get();
+					if (this.identityKey != null && !this.identityKey.equals(identityKey)) {
+						throw new CryptoFailedException("Received PreKeyWhisperMessage but preexisting identity key changed.");
 					}
+					this.identityKey = identityKey;
+				} catch (InvalidVersionException | InvalidMessageException e) {
+					ciphertextMessage = new WhisperMessage(encryptedKey.key);
 				}
-
-				break;
-
-			case COMPROMISED:
-			default:
-				// ignore
-				break;
+				if (ciphertextMessage instanceof PreKeyWhisperMessage) {
+					plaintext = cipher.decrypt((PreKeyWhisperMessage) ciphertextMessage);
+				} else {
+					plaintext = cipher.decrypt((WhisperMessage) ciphertextMessage);
+				}
+			} catch (InvalidKeyException | LegacyMessageException | InvalidMessageException | DuplicateMessageException | NoSessionException | InvalidKeyIdException | UntrustedIdentityException e) {
+				if (!(e instanceof DuplicateMessageException)) {
+					e.printStackTrace();
+				}
+				throw new CryptoFailedException("Error decrypting WhisperMessage " + e.getClass().getSimpleName() + ": " + e.getMessage());
+			}
+			if (!status.isActive()) {
+				setTrust(status.toActive());
+			}
+		} else {
+			throw new CryptoFailedException("not encrypting omemo message from fingerprint "+getFingerprint()+" because it was marked as compromised");
 		}
 		return plaintext;
 	}
 
 	@Nullable
-	public byte[] processSending(@NonNull byte[] outgoingMessage) {
-		Trust trust = getTrust();
-		if (trust.trusted()) {
+	public AxolotlKey processSending(@NonNull byte[] outgoingMessage) {
+		FingerprintStatus status = getTrust();
+		if (status.isTrustedAndActive()) {
 			CiphertextMessage ciphertextMessage = cipher.encrypt(outgoingMessage);
-			return ciphertextMessage.serialize();
+			return new AxolotlKey(ciphertextMessage.serialize(),ciphertextMessage.getType() == CiphertextMessage.PREKEY_TYPE);
 		} else {
 			return null;
+		}
+	}
+
+	public Account getAccount() {
+		return account;
+	}
+
+	@Override
+	public int compareTo(XmppAxolotlSession o) {
+		return getTrust().compareTo(o.getTrust());
+	}
+
+	public static class AxolotlKey {
+
+
+		public final byte[] key;
+		public final boolean prekey;
+
+		public AxolotlKey(byte[] key, boolean prekey) {
+			this.key = key;
+			this.prekey = prekey;
 		}
 	}
 }

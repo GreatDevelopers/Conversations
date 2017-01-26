@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:weightSum="1">
+
+        <TextView
+            android:text="No registration Required\nLogin via Your College ID and Password"
+            android:layout_width="match_parent"
+            android:layout_height="61dp"
+            android:id="@+id/intro_title_1"
+            android:gravity="center_vertical|center_horizontal"
+            android:fontFamily="sans-serif"
+            android:textColor="@color/background_floating_material_light"
+            android:textSize="@dimen/abc_text_size_title_material" />
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/intro_image_1"
+            android:src="@drawable/screenshot_nexus5x_login"
+            android:scaleType="centerCrop"
+            android:paddingBottom="@dimen/abc_action_bar_icon_vertical_padding_material" />
+    </LinearLayout>
+</RelativeLayout>

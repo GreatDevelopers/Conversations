@@ -122,7 +122,7 @@
   <string name="pref_never_send_crash">Nunca informar de errores</string>
   <string name="pref_never_send_crash_summary">Si envías registros de error ayudas al desarrollo de Conversations</string>
   <string name="pref_confirm_messages">Confirmar mensajes</string>
-  <string name="pref_confirm_messages_summary">Permitir a tus contactos saber cuando recibes y lees un mensaje</string>
+  <string name="pref_confirm_messages_summary">Permitir a tus contactos saber cuando has recibido y leído sus mensajes</string>
   <string name="pref_ui_options">Pantalla</string>
   <string name="openpgp_error">OpenKeychain reportó un error</string>
   <string name="error_decrypting_file">Error descifrando archivo</string>
@@ -331,6 +331,7 @@
   <string name="check_x_filesize_on_host">Comprobar tamaño de %1$s en %2$s</string>
   <string name="message_options">Opciones de mensaje</string>
   <string name="copy_text">Copiar texto</string>
+  <string name="select_text">Seleccionar texto</string>
   <string name="copy_original_url">Copiar URL original</string>
   <string name="send_again">Volver a enviar</string>
   <string name="file_url">URL de archivo</string>
@@ -379,7 +380,7 @@
   <string name="no_application_found_to_open_file">No se ha encontrado ninguna aplicación para abrir el archivo</string>
   <string name="could_not_verify_fingerprint">No se puede verificar el contacto</string>
   <string name="manually_verify">Verificar manualmente</string>
-  <string name="are_you_sure_verify_fingerprint">¿Estás seguro de que quieres verificar el contacto?</string>
+  <string name="are_you_sure_verify_fingerprint">¿Estás seguro de que quieres verificar la huella digital OTR de tu contacto?</string>
   <string name="pref_show_dynamic_tags">Mostrar etiquetas</string>
   <string name="pref_show_dynamic_tags_summary">Mostrar información en forma de etiquetas debajo de los contactos</string>
   <string name="enable_notifications">Habilitar notificaciones</string>
@@ -395,9 +396,6 @@
   <string name="wipe_omemo_pep">Limpiar otros dispositivos de PEP</string>
   <string name="clear_other_devices">Limpiar dispositivos</string>
   <string name="clear_other_devices_desc">¿Estás seguro de que quieres limpiar todos los otros dispositivos del anuncio OMEMO? La próxima vez que tus dispositivos conecten, tendrán que volver a anunciarse, pero estos podrían no recibir los mensajes enviados durante el proceso.</string>
-  <string name="purge_key">Eliminar clave</string>
-  <string name="purge_key_desc_part1">¿Estás seguro de que quieres eliminar esta clave?</string>
-  <string name="purge_key_desc_part2">Esto será irreversible y nunca podrás iniciar sesión con esta clave de nuevo.</string>
   <string name="error_no_keys_to_trust_server_error">No hay claves usables disponibles para este contacto. La búsqueda de nuevas claves al servidor ha fallado. Puede que exista un problema con el servidor de tus contactos.</string>
   <string name="error_no_keys_to_trust">No hay claves usables disponibles para este contacto. Si has eliminado alguna de sus claves, tus contactos necesitarán generar nuevas claves.</string>
   <string name="error_trustkeys_title">Error</string>
@@ -472,7 +470,7 @@
   <string name="contact_is_typing">%s está escribiendo...</string>
   <string name="contact_has_stopped_typing">%s ha dejado de escribir</string>
   <string name="pref_chat_states">Notificación de escritura</string>
-  <string name="pref_chat_states_summary">Permitir a tus contactos saber cuando estás escribiendo un nuevo mensaje</string>
+  <string name="pref_chat_states_summary">Permitir a tus contactos saber cuando estás escribiendo un mensaje</string>
   <string name="send_location">Enviar ubicación</string>
   <string name="show_location">Mostrar ubicación</string>
   <string name="no_application_found_to_display_location">No se ha encontrado ninguna aplicación para mostrar la ubicación</string>
@@ -660,4 +658,22 @@
   <string name="pref_delete_omemo_identities_summary">Regenerar tus clave OMEMO. Todos tus contactos tendrán que verificarte de nuevo. Usa esta opción como último recurso.</string>
   <string name="delete_selected_keys">Eliminar claves seleccionadas</string>
   <string name="error_publish_avatar_offline">Debes estar conectado para publicar la imagen de perfil</string>
+  <string name="show_error_message">Mostrar mensaje de error</string>
+  <string name="error_message">Mensaje de error</string>
+  <string name="data_saver_enabled">Optimización de datos habilitado</string>
+  <string name="data_saver_enabled_explained">Tu sistema operativo está restringiendo a Conversations acceder a internet cuando está en segundo plano. Para recibir notificaciones de nuevos mensajes deberías permitir a Conversations acceder a internet cuando la optimización de datos está habilitada.\nConversations realizará igualmente optimizaciones para ahorrar datos cuando sea posible.</string>
+  <string name="device_does_not_support_data_saver">Tu dispositivo no soporta la opción de deshabilitar la optimización de datos para Conversations</string>
+  <string name="error_unable_to_create_temporary_file">No se ha podido crear el fichero temporal</string>
+  <string name="this_device_has_been_verified">Este dispositivo ha sido verificado</string>
+  <string name="copy_fingerprint">Copiar huella digital</string>
+  <string name="all_omemo_keys_have_been_verified">Todas las huellas digitales OMEMO han sido verificadas</string>
+  <string name="barcode_does_not_contain_fingerprints_for_this_conversation">El código QR no contiene huellas digitales para esta conversación.</string>
+  <string name="verified_fingerprints">Huellas digitales verificadas</string>
+  <string name="use_camera_icon_to_scan_barcode">Usa la cámara para escanear el código QR del contacto</string>
+  <string name="please_wait_for_keys_to_be_fetched">Por favor, espera a que las claves sean recuperadas</string>
+  <string name="pref_blind_trust_before_verification">Confianza ciega antes de verificación</string>
+  <string name="pref_blind_trust_before_verification_summary">Automáticamente confiar en los nuevos dispositivos de tus contactos que no han sido verificados todavía, y solicitar confirmación manual cada vez que un contacto verificado añade un dispositivo nuevo.</string>
+  <string name="blindly_trusted_omemo_keys">Huellas digitales OMEMO de confianza ciega</string>
+  <string name="not_trusted">No confiables</string>
+  <string name="invalid_barcode">Código QR inválido</string>
 </resources>

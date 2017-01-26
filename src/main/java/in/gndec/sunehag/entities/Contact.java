@@ -121,7 +121,7 @@ public class Contact implements ListItem, Blockable {
 		} else if (this.presenceName != null && mutualPresenceSubscription()) {
 			return this.presenceName;
 		} else if (jid.hasLocalpart()) {
-			return jid.getLocalpart();
+			return jid.getUnescapedLocalpart();
 		} else {
 			return jid.getDomainpart();
 		}
@@ -200,7 +200,7 @@ public class Contact implements ListItem, Blockable {
 			values.put(ACCOUNT, accountUuid);
 			values.put(SYSTEMNAME, systemName);
 			values.put(SERVERNAME, serverName);
-			values.put(JID, jid.toString());
+			values.put(JID, jid.toPreppedString());
 			values.put(OPTIONS, subscription);
 			values.put(SYSTEMACCOUNT, systemAccount);
 			values.put(PHOTOURI, photoUri);
@@ -211,10 +211,6 @@ public class Contact implements ListItem, Blockable {
 			values.put(GROUPS, groups.toString());
 			return values;
 		}
-	}
-
-	public int getSubscription() {
-		return this.subscription;
 	}
 
 	public Account getAccount() {
@@ -309,7 +305,7 @@ public class Contact implements ListItem, Blockable {
 					for (int i = 0; i < prints.length(); ++i) {
 						final String print = prints.isNull(i) ? null : prints.getString(i);
 						if (print != null && !print.isEmpty()) {
-							fingerprints.add(prints.getString(i));
+							fingerprints.add(prints.getString(i).toLowerCase(Locale.US));
 						}
 					}
 				}

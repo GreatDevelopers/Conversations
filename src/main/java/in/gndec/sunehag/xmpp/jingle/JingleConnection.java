@@ -13,6 +13,7 @@ import java.util.Locale;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
+
 import in.gndec.sunehag.Config;
 import in.gndec.sunehag.crypto.axolotl.AxolotlService;
 import in.gndec.sunehag.crypto.axolotl.OnMessageCreatedCallback;
@@ -25,6 +26,7 @@ import in.gndec.sunehag.entities.Presence;
 import in.gndec.sunehag.entities.ServiceDiscoveryResult;
 import in.gndec.sunehag.entities.Transferable;
 import in.gndec.sunehag.entities.TransferablePlaceholder;
+import in.gndec.sunehag.parser.IqParser;
 import in.gndec.sunehag.persistance.FileBackend;
 import in.gndec.sunehag.services.AbstractConnectionManager;
 import in.gndec.sunehag.services.XmppConnectionService;
@@ -35,6 +37,9 @@ import in.gndec.sunehag.xmpp.jingle.stanzas.Content;
 import in.gndec.sunehag.xmpp.jingle.stanzas.JinglePacket;
 import in.gndec.sunehag.xmpp.jingle.stanzas.Reason;
 import in.gndec.sunehag.xmpp.stanzas.IqPacket;
+
+
+
 
 public class JingleConnection implements Transferable {
 
@@ -87,7 +92,7 @@ public class JingleConnection implements Transferable {
 		@Override
 		public void onIqPacketReceived(Account account, IqPacket packet) {
 			if (packet.getType() != IqPacket.TYPE.RESULT) {
-				fail();
+				fail(IqParser.extractErrorMessage(packet));
 			}
 		}
 	};
@@ -387,7 +392,7 @@ public class JingleConnection implements Transferable {
 				long size = Long.parseLong(fileSize.getContent());
 				message.setBody(Long.toString(size));
 				conversation.add(message);
-				mXmppConnectionService.updateConversationUi();
+				mJingleConnectionManager.updateConversationUi(true);
 				if (mJingleConnectionManager.hasStoragePermission()
 						&& size < this.mJingleConnectionManager.getAutoAcceptFileSize()
 						&& mXmppConnectionService.isDataSaverDisabled()) {
@@ -488,7 +493,7 @@ public class JingleConnection implements Transferable {
 						mJingleStatus = JINGLE_STATUS_INITIATED;
 						mXmppConnectionService.markMessage(message, Message.STATUS_OFFERED);
 					} else {
-						fail();
+						fail(IqParser.extractErrorMessage(packet));
 					}
 				}
 			});
@@ -509,7 +514,7 @@ public class JingleConnection implements Transferable {
 	private void sendAccept() {
 		mJingleStatus = JINGLE_STATUS_ACCEPTED;
 		this.mStatus = Transferable.STATUS_DOWNLOADING;
-		mXmppConnectionService.updateConversationUi();
+		this.mJingleConnectionManager.updateConversationUi(true);
 		this.mJingleConnectionManager.getPrimaryCandidate(this.account, new OnPrimaryCandidateFound() {
 			@Override
 			public void onPrimaryCandidateFound(boolean success, final JingleCandidate candidate) {
@@ -619,6 +624,10 @@ public class JingleConnection implements Transferable {
 				if (cid != null) {
 					Log.d(Config.LOGTAG, "candidate used by counterpart:" + cid);
 					JingleCandidate candidate = getCandidate(cid);
+					if (candidate == null) {
+						Log.d(Config.LOGTAG,"could not find candidate with cid="+cid);
+						return false;
+					}
 					candidate.flagAsUsedByCounterpart();
 					this.receivedCandidate = true;
 					if ((mJingleStatus == JINGLE_STATUS_ACCEPTED)
@@ -751,7 +760,7 @@ public class JingleConnection implements Transferable {
 	}
 
 	private void sendFallbackToIbb() {
-		Log.d(Config.LOGTAG, "sending fallback to ibb");
+		Log.d(Config.LOGTAG, account.getJid().toBareJid()+": sending fallback to ibb");
 		JinglePacket packet = this.bootstrapPacket("transport-replace");
 		Content content = new Content(this.contentCreator, this.contentName);
 		this.transportId = this.mJingleConnectionManager.nextRandomId();
@@ -761,6 +770,18 @@ public class JingleConnection implements Transferable {
 		packet.setContent(content);
 		this.sendJinglePacket(packet);
 	}
+
+	OnTransportConnected onIbbTransportConnected = new OnTransportConnected() {
+		@Override
+		public void failed() {
+			Log.d(Config.LOGTAG, "ibb open failed");
+		}
+
+		@Override
+		public void established() {
+			JingleConnection.this.transport.send(file, onFileTransmissionSatusChanged);
+		}
+	};
 
 	private boolean receiveFallbackToIbb(JinglePacket packet) {
 		Log.d(Config.LOGTAG, "receiving fallack to ibb");
@@ -774,13 +795,28 @@ public class JingleConnection implements Transferable {
 		}
 		this.transportId = packet.getJingleContent().getTransportId();
 		this.transport = new JingleInbandTransport(this, this.transportId, this.ibbBlockSize);
-		this.transport.receive(file, onFileTransmissionSatusChanged);
+
 		JinglePacket answer = bootstrapPacket("transport-accept");
 		Content content = new Content("initiator", "a-file-offer");
 		content.setTransportId(this.transportId);
 		content.ibbTransport().setAttribute("block-size",this.ibbBlockSize);
 		answer.setContent(content);
-		this.sendJinglePacket(answer);
+
+
+		if (initiator.equals(account.getJid())) {
+			this.sendJinglePacket(answer, new OnIqPacketReceived() {
+				@Override
+				public void onIqPacketReceived(Account account, IqPacket packet) {
+					if (packet.getType() == IqPacket.TYPE.RESULT) {
+						Log.d(Config.LOGTAG, account.getJid().toBareJid() + " recipient ACKed our transport-accept. creating ibb");
+						transport.connect(onIbbTransportConnected);
+					}
+				}
+			});
+		} else {
+			this.transport.receive(file, onFileTransmissionSatusChanged);
+			this.sendJinglePacket(answer);
+		}
 		return true;
 	}
 
@@ -795,19 +831,13 @@ public class JingleConnection implements Transferable {
 				}
 			}
 			this.transport = new JingleInbandTransport(this, this.transportId, this.ibbBlockSize);
-			this.transport.connect(new OnTransportConnected() {
 
-				@Override
-				public void failed() {
-					Log.d(Config.LOGTAG, "ibb open failed");
-				}
-
-				@Override
-				public void established() {
-					JingleConnection.this.transport.send(file,
-							onFileTransmissionSatusChanged);
-				}
-			});
+			//might be receive instead if we are not initiating
+			if (initiator.equals(account.getJid())) {
+				this.transport.connect(onIbbTransportConnected);
+			} else {
+				this.transport.receive(file,onFileTransmissionSatusChanged);
+			}
 			return true;
 		} else {
 			return false;
@@ -837,7 +867,7 @@ public class JingleConnection implements Transferable {
 			if (this.file!=null) {
 				file.delete();
 			}
-			this.mXmppConnectionService.updateConversationUi();
+			this.mJingleConnectionManager.updateConversationUi(true);
 		} else {
 			this.mXmppConnectionService.markMessage(this.message,
 					Message.STATUS_SEND_FAILED);
@@ -846,6 +876,10 @@ public class JingleConnection implements Transferable {
 	}
 
 	private void fail() {
+		fail(null);
+	}
+
+	private void fail(String errorMessage) {
 		this.mJingleStatus = JINGLE_STATUS_FAILED;
 		this.disconnectSocks5Connections();
 		if (this.transport != null && this.transport instanceof JingleInbandTransport) {
@@ -859,10 +893,11 @@ public class JingleConnection implements Transferable {
 				if (this.file!=null) {
 					file.delete();
 				}
-				this.mXmppConnectionService.updateConversationUi();
+				this.mJingleConnectionManager.updateConversationUi(true);
 			} else {
 				this.mXmppConnectionService.markMessage(this.message,
-						Message.STATUS_SEND_FAILED);
+						Message.STATUS_SEND_FAILED,
+						errorMessage);
 				this.message.setTransferable(null);
 			}
 		}
@@ -1006,7 +1041,7 @@ public class JingleConnection implements Transferable {
 
 	public void updateProgress(int i) {
 		this.mProgress = i;
-		mXmppConnectionService.updateConversationUi();
+		mJingleConnectionManager.updateConversationUi(false);
 	}
 
 	public String getTransportId() {

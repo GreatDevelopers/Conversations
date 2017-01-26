@@ -34,19 +34,24 @@ public final class Config {
 		return (ENCRYPTION_MASK & (ENCRYPTION_MASK - 1)) != 0;
 	}
 
-	public static final String LOGTAG = "SunehaG";
+	public static final String LOGTAG = "sunehaG";
 	
 	//FIXME: Change "YOURHOSTNAME" to the domain name at which you want to run this app
-	public static final String BUG_REPORTS = "sunehag@YOURHOSTNAME";
+	public static final String BUG_REPORTS = "sunehag@YOUR DOMAIN";
 
 	//FIXME: Change "YOUR DOMAIN" to the domain name at which you want to run this app
-	public static final String DOMAIN_LOCK = "YOUR DOMAIN"; //only allow account creation for this domain
+	public static final String DOMAIN_LOCK = "YOUR DOMAIN"; //only allow account connection for this domain
 
 	//FIXME: Change "YOUR PASSWORD RECOVERY PAGE" to the domain name at which you want to run this app
 	public static final String FORGOT_PASSWORD_URL = "http://YOUR PASSWORD RECOVERY PAGE"; //URL to password recovery page (web page)
 
 	//FIXME: Change "YOUR CHANGE PASSWORD PAGE" to the domain name at which you want to run this app
-	public static final String CHANGE_PASSWORD_URL = "http://YOUR CHANGE PASSWORD PAGE";
+	public static final String CHANGE_PASSWORD_URL = "http://YOUR CHANGE PASSWORD PAGE"; // URL to change password page (web page)
+
+	//FIXME: Custom DNS for the app
+	public static final boolean ALLOW_CUSTOM_DNS = false;
+	public static final byte[] ipAddress = new byte[]{8,8,8,8}; //Enter Your custom DNS Server (Default is 8.8.8.8)
+
 	public static final String MAGIC_CREATE_DOMAIN = null;
 	public static final boolean DISALLOW_REGISTRATION_IN_UI = true; //hide the register checkbox
 
@@ -61,16 +66,12 @@ public final class Config {
 	public static final int PING_MAX_INTERVAL = 300;
 	public static final int IDLE_PING_INTERVAL = 600; //540 is minimum according to docs;
 	public static final int PING_MIN_INTERVAL = 30;
+	public static final int LOW_PING_TIMEOUT = 1; // used after push received
 	public static final int PING_TIMEOUT = 15;
 	public static final int SOCKET_TIMEOUT = 15;
 	public static final int CONNECT_TIMEOUT = 90;
 	public static final int CONNECT_DISCO_TIMEOUT = 20;
 	public static final int MINI_GRACE_PERIOD = 750;
-
-	public static final boolean PUSH_MODE = false; 	//closes the tcp connection when going to background
-													//and after PING_MIN_INTERVAL of inactivity
-													//very experimental. only enable this if you want
-													//to around with GCM push
 
 	public static final int AVATAR_SIZE = 192;
 	public static final Bitmap.CompressFormat AVATAR_FORMAT = Bitmap.CompressFormat.WEBP;
@@ -89,6 +90,14 @@ public final class Config {
 
 	public static final int MAX_DISPLAY_MESSAGE_CHARS = 4096;
 
+	public static final long MILLISECONDS_IN_DAY = 24 * 60 * 60 * 1000;
+
+	public static final long OMEMO_AUTO_EXPIRY = 7 * MILLISECONDS_IN_DAY;
+	public static final boolean REMOVE_BROKEN_DEVICES = false;
+	public static final boolean OMEMO_PADDING = false;
+	public static boolean PUT_AUTH_TAG_INTO_KEY = false;
+
+
 	public static final boolean DISABLE_PROXY_LOOKUP = false; //useful to debug ibb
 	public static final boolean DISABLE_HTTP_UPLOAD = false;
 	public static final boolean DISABLE_STRING_PREP = false; // setting to true might increase startup performance
@@ -100,20 +109,24 @@ public final class Config {
 
 	public static final boolean REPORT_WRONG_FILESIZE_IN_OTR_JINGLE = true;
 
-	public static final boolean SHOW_REGENERATE_AXOLOTL_KEYS_BUTTON = false;
-
 	public static final boolean X509_VERIFICATION = false; //use x509 certificates to verify OMEMO keys
+
+	public static final boolean ONLY_INTERNAL_STORAGE = false; //use internal storage instead of sdcard to save attachments
 
 	public static final boolean IGNORE_ID_REWRITE_IN_MUC = true;
 
 	public static final boolean PARSE_REAL_JID_FROM_MUC_MAM = false; //dangerous if server doesn’t filter
 
-	public static final long MILLISECONDS_IN_DAY = 24 * 60 * 60 * 1000;
 	public static final long MAM_MAX_CATCHUP =  MILLISECONDS_IN_DAY / 2;
 	public static final int MAM_MAX_MESSAGES = 500;
 
+	public static final long FREQUENT_RESTARTS_DETECTION_WINDOW = 12 * 60 * 60 * 1000; // 10 hours
+	public static final long FREQUENT_RESTARTS_THRESHOLD = 0; // previous value was 16;
+
 	public static final ChatState DEFAULT_CHATSTATE = ChatState.ACTIVE;
 	public static final int TYPING_TIMEOUT = 8;
+
+	public static final int EXPIRY_INTERVAL = 30 * 60 * 1000; // 30 minutes
 
 	public static final String ENABLED_CIPHERS[] = {
 		"TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",

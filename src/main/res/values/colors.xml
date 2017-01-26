@@ -21,4 +21,22 @@
 	<color name="red800">#ffc62828</color>
 	<color name="orange500">#ffff9800</color>
 	<color name="green500">#ff259b24</color>
+	<color name="introbgA400">#4fac00</color>
+	<color name="dot_dark_intro">#2e7800</color>
+	<color name="dot_light_intro">#ffffff</color>
+
+	<array name="array_dot_active">
+		<item>@color/dot_light_intro</item>
+		<item>@color/dot_light_intro</item>
+		<item>@color/dot_light_intro</item>
+		<item>@color/dot_light_intro</item>
+	</array>
+
+	<array name="array_dot_inactive">
+		<item>@color/dot_dark_intro</item>
+		<item>@color/dot_dark_intro</item>
+		<item>@color/dot_dark_intro</item>
+		<item>@color/dot_dark_intro</item>
+	</array>
+	<color name="bubble">#ff4b9b4a</color>
 </resources>

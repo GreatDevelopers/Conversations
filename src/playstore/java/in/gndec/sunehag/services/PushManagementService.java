@@ -90,8 +90,8 @@ public class PushManagementService {
 			public void run() {
 				InstanceID instanceID = InstanceID.getInstance(mXmppConnectionService);
 				try {
-					String token = instanceID.getToken(mXmppConnectionService.getString(R.string.gcm_defaultSenderId), GoogleCloudMessaging.INSTANCE_ID_SCOPE, null);
-					instanceTokenRetrieved.onGcmInstanceTokenRetrieved(token);
+					//String token = instanceID.getToken(mXmppConnectionService.getString(R.string.gcm_defaultSenderId), GoogleCloudMessaging.INSTANCE_ID_SCOPE, null);
+					//instanceTokenRetrieved.onGcmInstanceTokenRetrieved(token);
 				} catch (Exception e) {
 					Log.d(Config.LOGTAG,"unable to get push token");
 				}
@@ -104,6 +104,10 @@ public class PushManagementService {
 	public boolean available(Account account) {
 		final XmppConnection connection = account.getXmppConnection();
 		return connection != null && connection.getFeatures().push() && playServicesAvailable();
+	}
+
+	public boolean availableAndUseful(Account account) {
+		return account.getServerIdentity() == XmppConnection.Identity.EJABBERD && available(account);
 	}
 
 	private boolean playServicesAvailable() {

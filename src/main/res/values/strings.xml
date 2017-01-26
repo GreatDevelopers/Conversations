@@ -1,24 +1,24 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<string name="app_name" translatable="false">SunehaG</string>
+	<string name="app_name" translatable="false">sunehaG</string>
 	<string name="action_settings">Settings</string>
 	<string name="action_add">New conversation</string>
 	<string name="action_accounts">Manage accounts</string>
 	<string name="action_end_conversation">End this conversation</string>
 	<string name="action_contact_details">Contact details</string>
-	<string name="action_muc_details">Conference details</string>
+	<string name="action_muc_details">Group details</string>
 	<string name="action_secure">Secure conversation</string>
 	<string name="action_add_account">Add account</string>
 	<string name="action_edit_contact">Edit name</string>
 	<string name="action_add_phone_book">Add to address book</string>
-	<string name="action_delete_contact">Delete from roster</string>
+	<string name="action_delete_contact">Delete from contacts</string>
 	<string name="action_block_contact">Block contact</string>
 	<string name="action_unblock_contact">Unblock contact</string>
 	<string name="action_block_domain">Block domain</string>
 	<string name="action_unblock_domain">Unblock domain</string>
 	<string name="title_activity_manage_accounts">Manage Accounts</string>
 	<string name="title_activity_settings">Settings</string>
-	<string name="title_activity_conference_details">Conference Details</string>
+	<string name="title_activity_conference_details">Group Details</string>
 	<string name="title_activity_contact_details">Contact Details</string>
 	<string name="title_activity_sharewith">Share with Conversation</string>
 	<string name="title_activity_start_conversation">Start Conversation</string>
@@ -37,7 +37,7 @@
 	<string name="moderator">Moderator</string>
 	<string name="participant">Participant</string>
 	<string name="visitor">Visitor</string>
-	<string name="remove_contact_text">Would you like to remove %s from your roster? The conversation associated with this contact will not be removed.</string>
+	<string name="remove_contact_text">Would you like to remove %s from your contact list? The conversation associated with this contact will not be removed.</string>
 	<string name="block_contact_text">Would you like to block %s from sending you messages?</string>
 	<string name="unblock_contact_text">Would you like to unblock %s and allow them to send you messages?</string>
 	<string name="block_domain_text">Block all contacts from %s?</string>
@@ -59,15 +59,15 @@
 	<string name="unblock">Unblock</string>
 	<string name="save">Save</string>
 	<string name="ok">OK</string>
-	<string name="crash_report_title">SunehaG has crashed</string>
-	<string name="crash_report_message">By sending in stack traces you are helping the ongoing development ofSunehaG\n<b>Warning:</b> This will use your XMPP account to send the stack trace to the developer.</string>
+	<string name="crash_report_title">sunehaG has crashed</string>
+	<string name="crash_report_message">By sending in stack traces you are helping the ongoing development of sunehaG\n<b>Warning:</b> This will use your XMPP account to send the stack trace to the developer.</string>
 	<string name="send_now">Send now</string>
 	<string name="send_never">Never ask again</string>
 	<string name="problem_connecting_to_account">Unable to connect to account</string>
 	<string name="problem_connecting_to_accounts">Unable to connect to multiple accounts</string>
 	<string name="touch_to_fix">Touch here to manage your accounts</string>
 	<string name="attach_file">Attach file</string>
-	<string name="not_in_roster">The contact is not in your roster. Would you like to add it?</string>
+	<string name="not_in_roster">The contact is not in your contact list. Would you like to add it?</string>
 	<string name="add_contact">Add contact</string>
 	<string name="send_failed">delivery failed</string>
 	<string name="send_rejected">rejected</string>
@@ -80,9 +80,9 @@
 	<string name="delete_messages">Delete messages</string>
 	<string name="also_end_conversation">End this conversation afterwards</string>
 	<string name="choose_presence">Choose device</string>
-	<string name="send_unencrypted_message">Send unencrypted message</string>
+	<string name="send_unencrypted_message">Send message</string>
 	<string name="send_message_to_x">Send message to %s</string>
-	<string name="send_otr_message">Send OTR encrypted message</string>
+	<string name="send_otr_message">Send encrypted message</string>
 	<string name="send_omemo_message">Send OMEMO encrypted message</string>
 	<string name="send_omemo_x509_message">Send v\\OMEMO encrypted message</string>
 	<string name="send_pgp_message">Send OpenPGP encrypted message</string>
@@ -90,16 +90,16 @@
 	<string name="send_unencrypted">Send unencrypted</string>
 	<string name="decryption_failed">Decryption failed. Maybe you don’t have the proper private key.</string>
 	<string name="openkeychain_required">OpenKeychain</string>
-	<string name="openkeychain_required_long">SunehaG utilizes a third party app called <b>OpenKeychain</b> to encrypt and decrypt messages and to manage your public keys.\n\nOpenKeychain is licensed under GPLv3 and available on F-Droid and Google Play.\n\n<small>(Please restart SunehaG afterwards.)</small></string>
+	<string name="openkeychain_required_long">sunehaG utilizes a third party app called <b>OpenKeychain</b> to encrypt and decrypt messages and to manage your public keys.\n\nOpenKeychain is licensed under GPLv3 and available on F-Droid and Google Play.\n\n<small>(Please restart sunehaG afterwards.)</small></string>
 	<string name="restart">Restart</string>
 	<string name="install">Install</string>
 	<string name="openkeychain_not_installed">Please install OpenKeychain</string>
 	<string name="offering">offering…</string>
 	<string name="waiting">waiting…</string>
 	<string name="no_pgp_key">No OpenPGP Key found</string>
-	<string name="contact_has_no_pgp_key">SunehaG is unable to encrypt your messages because your contact is not announcing his or hers public key.\n\n<small>Please ask your contact to setup OpenPGP.</small></string>
+	<string name="contact_has_no_pgp_key">sunehaG is unable to encrypt your messages because your contact is not announcing his or hers public key.\n\n<small>Please ask your contact to setup OpenPGP.</small></string>
 	<string name="no_pgp_keys">No OpenPGP Keys found</string>
-	<string name="contacts_have_no_pgp_keys">SunehaG is unable to encrypt your messages because your contacts are not announcing their public key.\n\n<small>Please ask your contacts to setup OpenPGP.</small></string>
+	<string name="contacts_have_no_pgp_keys">sunehaG is unable to encrypt your messages because your contacts are not announcing their public key.\n\n<small>Please ask your contacts to setup OpenPGP.</small></string>
 	<string name="pref_general">General</string>
 	<string name="pref_xmpp_resource">XMPP resource</string>
 	<string name="pref_xmpp_resource_summary">The name this client identifies itself with</string>
@@ -121,16 +121,16 @@
 	<string name="pref_notification_grace_period_summary">The length of time Conversations keeps quiet after seeing activity on another device</string>
 	<string name="pref_advanced_options">Advanced</string>
 	<string name="pref_never_send_crash">Never send crash reports</string>
-	<string name="pref_never_send_crash_summary">By sending in stack traces you are helping the ongoing development ofSunehaG</string>
+	<string name="pref_never_send_crash_summary">By sending in stack traces you are helping the ongoing development of sunehaG</string>
 	<string name="pref_confirm_messages">Confirm Messages</string>
-	<string name="pref_confirm_messages_summary">Let your contact know when you have received and read a message</string>
+	<string name="pref_confirm_messages_summary">Let your contacts know when you have received and read their messages</string>
 	<string name="pref_ui_options">UI</string>
 	<string name="openpgp_error">OpenKeychain reported an error</string>
 	<string name="error_decrypting_file">I/O Error decrypting file</string>
 	<string name="accept">Accept</string>
 	<string name="error">An error has occurred</string>
-	<string name="pref_grant_presence_updates">Grant presence updates</string>
-	<string name="pref_grant_presence_updates_summary">Preemptively grant and ask for presence subscription for contacts you created</string>
+	<string name="pref_grant_presence_updates">Share your profile info</string>
+	<string name="pref_grant_presence_updates_summary">Let your contacts see your profile photo and your online presence</string>
 	<string name="subscriptions">Subscriptions</string>
 	<string name="your_account">Your account</string>
 	<string name="keys">Keys</string>
@@ -154,7 +154,7 @@
 	<string name="account_status_not_found">Server not found</string>
 	<string name="account_status_no_internet">No connectivity</string>
 	<string name="account_status_regis_fail">Registration failed</string>
-	<string name="account_status_regis_conflict">Username already in use</string>
+	<string name="account_status_regis_conflict">College ID already in use</string>
 	<string name="account_status_regis_success">Registration completed</string>
 	<string name="account_status_regis_not_sup">Server does not support registration</string>
 	<string name="account_status_security_error">Security error</string>
@@ -179,7 +179,7 @@
 	<string name="attach_record_voice">Record voice</string>
 	<string name="account_settings_jabber_id">College ID</string>
 	<string name="account_settings_password">Password</string>
-	<string name="account_settings_example_jabber_id">username</string>
+	<string name="account_settings_example_jabber_id">College ID</string>
 	<string name="account_settings_confirm_password">Confirm password</string>
 	<string name="password">Password</string>
 	<string name="confirm_password">Confirm password</string>
@@ -193,7 +193,7 @@
 	<string name="contact_status_extended_away">extended away</string>
 	<string name="contact_status_do_not_disturb">do not disturb</string>
 	<string name="contact_status_offline">offline</string>
-	<string name="muc_details_conference">Conference</string>
+	<string name="muc_details_conference">Group</string>
 	<string name="muc_details_other_members">Other Members</string>
 	<string name="server_info_show_more">Server info</string>
 	<string name="server_info_mam">XEP-0313: MAM</string>
@@ -235,11 +235,11 @@
 	<string name="done">Done</string>
 	<string name="verify">Verify</string>
 	<string name="decrypt">Decrypt</string>
-	<string name="conferences">Conferences</string>
+	<string name="conferences">Groups</string>
 	<string name="search">Search</string>
 	<string name="create_contact">Create Contact</string>
 	<string name="enter_contact">Enter Contact</string>
-	<string name="join_conference">Join Conference</string>
+	<string name="join_conference">Join Group</string>
 	<string name="delete_contact">Delete Contact</string>
 	<string name="view_contact_details">View contact details</string>
 	<string name="block_contact">Block contact</string>
@@ -249,15 +249,15 @@
 	<string name="select">Select</string>
 	<string name="contact_already_exists">The contact already exists</string>
 	<string name="join">Join</string>
-	<string name="conference_address">Conference address</string>
-	<string name="conference_address_example">Room Id</string>
+	<string name="conference_address">Group address</string>
+	<string name="conference_address_example">Group Id</string>
 	<string name="save_as_bookmark">Save as bookmark</string>
 	<string name="delete_bookmark">Delete bookmark</string>
 	<string name="bookmark_already_exists">This bookmark already exists</string>
 	<string name="you">You</string>
-	<string name="action_edit_subject">Edit conference subject</string>
-	<string name="edit_subject_hint">The subject of this conference</string>
-	<string name="joining_conference">Joining conference…</string>
+	<string name="action_edit_subject">Edit group subject</string>
+	<string name="edit_subject_hint">The subject of this group</string>
+	<string name="joining_conference">Joining group…</string>
 	<string name="leave">Leave</string>
 	<string name="contact_added_you">Contact added you to contact list</string>
 	<string name="add_back">Add back</string>
@@ -283,7 +283,7 @@
 	<string name="disable_notifications">Disable notifications</string>
 	<string name="disable_notifications_for_this_conversation">Disable notifications for this conversation</string>
 	<string name="enable">Enable</string>
-	<string name="conference_requires_password">Conference requires password</string>
+	<string name="conference_requires_password">Group requires password</string>
 	<string name="enter_password">Enter password</string>
 	<string name="missing_presence_updates">Missing presence updates from contact</string>
 	<string name="missing_presence_subscription">Missing presence subscription</string>
@@ -295,14 +295,14 @@
 	<string name="without_mutual_presence_updates"><b>Warning:</b> Sending this without mutual presence updates could cause unexpected problems.\n\n<small>Go to contact details to verify your presence subscriptions.</small></string>
 	<string name="pref_security_settings">Security</string>
 	<string name="pref_force_encryption">Force end-to-end encryption</string>
-	<string name="pref_force_encryption_summary">Always send messages encrypted (except for conferences)</string>
+	<string name="pref_force_encryption_summary">Always send messages encrypted (except for groups)</string>
 	<string name="pref_allow_message_correction">Allow message correction</string>
 	<string name="pref_allow_message_correction_summary">Allow your contacts to retroactively edit their messages</string>
 	<string name="pref_dont_save_encrypted">Don’t save encrypted messages</string>
 	<string name="pref_dont_save_encrypted_summary">Warning: This could lead to message loss</string>
 	<string name="pref_expert_options">Expert settings</string>
 	<string name="pref_expert_options_summary">Please be careful with these</string>
-	<string name="title_activity_about">AboutSunehaG</string>
+	<string name="title_activity_about">About sunehaG</string>
 	<string name="pref_about_conversations_summary">Build and licensing information</string>
 	<string name="pref_about_message" translatable="false">
 			\n\nCopyright © 2016 Great Developers
@@ -317,8 +317,8 @@
 			\n\nYou should have received a copy of the GNU General Public License
 			along with this program. If not, see https://www.gnu.org/licenses
         \n\nDownload the full original source code at https://github.com/siacs/Conversations (Copyright © 2014-2016 Daniel Gultsch)
-        \n\nDownload the modified source code at https://github.com/GreatDevelopers/Conversations
-			\n\n\nLibraries
+        \n\nDownload the modified source code at https://github.com/GreatDevelopers/sunehaG
+		\n\n\nLibraries
 			\n\nhttps://www.bouncycastle.org\n(The MIT License (MIT))
 			\n\nhttps://www.gnu.org/software/libidn\n(Apache License, Version 2.0)
 			\n\nhttps://github.com/ge0rg/MemorizingTrustManager\n(The MIT License (MIT))
@@ -347,17 +347,17 @@
 	<string name="pref_use_indicate_received_summary">Received messages will be marked with a green tick if supported</string>
 	<string name="pref_use_send_button_to_indicate_status_summary">Colorize send button to indicate contact status</string>
 	<string name="pref_expert_options_other">Other</string>
-	<string name="pref_conference_name">Conference name</string>
-	<string name="pref_conference_name_summary">Use room’s subject instead of JID to identify conferences</string>
-	<string name="pref_autojoin">Automatically join conferences</string>
-	<string name="pref_autojoin_summary">Respect the autojoin flag in conference bookmarks</string>
+	<string name="pref_conference_name">Group name</string>
+	<string name="pref_conference_name_summary">Use Group’s subject instead of JID to identify groups</string>
+	<string name="pref_autojoin">Automatically join groups</string>
+	<string name="pref_autojoin_summary">Respect the autojoin flag in group bookmarks</string>
 	<string name="toast_message_otr_fingerprint">OTR fingerprint copied to clipboard!</string>
 	<string name="toast_message_omemo_fingerprint">OMEMO fingerprint copied to clipboard!</string>
-	<string name="conference_banned">You are banned from this conference</string>
-	<string name="conference_members_only">This conference is members only</string>
-	<string name="conference_kicked">You have been kicked from this conference</string>
-	<string name="conference_shutdown">The conference was shut down</string>
-	<string name="conference_unknown_error">You are no longer in this conference</string>
+	<string name="conference_banned">You are banned from this group</string>
+	<string name="conference_members_only">This group is members only</string>
+	<string name="conference_kicked">You have been kicked from this group</string>
+	<string name="conference_shutdown">The group was shut down</string>
+	<string name="conference_unknown_error">You are no longer in this group</string>
 	<string name="using_account">using account %s</string>
 	<string name="checking_x">Checking %s on HTTP host</string>
 	<string name="not_connected_try_again">You are not connected. Try again later</string>
@@ -366,6 +366,7 @@
 	<string name="message_options">Message options</string>
 	<string name="copy_text">Copy text</string>
 	<string name="select_text">Select text</string>
+	<string name="quote">Quote</string>
 	<string name="copy_original_url">Copy original URL</string>
 	<string name="send_again">Send again</string>
 	<string name="file_url">File URL</string>
@@ -373,8 +374,8 @@
 	<string name="url_copied_to_clipboard">URL copied to clipboard</string>
 	<string name="message_copied_to_clipboard">Message copied to clipboard</string>
 	<string name="image_transmission_failed">Image transmission failed</string>
-	<string name="scan_qr_code">Scan QR code</string>
-	<string name="show_qr_code">Show QR code</string>
+	<string name="scan_qr_code">Scan Barcode</string>
+	<string name="show_qr_code">Show Barcode</string>
 	<string name="show_block_list">Show block list</string>
 	<string name="account_details">Account details</string>
 	<string name="verify_otr">Verify OTR</string>
@@ -393,11 +394,11 @@
 	<string name="verified">Verified!</string>
 	<string name="smp_requested">Contact requested SMP verification</string>
 	<string name="no_otr_session_found">No valid OTR session has been found!</string>
-	<string name="conversations_foreground_service">SunehaG</string>
+	<string name="conversations_foreground_service">sunehaG</string>
 	<string name="pref_keep_foreground_service">Keep service in foreground</string>
 	<string name="pref_keep_foreground_service_summary">Prevents the operating system from killing your connection</string>
 	<string name="pref_export_logs">Export history</string>
-	<string name="pref_export_logs_summary">WriteSunehaG history logs to SD card</string>
+	<string name="pref_export_logs_summary">Write sunehaG history logs to SD card</string>
 	<string name="notification_export_logs_title">Writing logs to SD card</string>
 	<string name="choose_file">Choose file</string>
 	<string name="receiving_x_file">Receiving %1$s (%2$d%% completed)</string>
@@ -414,13 +415,13 @@
 	<string name="no_application_found_to_open_file">No application found to open file</string>
 	<string name="could_not_verify_fingerprint">Could not verify fingerprint</string>
 	<string name="manually_verify">Manually verify</string>
-	<string name="are_you_sure_verify_fingerprint">Are you sure that you want to verify your contacts OTR fingerprint?</string>
+	<string name="are_you_sure_verify_fingerprint">Are you sure that you want to verify your contact’s OTR fingerprint?</string>
 	<string name="pref_show_dynamic_tags">Show dynamic tags</string>
 	<string name="pref_show_dynamic_tags_summary">Display read-only tags underneath contacts</string>
 	<string name="enable_notifications">Enable notifications</string>
-	<string name="conference_with">Create conference with…</string>
-	<string name="no_conference_server_found">No conference server found</string>
-	<string name="conference_creation_failed">Conference creation failed!</string>
+	<string name="conference_with">Create group with…</string>
+	<string name="no_conference_server_found">No group server found</string>
+	<string name="conference_creation_failed">Group creation failed!</string>
 	<string name="secret_accepted">Secret accepted!</string>
 	<string name="reset">Reset</string>
 	<string name="account_image_description">Account avatar</string>
@@ -430,9 +431,6 @@
 	<string name="wipe_omemo_pep">Wipe other devices from PEP</string>
 	<string name="clear_other_devices">Clear devices</string>
 	<string name="clear_other_devices_desc">Are you sure you want to clear all other devices from the OMEMO announcement? The next time your devices connect, they will reannounce themselves, but they might not receive messages sent in the meantime.</string>
-	<string name="purge_key">Purge key</string>
-	<string name="purge_key_desc_part1">Are you sure you want to purge this key?</string>
-	<string name="purge_key_desc_part2">It will irreversibly be considered compromised, and you can never build a session with it again.</string>
 	<string name="error_no_keys_to_trust_server_error">There are no usable keys available for this contact.\nFetching new keys from the server has been unsuccessful. Maybe there is something wrong with your contacts server.</string>
 	<string name="error_no_keys_to_trust">There are no usable keys available for this contact. If you have purged any of their keys, they need to generate new ones.</string>
 	<string name="error_trustkeys_title">Error</string>
@@ -464,21 +462,21 @@
 	<string name="remove_membership">Revoke membership</string>
 	<string name="grant_admin_privileges">Grant admin privileges</string>
 	<string name="remove_admin_privileges">Revoke admin privileges</string>
-	<string name="remove_from_room">Remove from conference</string>
+	<string name="remove_from_room">Remove from group</string>
 	<string name="could_not_change_affiliation">Could not change affiliation of %s</string>
-	<string name="ban_from_conference">Ban from conference</string>
-	<string name="removing_from_public_conference">You are trying to remove %s from a public conference. The only way to do that is to ban that user for ever.</string>
+	<string name="ban_from_conference">Ban from group</string>
+	<string name="removing_from_public_conference">You are trying to remove %s from a public group. The only way to do that is to ban that user for ever.</string>
 	<string name="ban_now">Ban now</string>
 	<string name="could_not_change_role">Could not change role of %s</string>
-	<string name="public_conference">Publicly accessible conference</string>
-	<string name="private_conference">Private, members only conference</string>
-	<string name="conference_options">Conference options</string>
+	<string name="public_conference">Publicly accessible group</string>
+	<string name="private_conference">Private, members only group</string>
+	<string name="conference_options">Group options</string>
 	<string name="members_only">Private, members only</string>
 	<string name="non_anonymous">Non-anonymous</string>
 	<string name="moderated">Moderated</string>
 	<string name="you_are_not_participating">You are not participating</string>
-	<string name="modified_conference_options">Modified conference options!</string>
-	<string name="could_not_modify_conference_options">Could not modify conference options</string>
+	<string name="modified_conference_options">Modified group options!</string>
+	<string name="could_not_modify_conference_options">Could not modify group options</string>
 	<string name="never">Never</string>
 	<string name="thirty_minutes">30 minutes</string>
 	<string name="one_hour">1 hour</string>
@@ -507,14 +505,14 @@
 	<string name="contact_is_typing">%s is typing…</string>
 	<string name="contact_has_stopped_typing">%s has stopped typing</string>
 	<string name="pref_chat_states">Typing notifications</string>
-	<string name="pref_chat_states_summary">Let your contact know when you are writing a new message</string>
+	<string name="pref_chat_states_summary">Let your contacts know when you are writing messages to them</string>
 	<string name="send_location">Send location</string>
 	<string name="show_location">Show location</string>
 	<string name="no_application_found_to_display_location">No application found to display location</string>
 	<string name="location">Location</string>
 	<string name="received_location">Received location</string>
 	<string name="title_undo_swipe_out_conversation">Conversation closed</string>
-	<string name="title_undo_swipe_out_muc">Left conference</string>
+	<string name="title_undo_swipe_out_muc">Left group</string>
 	<string name="pref_dont_trust_system_cas_title">Don’t trust system CAs</string>
 	<string name="pref_dont_trust_system_cas_summary">All certificates must be manually approved</string>
 	<string name="pref_remove_trusted_certificates_title">Remove certificates</string>
@@ -538,12 +536,12 @@
 	<string name="choose_quick_action">Choose quick action</string>
 	<string name="search_for_contacts_or_groups">Search for contacts or groups</string>
 	<string name="send_private_message">Send private message</string>
-	<string name="user_has_left_conference">%s has left the conference!</string>
-	<string name="username">Username</string>
-	<string name="username_hint">Username</string>
-	<string name="invalid_username">This is not a valid username</string>
-	<string name="conference_name">Conference name</string>
-	<string name="invalid_conference_name">This is not a valid conference name</string>
+	<string name="user_has_left_conference">%s has left the group!</string>
+	<string name="username">College ID</string>
+	<string name="username_hint">College ID</string>
+	<string name="invalid_username">This is not a valid college ID</string>
+	<string name="conference_name">Group name</string>
+	<string name="invalid_conference_name">This is not a valid group name</string>
 	<string name="download_failed_server_not_found">Download failed: Server not found</string>
 	<string name="download_failed_file_not_found">Download failed: File not found</string>
 	<string name="download_failed_could_not_connect">Download failed: Could not connect to host</string>
@@ -597,9 +595,9 @@
 	<string name="shared_image_with_x">Shared image with %s</string>
 	<string name="shared_images_with_x">Shared images with %s</string>
 	<string name="shared_text_with_x">Shared text with %s</string>
-	<string name="no_storage_permission">SunehaG need access to external storage</string>
+	<string name="no_storage_permission">sunehaG need access to external storage</string>
 	<string name="sync_with_contacts">Synchronize with contacts</string>
-	<string name="sync_with_contacts_long">SunehaG wants to match your XMPP roster with your contacts to show their full names and avatars.\n\nSunehaG will only read your contacts and match them locally without uploading them to your server.\n\nYou will now be asked to grant permission to access your contacts.</string>
+	<string name="sync_with_contacts_long">sunehaG wants to match your XMPP contact list with your contacts to show their full names and avatars.\n\nsunehaG will only read your contacts and match them locally without uploading them to your server.\n\nYou will now be asked to grant permission to access your contacts.</string>
 	<string name="certificate_information">Certificate Information</string>
 	<string name="certificate_subject">Subject</string>
 	<string name="certificate_issuer">Issuer</string>
@@ -617,27 +615,27 @@
 	<string name="always">Always</string>
 	<string name="automatically">Automatically</string>
 	<string name="battery_optimizations_enabled">Battery optimizations enabled</string>
-	<string name="battery_optimizations_enabled_explained">Your device is doing some heavy battery optimizations onSunehaG that might lead to delayed notifications or even message loss.\nIt is recommended to disable those.</string>
-	<string name="battery_optimizations_enabled_dialog">Your device is doing some heavy battery optimizations onSunehaG that might lead to delayed notifications or even message loss.\n\nYou will now be asked to disable those.</string>
+	<string name="battery_optimizations_enabled_explained">Your device is doing some heavy battery optimizations on sunehaG that might lead to delayed notifications or even message loss.\nIt is recommended to disable those.</string>
+	<string name="battery_optimizations_enabled_dialog">Your device is doing some heavy battery optimizations on sunehaG that might lead to delayed notifications or even message loss.\n\nYou will now be asked to disable those.</string>
 	<string name="disable">Disable</string>
 	<string name="selection_too_large">The selected area is too large</string>
 	<string name="no_accounts">(No activated accounts)</string>
 	<string name="this_field_is_required">This field is required</string>
 	<string name="correct_message">Correct message</string>
 	<string name="send_corrected_message">Send corrected message</string>
-	<string name="no_keys_just_confirm">You already trust this contact. By selecting \'done\' you are just confirming that %s is part of this conference.</string>
+	<string name="no_keys_just_confirm">You already trust this contact. By selecting \'done\' you are just confirming that %s is part of this group.</string>
 	<string name="select_image_and_crop">Select image and crop</string>
 	<string name="this_account_is_disabled">You have disabled this account</string>
 	<string name="security_error_invalid_file_access">Security error: Invalid file access</string>
 	<string name="no_application_to_share_uri">No application found to share URI</string>
 	<string name="share_uri_with">Share URI with…</string>
-	<string translatable="false" name="welcome_header">Join the Conversation</string>
+	<string name="welcome_header" translatable="false">Join the Conversation</string>
 	<string name="welcome_text">XMPP is a provider independent protocol. You can use this client with what ever XMPP server you choose.\nHowever for your convenience we made it easy to create an account on conversations.im¹; a provider specially suited for the use with Conversations.</string>
 	<string name="magic_create_text">We will guide you through the process of creating an account on conversations.im.¹\nWhen picking conversations.im as a provider you will be able to communicate with users of other providers by giving them your full College ID.</string>
 	<string name="your_full_jid_will_be">Your full College ID will be: %s</string>
 	<string name="create_account">Create Account</string>
 	<string name="use_own_provider">Use my own provider</string>
-	<string name="pick_your_username">Pick your username</string>
+	<string name="pick_your_username">Pick your college ID</string>
 	<string name="pref_manually_change_presence">Manually change presence</string>
 	<string name="pref_manually_change_presence_summary">Touch your avatar to change your presence</string>
 	<string name="change_presence">Change Presence</string>
@@ -653,17 +651,17 @@
 	<string name="show_password">Show password</string>
 	<string name="registration_please_wait">Registration failed: Try again later</string>
 	<string name="registration_password_too_weak">Registration failed: Password too weak</string>
-	<string name="create_conference">Create conference</string>
-	<string name="join_or_create_conference">Join or create conference</string>
+	<string name="create_conference">Create group</string>
+	<string name="join_or_create_conference">Join or create group</string>
 	<string name="conference_subject">Subject</string>
 	<string name="choose_participants">Choose participants</string>
-	<string name="creating_conference">Creating conference…</string>
+	<string name="creating_conference">Creating group…</string>
 	<string name="invite_again">Invite again</string>
 	<string name="gp_short">Short</string>
 	<string name="gp_medium">Medium</string>
 	<string name="gp_long">Long</string>
 	<string name="pref_broadcast_last_activity">Broadcast Last User Interaction</string>
-	<string name="pref_broadcast_last_activity_summary">Let all your contacts know when you useSunehaG</string>
+	<string name="pref_broadcast_last_activity_summary">Let all your contacts know when you use sunehaG</string>
 	<string name="pref_privacy">Privacy</string>
 	<string name="pref_theme_options">Theme</string>
 	<string name="pref_theme_options_summary">Select the color palette</string>
@@ -689,8 +687,8 @@
 	<string name="missing_presence_subscription_with_x">Missing presence subscription with %s.</string>
 	<string name="missing_keys_from_x">Missing OMEMO keys from %s.</string>
 	<string name="missing_omemo_keys">Missing OMEMO keys</string>
-	<string name="wrong_conference_configuration">This is not a private, non-anonymous conference.</string>
-	<string name="this_conference_has_no_members">There are no members in this conference.</string>
+	<string name="wrong_conference_configuration">This is not a private, non-anonymous group.</string>
+	<string name="this_conference_has_no_members">There are no members in this group.</string>
 	<string name="report_jid_as_spammer">Report this JID as sending unwanted messages.</string>
 	<string name="pref_delete_omemo_identities">Delete OMEMO identities</string>
 	<string name="pref_delete_omemo_identities_summary">Regenerate your OMEMO keys. All your contacts will have to verify you again. Use this only as a last resort.</string>
@@ -698,4 +696,94 @@
 	<string name="error_publish_avatar_offline">You need to be connected to publish your avatar.</string>
 	<string name="account_forget_password">Forgot password</string>
 	<string name="forget_password">Forgot Password?</string>
+	<string name="empty_password_error_message">Please enter password!</string>
+	<string name="show_error_message">Show error message</string>
+	<string name="error_message">Error Message</string>
+	<string name="muc_share_via_qr_code">Share via QR Code</string>
+	<string name="contact_details_share_via_qr_code">Share via QR Code</string>
+	<string name="data_saver_enabled">Data saver enabled</string>
+	<string name="data_saver_enabled_explained">Your operating system is restricting sunehaG from accessing the Internet when in background. To receive notifications of new messages you should allow sunehaG unrestricted access when Data saver is on.\nsunehaG will still make an effort to save data when possible.</string>
+	<string name="device_does_not_support_data_saver">Your device does not support disabling Data saver for sunehaG.</string>
+	<string name="error_unable_to_create_temporary_file">Unable to create temporary file</string>
+	<string name="this_device_has_been_verified">This device has been verified</string>
+	<string name="copy_fingerprint">Copy fingerprint</string>
+	<string name="all_omemo_keys_have_been_verified">All OMEMO keys have been verified</string>
+	<string name="iAgree">I Agree</string>
+	<string name="iDoNotAgree">I Don\'t Agree</string>
+	<string name="barcode_does_not_contain_fingerprints_for_this_conversation">Barcode does not contain fingerprints for this conversation.</string>
+	<string name="verified_fingerprints">Verified fingerprints</string>
+	<string name="use_camera_icon_to_scan_barcode">Use the camera to scan a contact’s barcode</string>
+	<string name="please_wait_for_keys_to_be_fetched">Please wait for keys to be fetched</string>
+	<string name="terms_and_conditions"><![CDATA[<p><strong>PLEASE READ THESE TERMS AND CONDITIONS CAREFULLY BEFORE USING THIS APPLICATION</strong></p>
+<p>The following terms of service constitute a binding legal agreement (the “Agreement”) between You and Guru Nanak Dev Engineering College, Ludhiana (hereinafter referred to as “sunehaG” / “we”/ “us”), (which expression shall include its successors and assigns), setting forth the terms and conditions (“Terms”) under which the sunehaG Messenger (the “Application”) will be licensed to You by Guru Nanak Dev Engineering College, Ludhiana.</p>
+<p>By accessing, downloading, installing the Application, and using the Services, You represent to sunehaG that You are competent to enter into a contract (i.e. You are 18 years of age, have a sound mind and are not disqualified from entering into a contract under the applicable law) and You have read this Agreement, understood it and agree to be bound by its Terms. Please review the Agreement carefully before accessing, downloading and installation.</p>
+<p>We occasionally modify these policies, so please check back here for any updates. Beyond the policies listed below, note that several products and features may have additional policies and terms — please check the links provided for those additional requirements.</p>
+<ol>
+<li>
+<p><strong><em>Illegal Activities:-</em></strong> Do not use our Services to engage in illegal activities or to promote activities that are dangerous and illegal, such as terrorism, the sale of illegal drugs, or human trafficking. We may also remove content that violates applicable local laws.</p>
+</li>
+<li>
+<p><strong><em>Malicious and Deceptive Practices:-</em></strong> Do not transmit viruses, malware, or any other malicious or destructive code. Do not distribute content that harms or interferes with the operation of the networks, servers, or other infrastructure of Google or others. Do not use our Services for phishing scams.</p>
+</li>
+<li>
+<p><strong><em>Hate Speech:-</em></strong> Our products are platforms for free expression. But we don’t support content that promotes or condones violence against individuals or groups based on race or ethnic origin, religion, disability, gender, age, nationality, veteran status, or sexual orientation/gender identity, or whose primary purpose is inciting hatred on the basis of these core characteristics.</p>
+</li>
+<li>
+<p><strong><em>Harassment, Bullying, and Threats:-</em></strong> Do not engage in harassing, bullying, or threatening behavior, and do not incite others to engage in these activities. Anyone using our Services to single someone out for malicious abuse, to threaten someone with serious harm, to sexualize a person in an unwanted way, or to harass in other ways may have the offending content removed or be permanently banned from using the Services. In emergency situations, we may escalate imminent threats of serious harm to law enforcement. Keep in mind that online harassment is also illegal in many places and can have serious offline consequences for both the harasser and the victim.</p>
+</li>
+<li>
+<p><strong><em>Personal and Confidential Information:-</em></strong> Do not distribute other people’s personal and confidential information, such as credit card numbers, confidential national ID numbers, or account passwords, without their permission. Do not post or distribute images or videos of minors without the necessary consent from their legal representatives.</p>
+</li>
+<li>
+<p><strong><em>Spam:-</em></strong> Do not spam, including by sending unwanted promotional or commercial content, or unwanted or mass solicitation. Do not aggressively send invitations, add people to your circles, or message people that you do not know.</p>
+</li>
+<li>
+<p><strong><em>Violence:-</em></strong> Do not distribute depictions of graphic or gratuitous violence.</p>
+</li>
+</ol>
+<p><strong>Privacy policy and user data</strong></p>
+<p>Our Service allows you to post, link, store, share and otherwise make available certain information,  text, graphics, videos, or other material (“Content”). You are responsible for the</p>
+<p><strong>Information Collection And Use</strong></p>
+<p>While using our app, we may ask you to provide us with certain personally identifiable information  that can be used to contact or identify you. Personally identifiable information may include, but is not  limited to your name (“Personal Information”).</p>
+<p><strong>Log Data</strong></p>
+<p>Like many apps, we collect information that your device sends whenever you visit our app  (“Log Data”).</p>
+<p>This Log Data may include information such as your Internet Protocol (“IP”) address, device type, device version, the features of our app that you use, the time and date of your use,  the time spent on those services and other statistics.</p>
+<p><strong>Cookies</strong></p>
+<p>Cookies are files with small amount of data, which may include an anonymous unique identifier.  Cookies are sent to your device from our server and stored on your device.</p>
+<p>Like many apps, we use “cookies” to collect information. You can instruct your browser to refuse all cookies or to indicate when a cookie is being sent. However, if you do not accept cookies, you may  not be able to use some features of our app.</p>
+<p><strong>Security</strong></p>
+<p>The security of your Personal Information is important to us, but remember that no method of  transmission over the Internet, or method of electronic storage, is 100% secure. While we strive to  use commercially acceptable means to protect your Personal Information, we cannot guarantee its  absolute security.</p>
+<p><strong>Disclaimer</strong></p>
+<p>YOU USE OUR SERVICES AT YOUR OWN RISK AND SUBJECT TO THE FOLLOWING DISCLAIMERS. WE ARE PROVIDING OUR SERVICES ON AN “AS IS” BASIS WITHOUT ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, NON-INFRINGEMENT, AND FREEDOM FROM COMPUTER VIRUS OR OTHER HARMFUL CODE. WE DO NOT WARRANT THAT ANY INFORMATION PROVIDED BY US IS ACCURATE, COMPLETE, OR USEFUL, THAT OUR SERVICES WILL BE OPERATIONAL, ERROR FREE, SECURE, OR SAFE, OR THAT OUR SERVICES WILL FUNCTION WITHOUT DISRUPTIONS, DELAYS, OR IMPERFECTIONS. WE DO NOT CONTROL, AND ARE NOT RESPONSIBLE FOR, CONTROLLING HOW OR WHEN OUR USERS USE OUR SERVICES OR THE FEATURES, SERVICES, AND INTERFACES OUR SERVICES PROVIDE. WE ARE NOT RESPONSIBLE FOR AND ARE NOT OBLIGATED TO CONTROL THE ACTIONS OR INFORMATION (INCLUDING CONTENT) OF OUR USERS OR OTHER THIRD PARTIES. YOU RELEASE US, OUR SUBSIDIARIES, AFFILIATES, AND OUR AND THEIR DIRECTORS, OFFICERS, EMPLOYEES, PARTNERS, AND AGENTS (TOGETHER, THE “sunehaG PARTIES”) FROM ANY CLAIM, COMPLAINT, CAUSE OF ACTION, CONTROVERSY, OR DISPUTE (TOGETHER, “CLAIM”) AND DAMAGES, KNOWN AND UNKNOWN, RELATING TO, ARISING OUT OF, OR IN ANY WAY CONNECTED WITH ANY SUCH CLAIM YOU HAVE AGAINST ANY THIRD PARTIES. YOU WAIVE ANY RIGHTS YOU MAY HAVE UNDER ANY APPLICABLE STATUTE OR LAW OF ANY OTHER JURISDICTION, WHICH SAYS THAT: A GENERAL RELEASE DOES NOT EXTEND TO CLAIMS WHICH THE CREDITOR DOES NOT KNOW OR SUSPECT TO EXIST IN HIS OR HER FAVOR AT THE TIME OF EXECUTING THE RELEASE, WHICH IF KNOWN BY HIM OR HER MUST HAVE MATERIALLY AFFECTED HIS OR HER SETTLEMENT WITH THE DEBTOR.</p>
+<p><strong>Termination of Services</strong></p>
+<p>We provide the service of The Application only to the students, staff and faculty of Guru Nanak Dev Engineering College, Ludhiana (together “GENCONIANS”) and only for the period of time for which they are enrolled and/or employed by Guru Nanak Dev Engineering College, Ludhiana in their respective role. Services of sunehaG will terminate with the termination of any relation establishing the user as a GENCONIAN. This termination may be the result of scheduled and agreed upon expiration of contract between the user and Guru Nanak Dev Engineering College, Ludhiana and / or as a punitive measure for violating any or all of the following provisions established with mutual agreement: “Licenses”, “Disclaimers”, “Termination of Services” and “Terms and conditions”.</p>]]></string>
+	<string name="pref_blind_trust_before_verification">Blind Trust Before Verification</string>
+	<string name="pref_blind_trust_before_verification_summary">Automatically trust all new devices of contacts that haven’t been verified before, and prompt for manual confirmation each time a verified contact adds a new device.</string>
+	<string name="blindly_trusted_omemo_keys">Blindly trusted OMEMO keys</string>
+	<string name="not_trusted">Untrusted</string>
+	<string name="invalid_barcode">Invalid barcode</string>
+	<string name="IDoNotAgreeMessage">You must Accept the Terms and Conditions in order to you the application\n\nClick \"Back\" to read and Accept \nor\nClick \"Exit\" to exit the Application</string>
+	<string name="IAgreeMessage">I have read and agree to the Terms and Conditions</string>
+	<string name="pref_clean_cache_summary">Clean cache folder (used by Camera Application)</string>
+	<string name="pref_clean_cache">Clean cache</string>
+	<string name="pref_clean_private_storage">Clean private storage</string>
+	<string name="pref_clean_private_storage_summary">Clean private storage where files are kept (They can be re-downloaded from the server)</string>
+	<string name="i_followed_this_link_from_a_trusted_source">I followed this link from a trusted source</string>
+	<string name="verifying_omemo_keys_trusted_source">You are about to verify the OMEMO keys of %1$s after clicking a link. This is only secure if you followed this link from a trusted source where only %2$s could have published this link.</string>
+	<string name="verify_omemo_keys">Verify OMEMO keys</string>
+	<string name="show_inactive_devices">Show inactive devices</string>
+	<string name="hide_inactive_devices">Hide inactive devices</string>
+	<string name="distrust_omemo_key">Distrust device</string>
+	<string name="distrust_omemo_key_text">Are you sure you want to remove the verification for this device?\nThis device and messages coming from that device will be marked as untrusted.</string>
+	<string name="timeout_24_hours">24 hours</string>
+	<string name="timeout_7_days">7 days</string>
+	<string name="timeout_30_days">30 days</string>
+	<string name="timeout_6_months">6 months</string>
+	<string name="pref_automatically_delete_messages">Automatic message deletion</string>
+	<string name="pref_automatically_delete_messages_description">Automatically delete messages from this device that are older than the configured time frame.</string>
+	<string name="encrypting_message">Encrypting message</string>
+	<string name="not_fetching_history_retention_period">Overstepping local retention period.</string>
+	<string name="transcoding_video_progress">Compressing video (%s%% completed)</string>
+	<string name="nextMember">Load More Contacts</string>
+	<string name="previousMember">Load Previous Contacts</string>
 </resources>
