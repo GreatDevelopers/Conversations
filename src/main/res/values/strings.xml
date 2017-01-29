@@ -431,9 +431,6 @@
 	<string name="wipe_omemo_pep">Wipe other devices from PEP</string>
 	<string name="clear_other_devices">Clear devices</string>
 	<string name="clear_other_devices_desc">Are you sure you want to clear all other devices from the OMEMO announcement? The next time your devices connect, they will reannounce themselves, but they might not receive messages sent in the meantime.</string>
-	<string name="purge_key">Purge key</string>
-	<string name="purge_key_desc_part1">Are you sure you want to purge this key?</string>
-	<string name="purge_key_desc_part2">It will irreversibly be considered compromised, and you can never build a session with it again.</string>
 	<string name="error_no_keys_to_trust_server_error">There are no usable keys available for this contact.\nFetching new keys from the server has been unsuccessful. Maybe there is something wrong with your contacts server.</string>
 	<string name="error_no_keys_to_trust">There are no usable keys available for this contact. If you have purged any of their keys, they need to generate new ones.</string>
 	<string name="error_trustkeys_title">Error</string>
@@ -780,4 +777,15 @@
     <string name="share_location">Share Location</string>
 	<string name="show_inactive_devices">Show inactive devices</string>
 	<string name="hide_inactive_devices">Hide inactive devices</string>
+	<string name="distrust_omemo_key">Distrust device</string>
+	<string name="distrust_omemo_key_text">Are you sure you want to remove the verification for this device?\nThis device and messages coming from that device will be marked as untrusted.</string>
+	<string name="timeout_24_hours">24 hours</string>
+	<string name="timeout_7_days">7 days</string>
+	<string name="timeout_30_days">30 days</string>
+	<string name="timeout_6_months">6 months</string>
+	<string name="pref_automatically_delete_messages">Automatic message deletion</string>
+	<string name="pref_automatically_delete_messages_description">Automatically delete messages from this device that are older than the configured time frame.</string>
+	<string name="encrypting_message">Encrypting message</string>
+	<string name="not_fetching_history_retention_period">Overstepping local retention period.</string>
+	<string name="transcoding_video_progress">Compressing video (%s%% completed)</string>
 </resources>

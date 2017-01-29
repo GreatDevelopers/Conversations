@@ -100,11 +100,26 @@ public class NotificationService {
 		}
 	}
 
-	public void finishBacklog(boolean notify) {
+	public void finishBacklog(boolean notify, Account account) {
 		synchronized (notifications) {
 			mXmppConnectionService.updateUnreadCountBadge();
-			updateNotification(notify);
+			if (account == null || !notify) {
+				updateNotification(notify);
+			} else {
+				boolean hasPendingMessages = false;
+				for(ArrayList<Message> messages : notifications.values()) {
+					if (messages.size() > 0 && messages.get(0).getConversation().getAccount() == account) {
+						hasPendingMessages = true;
+						break;
+					}
+				}
+				updateNotification(hasPendingMessages);
+			}
 		}
+	}
+
+	public void finishBacklog(boolean notify) {
+		finishBacklog(notify,null);
 	}
 
 	private void pushToStack(final Message message) {
@@ -507,7 +522,7 @@ public class NotificationService {
 		return (m.find() || message.getType() == Message.TYPE_PRIVATE);
 	}
 
-	private static Pattern generateNickHighlightPattern(final String nick) {
+	public static Pattern generateNickHighlightPattern(final String nick) {
 		// We expect a word boundary, i.e. space or start of string, followed by
 		// the
 		// nick (matched in case-insensitive manner), followed by optional

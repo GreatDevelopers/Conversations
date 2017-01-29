@@ -439,8 +439,10 @@ public class AxolotlService implements OnAdvancedStreamFeaturesLoaded {
 		mXmppConnectionService.sendIqPacket(account, publish, null);
 	}
 
-	public void purgeKey(final String fingerprint) {
-		axolotlStore.setFingerprintStatus(fingerprint.replaceAll("\\s", ""), FingerprintStatus.createCompromised());
+	public void distrustFingerprint(final String fingerprint) {
+		final String fp = fingerprint.replaceAll("\\s", "");
+		final FingerprintStatus fingerprintStatus = axolotlStore.getFingerprintStatus(fp);
+		axolotlStore.setFingerprintStatus(fp,fingerprintStatus.toUntrusted());
 	}
 
 	public void publishOwnDeviceIdIfNeeded() {
@@ -1120,7 +1122,7 @@ public class AxolotlService implements OnAdvancedStreamFeaturesLoaded {
 				session.resetPreKeyId();
 			}
 		} catch (CryptoFailedException e) {
-			Log.w(Config.LOGTAG, getLogprefix(account) + "Failed to decrypt message: " + e.getMessage());
+			Log.w(Config.LOGTAG, getLogprefix(account) + "Failed to decrypt message from "+message.getFrom()+": " + e.getMessage());
 		}
 
 		if (session.isFresh() && plaintextMessage != null) {
@@ -1134,7 +1136,12 @@ public class AxolotlService implements OnAdvancedStreamFeaturesLoaded {
 		XmppAxolotlMessage.XmppAxolotlKeyTransportMessage keyTransportMessage;
 
 		XmppAxolotlSession session = getReceivingSession(message);
-		keyTransportMessage = message.getParameters(session, getOwnDeviceId());
+		try {
+			keyTransportMessage = message.getParameters(session, getOwnDeviceId());
+		} catch (CryptoFailedException e) {
+			Log.d(Config.LOGTAG,"could not decrypt keyTransport message "+e.getMessage());
+			keyTransportMessage = null;
+		}
 
 		if (session.isFresh() && keyTransportMessage != null) {
 			putFreshSession(session);

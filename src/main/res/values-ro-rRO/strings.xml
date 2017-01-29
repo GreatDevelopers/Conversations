@@ -332,6 +332,7 @@
   <string name="message_options">Optiuni mesaje</string>
   <string name="copy_text">Copiaza text</string>
   <string name="select_text">Selecteaza text</string>
+  <string name="quote">Citeaza</string>
   <string name="copy_original_url">Copiaza URL original</string>
   <string name="send_again">Trimite din nou</string>
   <string name="file_url">URL fisier</string>
@@ -396,9 +397,6 @@
   <string name="wipe_omemo_pep">Sterge alte dispozitive din PEP</string>
   <string name="clear_other_devices">Curata lista dispozitive</string>
   <string name="clear_other_devices_desc">Sigur vrei sa inlaturi toate celelalte dispozitive din mesajul de anunt OMEMO? Data viitoare cand dispozitivele se vor conecta, se vor anunta din nou, dar se poate ca ele sa nu fi primit mesajele trimise intre timp.</string>
-  <string name="purge_key">Sterge cheia</string>
-  <string name="purge_key_desc_part1">Sigur vrei sa stergi aceasta cheie?</string>
-  <string name="purge_key_desc_part2">Va fi considera compromisa ireversibil si nu vei mai putea crea o sesiune cu ea niciodata.</string>
   <string name="error_no_keys_to_trust_server_error">Nu exista chei utilizabile pentru acest contact.\nIncercarea de a descarca o cheie de pe server a esuat. Se poate sa fie o problema cu serverul de contacte.</string>
   <string name="error_no_keys_to_trust">Nu exista chei disponibile si utilizabile pentru acest contact. Daca ai sters vreuna din cheile contactului, trebuie sa generezi o alta noua.</string>
   <string name="error_trustkeys_title">Eroare</string>
@@ -683,4 +681,15 @@ Emitent</string>
   <string name="blindly_trusted_omemo_keys">Incredere oarba in aceste chei OMEMO</string>
   <string name="not_trusted">De neincredere</string>
   <string name="invalid_barcode">Cod de bare 2D invalid</string>
+  <string name="pref_clean_cache_summary">Locul unde sunt pozele temporar salvate (folosit de aplicatia camera foto)</string>
+  <string name="pref_clean_cache">Curata memoria temporara</string>
+  <string name="pref_clean_private_storage">Curata stocarea privata</string>
+  <string name="pref_clean_private_storage_summary">Locul unde sunt fisierele pastrate (pot fi descarcate de pe server din nou)</string>
+  <string name="i_followed_this_link_from_a_trusted_source">Am urmat aceasta legatura de la o sursa de incredere</string>
+  <string name="verifying_omemo_keys_trusted_source">Urmeaza sa verificati cheile OMEMO pentru %1$s dupa ce veti deschide legatura. Acest lucru se poate face in siguranta doar daca ati primit legatura de la o sursa de incredere unde doar %2$s putea publica.</string>
+  <string name="verify_omemo_keys">Verifica cheile OMEMO</string>
+  <string name="show_inactive_devices">Arata dispozitivele inactive</string>
+  <string name="hide_inactive_devices">Ascunde dispozitivele inactive</string>
+  <string name="distrust_omemo_key">Pierde increderea in acest dispozitiv</string>
+  <string name="distrust_omemo_key_text">Sigur doriti sa stergeti datele de verificare pentru acest dispozitiv?\nAcest dispozitiv precum si mesajele venind de la el vor fi marcate ca ne fiind de incredere.</string>
 </resources>

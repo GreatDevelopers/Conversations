@@ -332,6 +332,7 @@
   <string name="message_options">Berichtopties</string>
   <string name="copy_text">Tekst kopiëren</string>
   <string name="select_text">Tekst selecteren</string>
+  <string name="quote">Citeren</string>
   <string name="copy_original_url">Oorspronkelijke URL kopiëren</string>
   <string name="send_again">Opnieuw versturen</string>
   <string name="file_url">Bestands-URL</string>
@@ -396,9 +397,6 @@
   <string name="wipe_omemo_pep">Andere apparaten van PEP verwijderen</string>
   <string name="clear_other_devices">Apparaten wissen</string>
   <string name="clear_other_devices_desc">Weet je zeker dat je alle andere apparaten uit de OMEMO-aankondiging wilt weglaten? De volgende keer dat je apparaten verbinding maken zullen ze zich opnieuw aankondigen, maar zullen ze misschien niet de berichten ontvangen die in de tussentijd zijn verzonden.</string>
-  <string name="purge_key">Sleutel verwijderen</string>
-  <string name="purge_key_desc_part1">Weet je zeker dat je deze sleutel wilt verwijderen?</string>
-  <string name="purge_key_desc_part2">Ze zal onherroepelijk beschouwd worden als gecompromitteerd en je zal er nooit meer een nieuwe sessie mee kunnen opzetten.</string>
   <string name="error_no_keys_to_trust_server_error">Er zijn geen bruikbare sleutels beschikbaar voor dit contact.\nHet ophalen van nieuwe sleutels van de server is mislukt. Misschien is er iets mis met de server van je contact.</string>
   <string name="error_no_keys_to_trust">Er zijn geen bruikbare sleutels beschikbaar voor dit contact. Als je zijn/haar sleutels hebt verwijderd dient hij/zij nieuwe aan te maken.</string>
   <string name="error_trustkeys_title">Fout</string>
@@ -682,4 +680,15 @@
   <string name="blindly_trusted_omemo_keys">Blindelings vertrouwde OMEMO-sleutels</string>
   <string name="not_trusted">Onvertrouwd</string>
   <string name="invalid_barcode">Ongeldige 2D-streepjescode</string>
+  <string name="pref_clean_cache_summary">Cachemap wissen (wordt gebruikt door Camera)</string>
+  <string name="pref_clean_cache">Cache wissen</string>
+  <string name="pref_clean_private_storage">Privéopslag wissen</string>
+  <string name="pref_clean_private_storage_summary">Privéopslag waar bestanden worden bijgehouden wissen (de bestanden kunnen opnieuw gedownload worden van de server)</string>
+  <string name="i_followed_this_link_from_a_trusted_source">Ik heb deze koppeling gevolgd van een vertrouwde bron</string>
+  <string name="verifying_omemo_keys_trusted_source">Je staat op het punt de OMEMO-sleutels van %1$s te verifiëren door op een koppeling te klikken. Dit is enkel veilig als je de koppeling van een vertrouwde bron hebt gevolgd, waarbij enkel %2$s de koppeling gepubliceerd kan hebben.</string>
+  <string name="verify_omemo_keys">OMEMO-sleutels verifiëren</string>
+  <string name="show_inactive_devices">Toon niet-actieve apparaten</string>
+  <string name="hide_inactive_devices">Verberg niet-actieve apparaten</string>
+  <string name="distrust_omemo_key">Apparaat niet meer vertrouwen</string>
+  <string name="distrust_omemo_key_text">Weet je zeker dat je de verificatie voor dit apparaat wil verwijderen?\nHet apparaat en alle berichten die het verstuurt zullen als niet-vertrouwd worden weergegeven.</string>
 </resources>
