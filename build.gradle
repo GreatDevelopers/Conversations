@@ -59,8 +59,8 @@ android {
         minSdkVersion 21
         targetSdkVersion 25
         multiDexEnabled true
-        versionCode 4
-        versionName "0.7"
+        versionCode 5
+        versionName "0.8"
         archivesBaseName += "-$versionName"
         applicationId "in.gndec.sunehag"
     }

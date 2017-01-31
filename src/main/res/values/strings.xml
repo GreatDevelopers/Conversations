@@ -788,4 +788,6 @@
 	<string name="encrypting_message">Encrypting message</string>
 	<string name="not_fetching_history_retention_period">Overstepping local retention period.</string>
 	<string name="transcoding_video_progress">Compressing video (%s%% completed)</string>
+	<string name="nextMember">Load More Contacts</string>
+	<string name="previousMember">Load Previous Contacts</string>
 </resources>

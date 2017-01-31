@@ -52,6 +52,7 @@ public final class Config {
 	public static final boolean ALLOW_CUSTOM_DNS = true;
 	public static final byte[] ipAddress = new byte[]{8,8,8,8}; //Enter Your custom DNS Server (Default is 8.8.8.8)
 
+	public static final int NUMBER_OF_USERS_PER_PAGE=200;
 	public static final int DEFAULT_MAP_LOCATION_ZOOM = 15;
 
 	public static final String MAGIC_CREATE_DOMAIN = null;
