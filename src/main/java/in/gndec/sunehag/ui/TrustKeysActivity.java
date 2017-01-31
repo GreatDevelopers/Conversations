@@ -16,7 +16,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.zxing.integration.android.IntentIntegrator;
-import com.google.zxing.integration.android.IntentResult;
 
 import org.whispersystems.libaxolotl.IdentityKey;
 
@@ -28,7 +27,6 @@ import java.util.Map;
 import java.util.Set;
 
 import in.gndec.sunehag.Config;
-import in.gndec.sunehag.OmemoActivity;
 import in.gndec.sunehag.R;
 import in.gndec.sunehag.crypto.axolotl.AxolotlService;
 import in.gndec.sunehag.crypto.axolotl.FingerprintStatus;
@@ -38,7 +36,6 @@ import in.gndec.sunehag.utils.XmppUri;
 import in.gndec.sunehag.xmpp.OnKeyStatusUpdated;
 import in.gndec.sunehag.xmpp.jid.InvalidJidException;
 import in.gndec.sunehag.xmpp.jid.Jid;
-
 
 public class TrustKeysActivity extends OmemoActivity implements OnKeyStatusUpdated {
 	private List<Jid> contactJids;

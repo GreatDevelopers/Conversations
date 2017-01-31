@@ -431,9 +431,6 @@
 	<string name="wipe_omemo_pep">Wipe other devices from PEP</string>
 	<string name="clear_other_devices">Clear devices</string>
 	<string name="clear_other_devices_desc">Are you sure you want to clear all other devices from the OMEMO announcement? The next time your devices connect, they will reannounce themselves, but they might not receive messages sent in the meantime.</string>
-	<string name="purge_key">Purge key</string>
-	<string name="purge_key_desc_part1">Are you sure you want to purge this key?</string>
-	<string name="purge_key_desc_part2">It will irreversibly be considered compromised, and you can never build a session with it again.</string>
 	<string name="error_no_keys_to_trust_server_error">There are no usable keys available for this contact.\nFetching new keys from the server has been unsuccessful. Maybe there is something wrong with your contacts server.</string>
 	<string name="error_no_keys_to_trust">There are no usable keys available for this contact. If you have purged any of their keys, they need to generate new ones.</string>
 	<string name="error_trustkeys_title">Error</string>
@@ -726,7 +723,7 @@
 <p><strong><em>Illegal Activities:-</em></strong> Do not use our Services to engage in illegal activities or to promote activities that are dangerous and illegal, such as terrorism, the sale of illegal drugs, or human trafficking. We may also remove content that violates applicable local laws.</p>
 </li>
 <li>
-<p><strong><em>Malicious and Deceptive Practices:-</em></strong> Do not transmit viruses, malware, or any other malicious or destructive code. Do not distribute content that harms or interferes with the operation of the networks, servers, or other infrastructure of Google or others. Do not use our Services for phishing scams.</p>
+<p><strong><em>Malicious and Deceptive Practices:-</em></strong> Do not transmit viruses, malware, or any other malicious or destructive code. Do not distribute content that harms or interferes with the operation of the networks, servers, or other infrastructure of GNDEC or others. Do not use our Services for phishing scams.</p>
 </li>
 <li>
 <p><strong><em>Hate Speech:-</em></strong> Our products are platforms for free expression. But we don’t support content that promotes or condones violence against individuals or groups based on race or ethnic origin, religion, disability, gender, age, nationality, veteran status, or sexual orientation/gender identity, or whose primary purpose is inciting hatred on the basis of these core characteristics.</p>
@@ -745,7 +742,7 @@
 </li>
 </ol>
 <p><strong>Privacy policy and user data</strong></p>
-<p>Our Service allows you to post, link, store, share and otherwise make available certain information,  text, graphics, videos, or other material (“Content”). You are responsible for the</p>
+<p>Our Service allows you to post, link, store, share and otherwise make available certain information,  text, graphics, videos, or other material (“Content”).</p>
 <p><strong>Information Collection And Use</strong></p>
 <p>While using our app, we may ask you to provide us with certain personally identifiable information  that can be used to contact or identify you. Personally identifiable information may include, but is not  limited to your name (“Personal Information”).</p>
 <p><strong>Log Data</strong></p>
@@ -774,4 +771,21 @@
 	<string name="i_followed_this_link_from_a_trusted_source">I followed this link from a trusted source</string>
 	<string name="verifying_omemo_keys_trusted_source">You are about to verify the OMEMO keys of %1$s after clicking a link. This is only secure if you followed this link from a trusted source where only %2$s could have published this link.</string>
 	<string name="verify_omemo_keys">Verify OMEMO keys</string>
+    <string name="share">Share</string>
+    <string name="location_sharing_disabled">Location sharing is disabled in settings</string>
+    <string name="locating">Locating&#8230;</string>
+    <string name="share_location">Share Location</string>
+	<string name="show_inactive_devices">Show inactive devices</string>
+	<string name="hide_inactive_devices">Hide inactive devices</string>
+	<string name="distrust_omemo_key">Distrust device</string>
+	<string name="distrust_omemo_key_text">Are you sure you want to remove the verification for this device?\nThis device and messages coming from that device will be marked as untrusted.</string>
+	<string name="timeout_24_hours">24 hours</string>
+	<string name="timeout_7_days">7 days</string>
+	<string name="timeout_30_days">30 days</string>
+	<string name="timeout_6_months">6 months</string>
+	<string name="pref_automatically_delete_messages">Automatic message deletion</string>
+	<string name="pref_automatically_delete_messages_description">Automatically delete messages from this device that are older than the configured time frame.</string>
+	<string name="encrypting_message">Encrypting message</string>
+	<string name="not_fetching_history_retention_period">Overstepping local retention period.</string>
+	<string name="transcoding_video_progress">Compressing video (%s%% completed)</string>
 </resources>

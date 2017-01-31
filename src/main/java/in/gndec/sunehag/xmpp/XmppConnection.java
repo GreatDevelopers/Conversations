@@ -24,8 +24,8 @@ import java.net.IDN;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
@@ -59,6 +59,7 @@ import in.gndec.sunehag.crypto.sasl.External;
 import in.gndec.sunehag.crypto.sasl.Plain;
 import in.gndec.sunehag.crypto.sasl.SaslMechanism;
 import in.gndec.sunehag.crypto.sasl.ScramSha1;
+import in.gndec.sunehag.crypto.sasl.ScramSha256;
 import in.gndec.sunehag.entities.Account;
 import in.gndec.sunehag.entities.Message;
 import in.gndec.sunehag.entities.ServiceDiscoveryResult;
@@ -176,8 +177,6 @@ public class XmppConnection implements Runnable {
 		}
 	}
 
-	private Identity mServerIdentity = Identity.UNKNOWN;
-
 	public final OnIqPacketReceived registrationResponseListener =  new OnIqPacketReceived() {
 		@Override
 		public void onIqPacketReceived(Account account, IqPacket packet) {
@@ -251,17 +250,6 @@ public class XmppConnection implements Runnable {
 		Log.d(Config.LOGTAG, account.getJid().toBareJid().toString() + ": connecting");
 		features.encryptionEnabled = false;
 		this.attempt++;
-		switch (account.getJid().getDomainpart()) {
-			case "chat.facebook.com":
-				mServerIdentity = Identity.FACEBOOK;
-				break;
-			case "nimbuzz.com":
-				mServerIdentity = Identity.NIMBUZZ;
-				break;
-			default:
-				mServerIdentity = Identity.UNKNOWN;
-				break;
-		}
 		try {
 			Socket localSocket;
 			shouldAuthenticate = needsBinding = !account.isOptionSet(Account.OPTION_REGISTER);
@@ -745,7 +733,7 @@ public class XmppConnection implements Runnable {
 					final Pair<IqPacket, OnIqPacketReceived> packetCallbackDuple = packetCallbacks.get(packet.getId());
 					// Packets to the server should have responses from the server
 					if (packetCallbackDuple.first.toServer(account)) {
-						if (packet.fromServer(account) || mServerIdentity == Identity.FACEBOOK) {
+						if (packet.fromServer(account)) {
 							callback = packetCallbackDuple.second;
 							packetCallbacks.remove(packet.getId());
 						} else {
@@ -866,6 +854,8 @@ public class XmppConnection implements Runnable {
 		auth.setAttribute("xmlns", "urn:ietf:params:xml:ns:xmpp-sasl");
 		if (mechanisms.contains("EXTERNAL") && account.getPrivateKeyAlias() != null) {
 			saslMechanism = new External(tagWriter, account, mXmppConnectionService.getRNG());
+		} else if (mechanisms.contains("SCRAM-SHA-256")) {
+			saslMechanism = new ScramSha256(tagWriter, account, mXmppConnectionService.getRNG());
 		} else if (mechanisms.contains("SCRAM-SHA-1")) {
 			saslMechanism = new ScramSha1(tagWriter, account, mXmppConnectionService.getRNG());
 		} else if (mechanisms.contains("PLAIN")) {
@@ -1097,7 +1087,7 @@ public class XmppConnection implements Runnable {
 			this.disco.clear();
 		}
 		mPendingServiceDiscoveries.set(0);
-		mWaitForDisco.set(mServerIdentity != Identity.NIMBUZZ && smVersion != 0);
+		mWaitForDisco.set(smVersion != 0 && !account.getJid().getDomainpart().equalsIgnoreCase("nimbuzz.com"));
 		lastDiscoStarted = SystemClock.elapsedRealtime();
 		Log.d(Config.LOGTAG, account.getJid().toBareJid() + ": starting service discovery");
 		mXmppConnectionService.scheduleWakeUpCall(Config.CONNECT_DISCO_TIMEOUT, account.getUuid().hashCode());
@@ -1136,24 +1126,6 @@ public class XmppConnection implements Runnable {
 					boolean advancedStreamFeaturesLoaded;
 					synchronized (XmppConnection.this.disco) {
 						ServiceDiscoveryResult result = new ServiceDiscoveryResult(packet);
-						for (final ServiceDiscoveryResult.Identity id : result.getIdentities()) {
-							if (mServerIdentity == Identity.UNKNOWN && id.getType().equals("im") &&
-							    id.getCategory().equals("server") && id.getName() != null &&
-							    jid.equals(account.getServer())) {
-									switch (id.getName()) {
-										case "Prosody":
-											mServerIdentity = Identity.PROSODY;
-											break;
-										case "ejabberd":
-											mServerIdentity = Identity.EJABBERD;
-											break;
-										case "Slack-XMPP":
-											mServerIdentity = Identity.SLACK;
-											break;
-									}
-									Log.d(Config.LOGTAG, account.getJid().toBareJid() + ": server name: " + id.getName());
-								}
-						}
 						if (jid.equals(account.getServer())) {
 							mXmppConnectionService.databaseBackend.insertDiscoveryResult(result);
 						}
@@ -1283,7 +1255,7 @@ public class XmppConnection implements Runnable {
 	}
 
 	private String nextRandomId() {
-		return new BigInteger(50, mXmppConnectionService.getRNG()).toString(32);
+		return new BigInteger(50, mXmppConnectionService.getRNG()).toString(36);
 	}
 
 	public String sendIqPacket(final IqPacket packet, final OnIqPacketReceived callback) {
@@ -1384,6 +1356,9 @@ public class XmppConnection implements Runnable {
 	}
 
 	private void forceCloseSocket() {
+		if (tagWriter != null) {
+			tagWriter.forceClose();
+		}
 		if (socket != null) {
 			try {
 				socket.close();
@@ -1403,7 +1378,6 @@ public class XmppConnection implements Runnable {
 		interrupt();
 		Log.d(Config.LOGTAG, account.getJid().toBareJid() + ": disconnecting force="+Boolean.valueOf(force));
 		if (force) {
-			tagWriter.forceClose();
 			forceCloseSocket();
 		} else {
 			if (tagWriter.isActive()) {
@@ -1538,7 +1512,25 @@ public class XmppConnection implements Runnable {
 	}
 
 	public Identity getServerIdentity() {
-		return mServerIdentity;
+		synchronized (this.disco) {
+			ServiceDiscoveryResult result = disco.get(account.getJid().toDomainJid());
+			if (result == null) {
+				return Identity.UNKNOWN;
+			}
+			for (final ServiceDiscoveryResult.Identity id : result.getIdentities()) {
+				if (id.getType().equals("im") && id.getCategory().equals("server") && id.getName() != null) {
+					switch (id.getName()) {
+						case "Prosody":
+							return Identity.PROSODY;
+						case "ejabberd":
+							return Identity.EJABBERD;
+						case "Slack-XMPP":
+							return Identity.SLACK;
+					}
+				}
+			}
+		}
+		return Identity.UNKNOWN;
 	}
 
 	private class UnauthorizedException extends IOException {

@@ -39,4 +39,8 @@
 		<item>@color/dot_dark_intro</item>
 	</array>
 	<color name="bubble">#ff4b9b4a</color>
+	<color name="ondarktext">#fffafafa</color>
+	<color name="primarytext">#de000000</color>
+	<color name="divider">#1f000000</color>
+	<color name="secondarytext">#8a000000</color>
 </resources>

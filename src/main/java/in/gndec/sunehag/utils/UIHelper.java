@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import in.gndec.sunehag.Config;
@@ -28,9 +29,9 @@ public class UIHelper {
 	private static String HEAVY_BLACK_HEART_SUIT = "\u2764";
 	private static String WHITE_HEART_SUIT = "\u2661";
 
-	public static final ArrayList<String> HEARTS = new ArrayList<>(Arrays.asList(BLACK_HEART_SUIT,HEAVY_BLACK_HEART_SUIT,WHITE_HEART_SUIT));
+	public static final List<String> HEARTS = Arrays.asList(BLACK_HEART_SUIT,HEAVY_BLACK_HEART_SUIT,WHITE_HEART_SUIT);
 
-	private static final ArrayList<String> LOCATION_QUESTIONS = new ArrayList<>(Arrays.asList(
+	private static final List<String> LOCATION_QUESTIONS = Arrays.asList(
 			"where are you", //en
 			"where are you now", //en
 			"where are you right now", //en
@@ -48,7 +49,9 @@ public class UIHelper {
 			"wo seid ihr gerade", //de
 			"dónde estás", //es
 			"donde estas" //es
-		));
+		);
+
+	private static final List<Character> PUNCTIONATION = Arrays.asList('.',',','?','!',';',':');
 
 	private static final int SHORT_DATE_FLAGS = DateUtils.FORMAT_SHOW_DATE
 		| DateUtils.FORMAT_NO_YEAR | DateUtils.FORMAT_ABBREV_ALL;
@@ -179,10 +182,7 @@ public class UIHelper {
 				return new Pair<>(getFileDescriptionString(context,message),true);
 			}
 		} else {
-			String body = message.getBody();
-			if (body.length() > 256) {
-				body = body.substring(0,256);
-			}
+			final String body = message.getBody();
 			if (body.startsWith(Message.ME_COMMAND)) {
 				return new Pair<>(body.replaceAll("^" + Message.ME_COMMAND,
 						UIHelper.getMessageDisplayName(message) + " "), false);
@@ -195,10 +195,49 @@ public class UIHelper {
 			} else if (message.treatAsDownloadable() == Message.Decision.MUST) {
 				return new Pair<>(context.getString(R.string.x_file_offered_for_download,
 						getFileDescriptionString(context,message)),true);
-			} else{
-				return new Pair<>(body.trim(), false);
+			} else {
+				String[] lines = body.split("\n");
+				StringBuilder builder = new StringBuilder();
+				for(String l : lines) {
+					if (l.length() > 0) {
+						char first = l.charAt(0);
+						if ((first != '>' || isPositionFollowedByNumber(l,0)) && first != '\u00bb') {
+							String line = l.trim();
+							if (line.isEmpty()) {
+								continue;
+							}
+							char last = line.charAt(line.length()-1);
+							if (builder.length() != 0) {
+								builder.append(' ');
+							}
+							builder.append(line);
+							if (!PUNCTIONATION.contains(last)) {
+								break;
+							}
+						}
+					}
+				}
+				if (builder.length() == 0) {
+					builder.append(body.trim());
+				}
+				return new Pair<>(builder.length() > 256 ? builder.substring(0,256) : builder.toString(), false);
 			}
 		}
+	}
+
+	public static boolean isPositionFollowedByNumber(CharSequence body, int pos) {
+		boolean previousWasNumber = false;
+		for (int i = pos +1; i < body.length(); i++) {
+			char c = body.charAt(i);
+			if (Character.isDigit(body.charAt(i))) {
+				previousWasNumber = true;
+			} else if (previousWasNumber && (c == '.' || c == ',')) {
+				previousWasNumber = false;
+			} else {
+				return Character.isWhitespace(c) && previousWasNumber;
+			}
+		}
+		return previousWasNumber;
 	}
 
 	public static String getFileDescriptionString(final Context context, final Message message) {

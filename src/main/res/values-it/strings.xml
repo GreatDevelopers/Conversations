@@ -122,12 +122,14 @@
   <string name="pref_never_send_crash">Non inviare mai segnalazioni di errore</string>
   <string name="pref_never_send_crash_summary">Se scegli di inviare una segnalazione dell’errore aiuterai lo sviluppo di Conversations</string>
   <string name="pref_confirm_messages">Conferma Messaggi</string>
+  <string name="pref_confirm_messages_summary">Fai sapere ai tuoi contatti quando hai ricevuto e letto i loro messaggi</string>
   <string name="pref_ui_options">Interfaccia Utente</string>
   <string name="openpgp_error">OpenKeychain ha riportato un errore</string>
   <string name="error_decrypting_file">Errore di I/O nel decifrare il file</string>
   <string name="accept">Accetta</string>
   <string name="error">Si è verificato un errore</string>
   <string name="pref_grant_presence_updates">Concedi aggiornamenti della presenza</string>
+  <string name="pref_grant_presence_updates_summary">Concedi e richiedi preventivamente le sottoscrizioni sulla presenza ai contatti che hai creato</string>
   <string name="subscriptions">Sottoscrizioni</string>
   <string name="your_account">Il tuo utente</string>
   <string name="keys">Chiavi</string>
@@ -309,7 +311,7 @@
   <string name="pref_use_send_button_to_indicate_status">Il pulsante di invio indica lo stato</string>
   <string name="pref_use_indicate_received">Richiedi la ricevuta di ritorno</string>
   <string name="pref_use_indicate_received_summary">I messaggi ricevuti verranno contrassegnati con una spunta verde se supportato</string>
-  <string name="pref_use_send_button_to_indicate_status_summary">Colora il pulsante di invio per indicare lo stato di un contatto</string>
+  <string name="pref_use_send_button_to_indicate_status_summary">Colora il pulsante di invio per indicare lo stato del contatto</string>
   <string name="pref_expert_options_other">Altro</string>
   <string name="pref_conference_name">Nome della conferenza</string>
   <string name="pref_conference_name_summary">Usa il soggetto della stanza al posto del JID per identificare le conferenze</string>
@@ -330,6 +332,7 @@
   <string name="message_options">Opzioni del messaggio</string>
   <string name="copy_text">Copia testo</string>
   <string name="select_text">Seleziona testo</string>
+  <string name="quote">Quota</string>
   <string name="copy_original_url">Copia URL originale</string>
   <string name="send_again">Invia di nuovo</string>
   <string name="file_url">URL del file</string>
@@ -337,6 +340,8 @@
   <string name="url_copied_to_clipboard">URL copiato</string>
   <string name="message_copied_to_clipboard">Messaggio copiato</string>
   <string name="image_transmission_failed">Trasmissione dell’immagine fallita</string>
+  <string name="scan_qr_code">Scansiona codice a barre 2D</string>
+  <string name="show_qr_code">Mostra codice a barre 2D</string>
   <string name="show_block_list">Mostra la black list</string>
   <string name="account_details">Dettagli utente</string>
   <string name="verify_otr">Verifica OTR</string>
@@ -376,6 +381,7 @@
   <string name="no_application_found_to_open_file">Nessuna applicazione trovata per aprire il file</string>
   <string name="could_not_verify_fingerprint">Impronta non verificata</string>
   <string name="manually_verify">Verifica manuale</string>
+  <string name="are_you_sure_verify_fingerprint">Sei sicuro di voler verificare l\'impronta OTR del tuo contatto?</string>
   <string name="pref_show_dynamic_tags">Mostra tag dinamici</string>
   <string name="pref_show_dynamic_tags_summary">Mostra tag in sola lettura sotto i contatti</string>
   <string name="enable_notifications">Abilita le notifiche</string>
@@ -391,9 +397,6 @@
   <string name="wipe_omemo_pep">Cancella altri dispositivi da PEP</string>
   <string name="clear_other_devices">Pulisci dispositivi</string>
   <string name="clear_other_devices_desc">Sei sicuro/a di voler rimuovere tutti gli altri dispositivi dall\'annuncio OMEMO? La prossima volta che si connetteranno si riannunceranno, ma potrebbero non ricevere i messaggi inviati nel frattempo.</string>
-  <string name="purge_key">Elimina chiave</string>
-  <string name="purge_key_desc_part1">Sei sicuro/a di voler cancellare questa chiave?</string>
-  <string name="purge_key_desc_part2">Verrà considerata irreversibilmente compromessa, e non potrai più creare una sessione con essa.</string>
   <string name="error_no_keys_to_trust_server_error">Non ci sono chiavi utilizzabili per questo contatto.\nLa raccolta di nuove chiavi dal server è fallita. Forse qualcosa non va con il tuo server dei contatti.</string>
   <string name="error_no_keys_to_trust">Non ci sono chiavi usabili per questo contatto. Se hai cancellato qualsiasi loro chiave, devono generarne di nuove.</string>
   <string name="error_trustkeys_title">Errore</string>
@@ -450,7 +453,7 @@
   <string name="pref_enter_is_send">Invio spedisce</string>
   <string name="pref_enter_is_send_summary">Il tasto invio spedisce il messaggio</string>
   <string name="pref_display_enter_key">Mostra il tasto invio</string>
-  <string name="pref_display_enter_key_summary">Cambia il tasto delle faccine nel tastodi invio</string>
+  <string name="pref_display_enter_key_summary">Cambia il tasto delle faccine nel tasto di invio</string>
   <string name="audio">audio</string>
   <string name="video">video</string>
   <string name="image">immagine</string>
@@ -468,6 +471,7 @@
   <string name="contact_is_typing">%s sta digitando...</string>
   <string name="contact_has_stopped_typing">%s ha smesso di digitare</string>
   <string name="pref_chat_states">Notifiche di composizione</string>
+  <string name="pref_chat_states_summary">Fai sapere ai tuoi contatti quando stai scrivendo loro un messaggio</string>
   <string name="send_location">Invia la posizione</string>
   <string name="show_location">Mostra la posizione</string>
   <string name="no_application_found_to_display_location">Non è stata trovata alcuna applicazione per mostrare la posizione</string>
@@ -660,4 +664,31 @@
   <string name="data_saver_enabled">Risparmio dati attivato</string>
   <string name="data_saver_enabled_explained">Il tuo sistema operativo sta limitando l\'accesso internet a Conversations quando è in background. Per ricevere le notifiche di nuovi messaggi dovresti consentire l\'accesso senza limiti a Conversations quando il Risparmio dati è attivo.\nConversations cercherà comunque di risparmiare dati quando possibile.</string>
   <string name="device_does_not_support_data_saver">Il tuo dispositivo non supporta la disattivazione del Risparmio dati per Conversations.</string>
+  <string name="error_unable_to_create_temporary_file">Impossibile creare file temporaneo</string>
+  <string name="this_device_has_been_verified">Questo dispositivo è stato verificato</string>
+  <string name="copy_fingerprint">Copia impronta</string>
+  <string name="all_omemo_keys_have_been_verified">Tutte le chiavi OMEMO sono state verificate</string>
+  <string name="barcode_does_not_contain_fingerprints_for_this_conversation">Il codice a barre non contiene impronte per questa conversazione.</string>
+  <string name="verified_fingerprints">Impronte verificate</string>
+  <string name="use_camera_icon_to_scan_barcode">Usa la fotocamera per scansionare il codice a barre di un contatto</string>
+  <string name="please_wait_for_keys_to_be_fetched">Attendi la ricezione delle chiavi</string>
+  <string name="share_as_barcode">Condividi come codice a barre</string>
+  <string name="share_as_uri">Condividi come URI XMPP</string>
+  <string name="share_as_http">Condividi come link HTTP</string>
+  <string name="pref_blind_trust_before_verification">Fiducia cieca prima della verifica</string>
+  <string name="pref_blind_trust_before_verification_summary">Fidati automaticamente di tutti i nuovi dispositivi di contatti che non sono stati verificati e chiedi una conferma manuale ogni volta che un contatto verificato aggiunge un dispositivo.</string>
+  <string name="blindly_trusted_omemo_keys">Chiavi OMEMO fidate ciecamente</string>
+  <string name="not_trusted">Non fidato</string>
+  <string name="invalid_barcode">Codice a barre 2D non valido</string>
+  <string name="pref_clean_cache_summary">Svuota la cartella della cache (usata dall\'app fotocamera)</string>
+  <string name="pref_clean_cache">Svuota cache</string>
+  <string name="pref_clean_private_storage">Svuota archivio privato</string>
+  <string name="pref_clean_private_storage_summary">Svuota l\'archivio privato nella quale sono memorizzati i file (possono essere riscaricati dal server)</string>
+  <string name="i_followed_this_link_from_a_trusted_source">Ho seguito questo link da una fonte fidata</string>
+  <string name="verifying_omemo_keys_trusted_source">Stai per verificare le chiavi OMEMO di %1$s cliccando un link. Questo metodo è sicuro solo se hai seguito il link da una fonte fidata dove solo %2$s può averlo pubblicato.</string>
+  <string name="verify_omemo_keys">Verifica chiavi OMEMO</string>
+  <string name="show_inactive_devices">Mostra dispositivi inattivi</string>
+  <string name="hide_inactive_devices">Nascondi dispositivi inattivi</string>
+  <string name="distrust_omemo_key">Diffida il dispositvo</string>
+  <string name="distrust_omemo_key_text">Sei sicuro di volere rimuovere la verifica per questo dispositivo?\nIl dispositivo e i messaggi provenienti da esso verranno segnati come non fidati.</string>
 </resources>

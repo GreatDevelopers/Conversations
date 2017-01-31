@@ -13,6 +13,7 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.app.ListFragment;
 import android.app.PendingIntent;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
@@ -99,6 +100,7 @@ public class StartConversationActivity extends XmppActivity implements OnRosterU
     private AtomicBoolean mRequestedContactsPermission = new AtomicBoolean(false);
     private final int REQUEST_SYNC_CONTACTS = 0x3b28cf;
     private final int REQUEST_CREATE_CONFERENCE = 0x3b39da;
+    private final int REQUEST_STORAGE = 12022;
     private Dialog mCurrentDialog = null;
 
     private MenuItem.OnActionExpandListener mOnActionExpandListener = new MenuItem.OnActionExpandListener() {
@@ -321,6 +323,23 @@ public class StartConversationActivity extends XmppActivity implements OnRosterU
     protected void openConversationForBookmark(int position) {
         Bookmark bookmark = (Bookmark) conferences.get(position);
         openConversationsForBookmark(bookmark);
+    }
+
+    protected void shareBookmarkUri() {
+        shareBookmarkUri(conference_context_id);
+    }
+
+    protected void shareBookmarkUri(int position) {
+        Bookmark bookmark = (Bookmark) conferences.get(position);
+        Intent shareIntent = new Intent();
+        shareIntent.setAction(Intent.ACTION_SEND);
+        shareIntent.putExtra(Intent.EXTRA_TEXT, "xmpp:"+bookmark.getJid().toBareJid().toString()+"?join");
+        shareIntent.setType("text/plain");
+        try {
+            startActivity(Intent.createChooser(shareIntent, getText(R.string.share_uri_with)));
+        } catch (ActivityNotFoundException e) {
+            Toast.makeText(this, R.string.no_application_to_share_uri, Toast.LENGTH_SHORT).show();
+        }
     }
 
     protected void openConversationsForBookmark(Bookmark bookmark) {
@@ -715,7 +734,7 @@ public class StartConversationActivity extends XmppActivity implements OnRosterU
 
     private void askForContactsPermissions() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (checkSelfPermission(Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+            if (checkSelfPermission(Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                 if (mRequestedContactsPermission.compareAndSet(false, true)) {
                     if (shouldShowRequestPermissionRationale(Manifest.permission.READ_CONTACTS)) {
                         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -741,10 +760,16 @@ public class StartConversationActivity extends XmppActivity implements OnRosterU
                         }
                         builder.create().show();
                     } else {
-                        requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, 0);
+                        requestPermissions(new String[]{Manifest.permission.READ_CONTACTS,Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0);
                     }
                 }
             }
+            /*if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                if (shouldShowRequestPermissionRationale(Manifest.permission.READ_EXTERNAL_STORAGE) || shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                    Toast.makeText(StartConversationActivity.this,"Please grant Storage permission in order to use this feature",Toast.LENGTH_LONG).show();
+                }
+                requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.WRITE_EXTERNAL_STORAGE},REQUEST_STORAGE );
+            }*/
         }
     }
 
@@ -846,12 +871,13 @@ public class StartConversationActivity extends XmppActivity implements OnRosterU
 
     private boolean handleJid(Invite invite) {
         Account account = xmppConnectionService.findAccountByJid(invite.getJid());
-        if (account != null && !account.isOptionSet(Account.OPTION_DISABLED) && invite.hasFingerprints()) {
-            if (xmppConnectionService.verifyFingerprints(account,invite.getFingerprints())) {
-                switchToAccount(account);
-                finish();
-                return true;
+        if (account != null && !account.isOptionSet(Account.OPTION_DISABLED)) {
+            if (invite.hasFingerprints() && xmppConnectionService.verifyFingerprints(account,invite.getFingerprints())) {
+                Toast.makeText(this,R.string.verified_fingerprints,Toast.LENGTH_SHORT).show();
             }
+            switchToAccount(account);
+            finish();
+            return true;
         }
         List<Contact> contacts = xmppConnectionService.findContacts(invite.getJid());
         if (invite.isMuc()) {
@@ -872,7 +898,9 @@ public class StartConversationActivity extends XmppActivity implements OnRosterU
                 displayVerificationWarningDialog(contact,invite);
             } else {
                 if (invite.hasFingerprints()) {
-                    xmppConnectionService.verifyFingerprints(contact, invite.getFingerprints());
+                    if(xmppConnectionService.verifyFingerprints(contact, invite.getFingerprints())) {
+                        Toast.makeText(this,R.string.verified_fingerprints,Toast.LENGTH_SHORT).show();
+                    }
                 }
                 switchToConversation(contact, invite.getBody());
             }
@@ -1138,6 +1166,9 @@ public class StartConversationActivity extends XmppActivity implements OnRosterU
                     break;
                 case R.id.context_join_conference:
                     activity.openConversationForBookmark();
+                    break;
+                case R.id.context_share_uri:
+                    activity.shareBookmarkUri();
                     break;
                 case R.id.context_delete_conference:
                     activity.deleteConference();
